@@ -272,6 +272,13 @@ h1 {
     padding: 10px 15px;
     border: 2px solid var(--neon-yellow);
     box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8), 0 0 10px rgba(247, 255, 0, 0.4);
+    transition: all 0.3s ease;
+}
+
+.time-control:hover {
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8), 0 0 15px rgba(247, 255, 0, 0.7);
+    border-color: #ffff00;
+    transform: translateY(-2px);
 }
 
 .time-display {
@@ -301,6 +308,14 @@ h1 {
 }
 
 /* Create a progress effect */
+/* Seek progress track - more compatible method */
+#seek-bar {
+    background: linear-gradient(to right, var(--accent-color) 0%, var(--accent-color) var(--seek-progress, 0%), rgba(var(--accent-rgb), 0.2) var(--seek-progress, 0%), rgba(var(--accent-rgb), 0.2) 100%);
+    box-shadow: 0 0 8px rgba(255, 90, 95, 0.3);
+    overflow: hidden;
+}
+
+/* Keep for browsers that support it */
 #seek-bar::before {
     content: '';
     position: absolute;
@@ -313,6 +328,7 @@ h1 {
     pointer-events: none;
     z-index: 1;
     box-shadow: 0 0 8px rgba(255, 90, 95, 0.7);
+    display: none; /* Hide by default and use the background gradient instead */
 }
 
 #seek-bar::-webkit-slider-thumb {
@@ -341,6 +357,13 @@ h1 {
     transition: all 0.2s ease;
     position: relative;
     z-index: 2;
+}
+
+/* Firefox specific progress track styles */
+#seek-bar::-moz-range-progress {
+    background-color: var(--accent-color);
+    height: 8px;
+    border-radius: 4px;
 }
 
 #seek-bar:hover::-webkit-slider-thumb {
@@ -426,6 +449,21 @@ h1 {
     transition: all 0.2s ease-in-out;
     margin: 0 30px;
     border: 3px solid #333;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Add shine effect to play button */
+.play-button::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+    opacity: 0.5;
+    pointer-events: none;
 }
 
 .play-button:hover {
@@ -434,11 +472,43 @@ h1 {
     box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.8), inset 0 1px 3px rgba(255, 255, 255, 0.5);
 }
 
+.play-button:disabled {
+    opacity: 0.7;
+    cursor: wait;
+    transform: scale(0.95);
+}
+
+/* Smooth icon transitions */
+.play-button svg {
+    transition: all 0.3s ease;
+    position: absolute;
+}
+
+.play-icon {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.pause-icon {
+    transform: scale(0);
+    opacity: 0;
+}
+
+.play-button.playing .play-icon {
+    transform: scale(0);
+    opacity: 0;
+}
+
+.play-button.playing .pause-icon {
+    transform: scale(1);
+    opacity: 1;
+}
+
 .play-button svg {
     width: 35px;
     height: 35px;
-    position: relative;
-    left: 2px; /* Slight adjustment for the play icon */
+    transition: all 0.3s ease;
+    position: absolute;
     filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
 }
 
@@ -464,10 +534,24 @@ h1 {
     filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.3));
 }
 
-/* Hide/show play/pause icons */
-.play-button .pause-icon { display: none; }
-.play-button.playing .play-icon { display: none; }
-.play-button.playing .pause-icon { display: block; }
+/* Add pulsing effect when playing */
+.play-button.playing {
+    animation: pulse-glow 2s infinite;
+    background: linear-gradient(135deg, #ff6b70 0%, var(--accent-color) 100%);
+    box-shadow: 0 0 25px rgba(var(--accent-rgb), 0.9), inset 0 1px 3px rgba(255, 255, 255, 0.5);
+}
+
+@keyframes pulse-glow {
+    0% {
+        box-shadow: 0 0 15px rgba(var(--accent-rgb), 0.7), inset 0 1px 3px rgba(255, 255, 255, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(var(--accent-rgb), 1), inset 0 1px 5px rgba(255, 255, 255, 0.7);
+    }
+    100% {
+        box-shadow: 0 0 15px rgba(var(--accent-rgb), 0.7), inset 0 1px 3px rgba(255, 255, 255, 0.5);
+    }
+}
 
 .speed-controls {
     display: flex;

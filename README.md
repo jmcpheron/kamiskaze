@@ -4,7 +4,7 @@ Digital archives of the SoCal ska band Kamiskaze. This repository preserves perf
 
 ## About the Band
 
-Kamiskaze was a Southern California ska band active in the early 2000s. I (Jason McPheron) was the vocalist for the band for a period of time. This archive is an effort to preserve and share the band's musical legacy.
+Kamiskaze was a Southern California ska band active in the 90s-2000s. I (Jason McPheron) was the vocalist for the band for a period of time. This archive is an effort to preserve and share the band's musical legacy.
 
 ## Media Archives
 
@@ -15,7 +15,7 @@ The repository currently includes:
 ## How to Access the Media
 
 You can access the Kamiskaze archives through our custom media player:
-[https://jmcpheron.github.io/kamiskaze](https://jmcpheron.github.io/kamiskaze)
+[https://kamiskaze.rocks](https://kamiskaze.rocks)
 
 The player allows you to:
 - Stream video and audio recordings

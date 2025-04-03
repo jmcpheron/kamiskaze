@@ -308,9 +308,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isPlaying) {
       playIcon.classList.add('hidden');
       pauseIcon.classList.remove('hidden');
+      playPauseButton.classList.add('playing');
     } else {
       playIcon.classList.remove('hidden');
       pauseIcon.classList.add('hidden');
+      playPauseButton.classList.remove('playing');
     }
   }
 
@@ -535,9 +537,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const track = currentFeed.tracks[index];
     currentTrackIndex = index;
     
-    // Update audio source
-    audioPlayer.src = track.audioUrl;
-    audioPlayer.load();
+    // Temporarily disable play button during load
+    if (playPauseButton) {
+      playPauseButton.disabled = true;
+      playPauseButton.style.opacity = '0.7';
+    }
+    
+    // Update audio source with error handling
+    try {
+      // Check if URL exists
+      const testImg = new Image();
+      testImg.src = track.audioUrl;
+      
+      audioPlayer.src = track.audioUrl;
+      audioPlayer.load();
+      
+      // Re-enable play button after a short delay
+      setTimeout(() => {
+        if (playPauseButton) {
+          playPauseButton.disabled = false;
+          playPauseButton.style.opacity = '1';
+        }
+      }, 500);
+    } catch (error) {
+      console.error('Error loading track:', error);
+      showNotification('Error loading track: ' + error.message, 'error');
+    }
     
     // Update track info
     if (trackInfoElement) {
@@ -646,11 +671,21 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateProgress() {
+    // Prevent NaN when duration is not available
+    if (!audioPlayer.duration) return;
+    
     const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100 || 0;
+    
+    // Update the seek bar value
     seekBar.value = progress;
     
     // Update the seek bar's custom progress styling using CSS variables
     document.documentElement.style.setProperty('--seek-progress', `${progress}%`);
+    
+    // Apply a direct background gradient for better browser compatibility
+    const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim();
+    const bgColorLight = `rgba(${getComputedStyle(document.documentElement).getPropertyValue('--accent-rgb').trim()}, 0.2)`;
+    seekBar.style.background = `linear-gradient(to right, ${accentColor} 0%, ${accentColor} ${progress}%, ${bgColorLight} ${progress}%, ${bgColorLight} 100%)`;
     
     // Update time display
     currentTimeDisplay.textContent = formatTime(audioPlayer.currentTime);

@@ -7,63 +7,63 @@
         {
           "id": "silly-girl",
           "title": "Silly Girl",
-          "audioUrl": "videos/palm-springs-w_the-jawas/Silly Girl (1 of 9) [BHq_jERl2Ug].mkv",
+          "audioUrl": "videos/palm-springs-w_the-jawas/01 of 09 - Silly Girl.mkv",
           "description": "Track 1 of 9 from Palm Springs w/ The Jawas",
           "albumArt": ""
         },
         {
           "id": "generation-y",
           "title": "Generation Y",
-          "audioUrl": "videos/palm-springs-w_the-jawas/Generation Y (2 of 9) [N7cmBYo3bIA].mkv",
+          "audioUrl": "videos/palm-springs-w_the-jawas/02 of 09 - Generation Y.mkv",
           "description": "Track 2 of 9 from Palm Springs w/ The Jawas",
           "albumArt": ""
         },
         {
           "id": "psycho-cycle",
           "title": "Psycho Cycle",
-          "audioUrl": "videos/palm-springs-w_the-jawas/Psycho Cycle (3 of 9) [npSRDD6vlos].webm",
+          "audioUrl": "videos/palm-springs-w_the-jawas/03 of 09 - Psycho Cycle.webm",
           "description": "Track 3 of 9 from Palm Springs w/ The Jawas",
           "albumArt": ""
         },
         {
           "id": "stupid-muscle-head",
           "title": "Stupid Muscle Head",
-          "audioUrl": "videos/palm-springs-w_the-jawas/Stupid Muscle Head (4 of 9) [0OIyMdrWh_E].mkv",
+          "audioUrl": "videos/palm-springs-w_the-jawas/04 of 09 - Stupid Muscle Head.mkv",
           "description": "Track 4 of 9 from Palm Springs w/ The Jawas",
           "albumArt": ""
         },
         {
           "id": "coconut-champagne",
           "title": "Coconut Champagne",
-          "audioUrl": "videos/palm-springs-w_the-jawas/Coconut Champagne (5 of 9) [BJpAlQBuJXs].mp4",
+          "audioUrl": "videos/palm-springs-w_the-jawas/05 of 09 - Coconut Champagne.mp4",
           "description": "Track 5 of 9 from Palm Springs w/ The Jawas",
           "albumArt": ""
         },
         {
           "id": "hedgecore",
           "title": "Hedgecore",
-          "audioUrl": "videos/palm-springs-w_the-jawas/Hedgecore (6 of 9) [JGAemJPeHcs].mkv",
+          "audioUrl": "videos/palm-springs-w_the-jawas/06 of 09 - Hedgecore.mkv",
           "description": "Track 6 of 9 from Palm Springs w/ The Jawas",
           "albumArt": ""
         },
         {
           "id": "suiciety",
           "title": "Suiciety",
-          "audioUrl": "videos/palm-springs-w_the-jawas/Suiciety (7 of 9) [dbiz4MpRW-w].mp4",
+          "audioUrl": "videos/palm-springs-w_the-jawas/07 of 09 - Suiciety.mp4",
           "description": "Track 7 of 9 from Palm Springs w/ The Jawas",
           "albumArt": ""
         },
         {
           "id": "instrumental",
           "title": "Instrumental",
-          "audioUrl": "videos/palm-springs-w_the-jawas/Instrumental (8 of 9) [yB53v1QAsbg].mp4",
+          "audioUrl": "videos/palm-springs-w_the-jawas/08 of 09 - Instrumental.mp4",
           "description": "Track 8 of 9 from Palm Springs w/ The Jawas",
           "albumArt": ""
         },
         {
           "id": "blind",
           "title": "Blind",
-          "audioUrl": "videos/palm-springs-w_the-jawas/Blind (9 of 9) [iFsqNnBcZKo].mkv",
+          "audioUrl": "videos/palm-springs-w_the-jawas/09 of 09 - Blind.mkv",
           "description": "Track 9 of 9 from Palm Springs w/ The Jawas",
           "albumArt": ""
         }
@@ -77,70 +77,70 @@
         {
           "id": "track-01",
           "title": "Track 01",
-          "audioUrl": "audio/8track/Track-01.mp3",
+          "audioUrl": "audio/8track/01 - Track.mp3",
           "description": "Track 1 from the 8track collection",
           "albumArt": "sample_audio/clwb.svg"
         },
         {
           "id": "track-02",
           "title": "Track 02",
-          "audioUrl": "audio/8track/Track-02.mp3",
+          "audioUrl": "audio/8track/02 - Track.mp3",
           "description": "Track 2 from the 8track collection",
           "albumArt": "sample_audio/clwb.svg"
         },
         {
           "id": "track-03",
           "title": "Track 03",
-          "audioUrl": "audio/8track/Track-03.mp3",
+          "audioUrl": "audio/8track/03 - Track.mp3",
           "description": "Track 3 from the 8track collection",
           "albumArt": "sample_audio/clwb.svg"
         },
         {
           "id": "track-04",
           "title": "Track 04",
-          "audioUrl": "audio/8track/Track-04.mp3",
+          "audioUrl": "audio/8track/04 - Track.mp3",
           "description": "Track 4 from the 8track collection",
           "albumArt": "sample_audio/clwb.svg"
         },
         {
           "id": "track-05",
           "title": "Track 05",
-          "audioUrl": "audio/8track/Track-05.mp3",
+          "audioUrl": "audio/8track/05 - Track.mp3",
           "description": "Track 5 from the 8track collection",
           "albumArt": "sample_audio/clwb.svg"
         },
         {
           "id": "track-06",
           "title": "Track 06",
-          "audioUrl": "audio/8track/Track-06.mp3",
+          "audioUrl": "audio/8track/06 - Track.mp3",
           "description": "Track 6 from the 8track collection",
           "albumArt": "sample_audio/clwb.svg"
         },
         {
           "id": "track-07",
           "title": "Track 07",
-          "audioUrl": "audio/8track/Track-07.mp3",
+          "audioUrl": "audio/8track/07 - Track.mp3",
           "description": "Track 7 from the 8track collection",
           "albumArt": "sample_audio/clwb.svg"
         },
         {
           "id": "track-08",
           "title": "Track 08",
-          "audioUrl": "audio/8track/Track-08.mp3",
+          "audioUrl": "audio/8track/08 - Track.mp3",
           "description": "Track 8 from the 8track collection",
           "albumArt": "sample_audio/clwb.svg"
         },
         {
           "id": "track-09",
           "title": "Track 09",
-          "audioUrl": "audio/8track/Track-09.mp3",
+          "audioUrl": "audio/8track/09 - Track.mp3",
           "description": "Track 9 from the 8track collection",
           "albumArt": "sample_audio/clwb.svg"
         },
         {
           "id": "track-10",
           "title": "Track 10",
-          "audioUrl": "audio/8track/Track-10.mp3",
+          "audioUrl": "audio/8track/10 - Track.mp3",
           "description": "Track 10 from the 8track collection",
           "albumArt": "sample_audio/clwb.svg"
         }
@@ -154,14 +154,14 @@
         {
           "id": "little-ricky",
           "title": "Little Ricky",
-          "audioUrl": "audio/cubase/01-Little Ricky.mp3",
+          "audioUrl": "audio/cubase/01 - Little Ricky.mp3",
           "description": "Little Ricky track from Cubase sessions",
           "albumArt": "sample_audio/clwb.svg"
         },
         {
           "id": "toast",
           "title": "Toast",
-          "audioUrl": "audio/cubase/03-Toast.mp3",
+          "audioUrl": "audio/cubase/03 - Toast.mp3",
           "description": "Toast track from Cubase sessions",
           "albumArt": "sample_audio/clwb.svg"
         }
