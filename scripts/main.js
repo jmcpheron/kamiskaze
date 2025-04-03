@@ -588,11 +588,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const isVideoFile = track.audioUrl.toLowerCase().endsWith('.mp4') || 
                         track.audioUrl.toLowerCase().endsWith('.webm') || 
                         track.audioUrl.toLowerCase().endsWith('.mkv');
+                        
+    // MP3 files should always be treated as audio-only
+    const isAudioFile = track.audioUrl.toLowerCase().endsWith('.mp3') ||
+                        track.audioUrl.toLowerCase().endsWith('.wav') ||
+                        track.audioUrl.toLowerCase().endsWith('.ogg');
     
-    console.log(`Track ${index} is ${isVideoFile ? 'a video file' : 'not a video file'}: ${track.audioUrl}`);
+    console.log(`Track ${index} is ${isVideoFile ? 'a video file' : isAudioFile ? 'an audio file' : 'unknown format'}: ${track.audioUrl}`);
     
-    // Handle media display
-    if (isVideoFile) {
+    // Handle media display - only try video if it's explicitly a video file
+    if (isVideoFile && !isAudioFile) {
       console.log('Setting up video playback...');
       
       // Set up video playback
@@ -605,6 +610,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       
     } else {
+      // Audio-only mode for MP3 files and other audio formats
       console.log('Setting up audio-only playback...');
       
       // Not a video file - show album art instead
