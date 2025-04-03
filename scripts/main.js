@@ -34,6 +34,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const videoFullscreenButton = document.getElementById('video-fullscreen');
   const speedButtons = document.querySelectorAll('.speed-button');
   const trackList = document.getElementById('track-list');
+  const notificationArea = document.getElementById('notification-area');
+  const playlistButtons = document.getElementById('playlist-buttons');
+  
+  // Optional elements that may not exist in the current simplified UI
   const feedsToggle = document.getElementById('toggle-playlists-button');
   const playlistSelector = document.getElementById('playlist-buttons-container');
   const settingsButton = document.getElementById('toggle-settings-button');
@@ -41,7 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const addFeedForm = document.getElementById('add-feed-form');
   const feedUrlInput = document.getElementById('feed-url');
   const customFeedsList = document.getElementById('custom-feeds-list');
-  const notificationArea = document.getElementById('notification-area');
   const clearDataButton = document.getElementById('clear-cache-button');
   const helpButton = document.getElementById('help-button');
   const helpDialog = document.getElementById('help-dialog');
@@ -780,35 +783,68 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderPlaylistButtons() {
-    playlistSelector.innerHTML = '';
-    
-    feeds.forEach(feed => {
-      const button = document.createElement('button');
-      button.className = 'playlist-button';
-      button.dataset.feedId = feed.id;
+    // Check for new playlist buttons element first
+    if (playlistButtons) {
+      playlistButtons.innerHTML = '';
       
-      if (currentFeed && feed.id === currentFeed.id) {
-        button.classList.add('active');
-      }
-      
-      const titleSpan = document.createElement('span');
-      titleSpan.className = 'playlist-name';
-      titleSpan.textContent = feed.title;
-      
-      const tracksSpan = document.createElement('span');
-      tracksSpan.className = 'playlist-tracks';
-      tracksSpan.textContent = `${feed.tracks.length} tracks`;
-      
-      button.appendChild(titleSpan);
-      button.appendChild(tracksSpan);
-      
-      button.addEventListener('click', () => {
-        setCurrentFeed(feed);
-        togglePlaylistSelector();
+      feeds.forEach(feed => {
+        const button = document.createElement('button');
+        button.className = 'playlist-button';
+        button.dataset.feedId = feed.id;
+        
+        if (currentFeed && feed.id === currentFeed.id) {
+          button.classList.add('active');
+        }
+        
+        button.textContent = feed.title;
+        
+        button.addEventListener('click', () => {
+          setCurrentFeed(feed);
+        });
+        
+        playlistButtons.appendChild(button);
       });
       
-      playlistSelector.appendChild(button);
-    });
+      return;
+    }
+    
+    // Fall back to old playlist selector if it exists
+    if (playlistSelector) {
+      console.log('Using legacy playlist selector');
+      playlistSelector.innerHTML = '';
+      
+      feeds.forEach(feed => {
+        const button = document.createElement('button');
+        button.className = 'playlist-button';
+        button.dataset.feedId = feed.id;
+        
+        if (currentFeed && feed.id === currentFeed.id) {
+          button.classList.add('active');
+        }
+        
+        const titleSpan = document.createElement('span');
+        titleSpan.className = 'playlist-name';
+        titleSpan.textContent = feed.title;
+        
+        const tracksSpan = document.createElement('span');
+        tracksSpan.className = 'playlist-tracks';
+        tracksSpan.textContent = `${feed.tracks.length} tracks`;
+        
+        button.appendChild(titleSpan);
+        button.appendChild(tracksSpan);
+        
+        button.addEventListener('click', () => {
+          setCurrentFeed(feed);
+          if (typeof togglePlaylistSelector === 'function') {
+            togglePlaylistSelector();
+          }
+        });
+        
+        playlistSelector.appendChild(button);
+      });
+    } else {
+      console.log('No playlist selector found, skipping renderPlaylistButtons');
+    }
     
     // Refresh Feather icons
     if (window.feather) {
@@ -817,6 +853,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function togglePlaylistSelector() {
+    // Skip if required elements don't exist
+    if (!feedsToggle || !playlistSelector) {
+      console.log('Required elements for togglePlaylistSelector not found');
+      return;
+    }
+    
     const isExpanded = feedsToggle.getAttribute('aria-expanded') === 'true';
     
     if (isExpanded) {
@@ -829,14 +871,32 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateActivePlaylistButton() {
-    const buttons = playlistSelector.querySelectorAll('.playlist-button');
-    buttons.forEach(button => {
-      if (button.dataset.feedId === currentFeed.id) {
-        button.classList.add('active');
-      } else {
-        button.classList.remove('active');
-      }
-    });
+    // Check for new playlist buttons element first
+    if (playlistButtons) {
+      const buttons = playlistButtons.querySelectorAll('.playlist-button');
+      buttons.forEach(button => {
+        if (button.dataset.feedId === currentFeed.id) {
+          button.classList.add('active');
+        } else {
+          button.classList.remove('active');
+        }
+      });
+      return;
+    }
+    
+    // Fall back to old playlist selector if it exists
+    if (playlistSelector) {
+      const buttons = playlistSelector.querySelectorAll('.playlist-button');
+      buttons.forEach(button => {
+        if (button.dataset.feedId === currentFeed.id) {
+          button.classList.add('active');
+        } else {
+          button.classList.remove('active');
+        }
+      });
+    } else {
+      console.log('No playlist selector found, skipping updateActivePlaylistButton');
+    }
   }
 
   function renderTrackList() {
@@ -844,6 +904,25 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (!currentFeed || !currentFeed.tracks) return;
     
+    // Update track list container title and description
+    const trackListContainerTitle = document.querySelector('#track-list-container h2');
+    const trackListContainerDesc = document.querySelector('#track-list-container .playlist-description');
+    
+    if (trackListContainerTitle) {
+      trackListContainerTitle.textContent = currentFeed.title || 'Playlist';
+      
+      // Update track count if span exists
+      const trackCountSpan = trackListContainerTitle.querySelector('#track-count');
+      if (trackCountSpan) {
+        trackCountSpan.textContent = `(${currentFeed.tracks.length} tracks)`;
+      }
+    }
+    
+    if (trackListContainerDesc) {
+      trackListContainerDesc.textContent = currentFeed.description || '';
+    }
+    
+    // Render tracks
     currentFeed.tracks.forEach((track, index) => {
       const li = document.createElement('li');
       li.dataset.index = index;
@@ -977,6 +1056,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderCustomFeedsList() {
+    // Skip if custom feeds list doesn't exist
+    if (!customFeedsList) {
+      console.log('Custom feeds list not found, skipping renderCustomFeedsList');
+      return;
+    }
+    
     customFeedsList.innerHTML = '';
     
     if (customFeeds.length === 0) {
