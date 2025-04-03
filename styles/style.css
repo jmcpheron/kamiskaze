@@ -227,7 +227,7 @@ h1 {
 
 /* Player Controls Section - Hit Clips style */
 #player-controls {
-    padding: 25px;
+    padding: 30px;
     background: radial-gradient(circle at center, rgba(20, 20, 40, 0.4), rgba(5, 5, 15, 0.2));
     border-radius: 30px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
@@ -235,7 +235,7 @@ h1 {
     transition: all 0.3s ease;
     border: none;
     position: relative;
-    max-width: 700px;
+    width: 100%;
     margin-left: auto;
     margin-right: auto;
     background-image: 
@@ -274,7 +274,7 @@ h1 {
     margin-bottom: 15px;
     background: radial-gradient(circle at center, rgba(20, 20, 40, 0.6), rgba(10, 10, 20, 0.3));
     border-radius: 30px;
-    padding: 20px 25px;
+    padding: 25px 30px;
     border: none;
     box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15), 
                 inset 0 0 30px rgba(0, 255, 255, 0.05);
@@ -282,6 +282,7 @@ h1 {
     position: relative;
     z-index: 1;
     margin-top: 10px;
+    width: 100%;
 }
 
 .time-display-container {
@@ -436,14 +437,15 @@ h1 {
     justify-content: center;
     align-items: center;
     margin-bottom: 25px;
-    gap: 35px;
+    gap: 45px;
     position: relative;
-    padding: 30px 0;
+    padding: 40px 0;
     background: radial-gradient(ellipse at center, rgba(30, 30, 50, 0.5) 0%, rgba(10, 10, 30, 0.3) 70%);
     border-radius: 30px;
     border: none;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 
                 inset 0 0 40px rgba(0, 255, 255, 0.05);
+    width: 100%;
 }
 
 /* Modern Control Buttons with Subtle Animations */
@@ -1442,18 +1444,28 @@ footer a:hover {
 
     #player-controls {
         margin-bottom: 0;
-        padding: 30px;
+        padding: 35px;
         border-bottom: none;
         background: radial-gradient(ellipse at center, rgba(30, 30, 50, 0.3) 0%, rgba(10, 10, 20, 0.1) 100%);
-        border-radius: 20px;
+        border-radius: 30px;
         border: none;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        width: 100%;
     }
     
     #current-track-info {
         margin-top: 0; /* Reset margin */
-        margin-bottom: 15px;
+        margin-bottom: 25px;
         transform: scale(1.02);
+        padding: 1rem 1.5rem;
+    }
+    
+    #track-info-text h2 {
+        font-size: 1.4rem;
+    }
+    
+    #track-info-text p {
+        font-size: 1rem;
     }
 
     #playlist-selector {
@@ -1518,12 +1530,42 @@ footer a:hover {
     }
     
     #play-pause-button {
-        width: 70px;
-        height: 70px;
+        width: 80px;
+        height: 80px;
+    }
+    
+    .skip-button {
+        width: 65px;
+        height: 65px;
+    }
+    
+    .skip-button svg {
+        width: 35px;
+        height: 35px;
     }
     
     .main-control {
-        gap: 30px;
+        gap: 50px;
+        padding: 50px 0;
+    }
+    
+    .time-control {
+        padding: 30px 35px;
+    }
+
+    .time-display {
+        font-size: 1.6em;
+        min-width: 80px;
+        padding: 8px 15px;
+    }
+    
+    #seek-bar {
+        height: 25px;
+    }
+    
+    .seek-progress-bar {
+        height: 15px;
+        top: 5px;
     }
     
     .speed-controls {
