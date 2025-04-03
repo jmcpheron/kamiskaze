@@ -32,9 +32,9 @@
             <!-- Add Notification Area -->
             <div id="notification-area"></div>
 
-            <!-- Main content area for two-column layout -->
+            <!-- Main content area with integrated layout -->
             <div class="main-layout-container">
-                <!-- Left Column: Player -->
+                <!-- Player Column -->
                 <div class="player-column">
                     <!-- Album Art -->
                     <div id="album-art">
@@ -61,74 +61,67 @@
                         </div>
                     </div>
 
-                    <!-- Current Track Info (Moved Above Controls) -->
-                    <div id="current-track-info">
-                        <div id="track-info-text">
-                            <h2>No Track Selected</h2>
-                            <p>Select a track from the list below to start playing.</p>
-                        </div>
-                         <!-- Mini Album Art (Optional, can be removed or kept minimal) -->
-                        <div id="track-info-art">
-                             <img id="track-info-custom-art" src="" alt="Current track artwork">
-                             <svg id="track-info-default-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                 <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-                             </svg>
-                        </div>
-                    </div>
-
-                    <!-- Player Controls -->
-                    <div id="player-controls">
-                         <!-- Main Buttons -->
-                        <div class="main-control">
-                            <button id="prev-button" class="control-button skip-button" aria-label="Previous track">
-                                <!-- SVG for Previous -->
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
-                            </button>
-                            <button id="play-pause-button" class="control-button play-button" aria-label="Play">
-                                 <!-- Play Icon -->
-                                 <svg class="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                                 <!-- Pause Icon -->
-                                 <svg class="pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-                            </button>
-                            <button id="next-button" class="control-button skip-button" aria-label="Next track">
-                                <!-- SVG for Next -->
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
-                            </button>
-                        </div>
-                         <!-- Seek Bar and Time -->
-                        <div class="time-control">
-                            <div class="time-display-container">
-                                <span id="current-time" class="time-display">0:00</span>
-                                <span id="duration" class="time-display">--:--</span>
+                    <!-- Current Track Info & Controls Group -->
+                    <div class="player-controls-group">
+                        <!-- Current Track Info -->
+                        <div id="current-track-info">
+                            <div id="track-info-text">
+                                <h2>No Track Selected</h2>
+                                <p>Select a track from the list below to start playing.</p>
                             </div>
-                            <input type="range" id="seek-bar" value="0" max="0" aria-label="Seek bar">
                         </div>
-                         <!-- Hide Speed Controls -->
-                        <div class="speed-controls-container" style="display: none;">
-                            <span class="speed-label" aria-hidden="true">Speed:</span>
-                            <button class="speed-button" data-speed="0.5" aria-label="Set speed to 0.5x">0.5x</button>
-                            <button class="speed-button active" data-speed="1.0" aria-label="Set speed to 1x">1x</button>
-                            <button class="speed-button" data-speed="1.5" aria-label="Set speed to 1.5x">1.5x</button>
-                            <button class="speed-button" data-speed="2.0" aria-label="Set speed to 2x">2x</button>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Right Column: Playlist -->
-                <div class="playlist-column">
-                    <!-- Playlist Selector -->
-                    <div id="playlist-selector">
-                        <div class="playlist-selector-header">
-                            <h2>Playlists</h2>
+                        <!-- Player Controls -->
+                        <div id="player-controls">
+                            <!-- Main Buttons -->
+                            <div class="main-control">
+                                <button id="prev-button" class="control-button skip-button" aria-label="Previous track">
+                                    <!-- SVG for Previous -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+                                </button>
+                                <button id="play-pause-button" class="control-button play-button" aria-label="Play">
+                                    <!-- Play Icon -->
+                                    <svg class="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                                    <!-- Pause Icon -->
+                                    <svg class="pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                                </button>
+                                <button id="next-button" class="control-button skip-button" aria-label="Next track">
+                                    <!-- SVG for Next -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                                </button>
+                            </div>
+                            <!-- Seek Bar and Time -->
+                            <div class="time-control">
+                                <div class="time-display-container">
+                                    <span id="current-time" class="time-display">0:00</span>
+                                    <span id="duration" class="time-display">--:--</span>
+                                </div>
+                                <input type="range" id="seek-bar" value="0" max="0" aria-label="Seek bar">
+                            </div>
+                            <!-- Hide Speed Controls -->
+                            <div class="speed-controls-container" style="display: none;">
+                                <span class="speed-label" aria-hidden="true">Speed:</span>
+                                <button class="speed-button" data-speed="0.5" aria-label="Set speed to 0.5x">0.5x</button>
+                                <button class="speed-button active" data-speed="1.0" aria-label="Set speed to 1x">1x</button>
+                                <button class="speed-button" data-speed="1.5" aria-label="Set speed to 1.5x">1.5x</button>
+                                <button class="speed-button" data-speed="2.0" aria-label="Set speed to 2x">2x</button>
+                            </div>
                         </div>
-                        <div id="playlist-buttons" class="playlist-buttons"></div>
                     </div>
                     
-                    <!-- Track List -->
-                    <div id="track-list-container">
-                        <h2>Palm Springs w/ The Jawas <span id="track-count" class="track-count"></span></h2>
-                        <p class="playlist-description">Live performance at the Jawas in Palm Springs, CA</p>
-                        <ul id="track-list"></ul>
+                    <!-- Integrated Track List -->
+                    <div class="integrated-playlist">
+                        <!-- Playlist Selector - Compact Version -->
+                        <div class="playlist-selector-compact">
+                            <div id="playlist-buttons" class="playlist-buttons"></div>
+                        </div>
+                        
+                        <!-- Track List -->
+                        <div id="track-list-container">
+                            <h3>Palm Springs w/ The Jawas <span id="track-count" class="track-count"></span></h3>
+                            <p class="playlist-description">Live performance at the Jawas in Palm Springs, CA</p>
+                            <ul id="track-list"></ul>
+                        </div>
                     </div>
                 </div>
             </div>
