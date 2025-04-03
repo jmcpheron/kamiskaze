@@ -161,10 +161,12 @@ h1 {
     justify-content: space-between;
     align-items: center;
     height: 80px; /* Taller for better touch targets */
+    z-index: 10;
 }
 
 #album-art:hover #video-controls-overlay,
-#video-controls-overlay:hover {
+#video-controls-overlay:hover,
+#album-art.video-active:hover #video-controls-overlay {
     opacity: 1;
 }
 
@@ -1977,25 +1979,7 @@ video:fullscreen {
 }
 
 /* Video controls overlay */
-.video-controls-overlay {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    padding: 0;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    z-index: 3;
-    box-sizing: border-box;
-}
-
-#album-art:hover .video-controls-overlay,
-.video-controls-overlay:hover,
-.video-controls-overlay.active {
-    opacity: 1;
-}
+/* Video controls styling consolidated with #video-controls-overlay above */
 
 .video-control-button {
     background: rgba(0, 0, 0, 0.6);

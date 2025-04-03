@@ -141,6 +141,12 @@ document.addEventListener('DOMContentLoaded', () => {
       videoFullscreenButton.addEventListener('click', toggleFullscreen);
     }
     
+    // Add event listener for video play/pause button
+    const videoPlayPauseButton = document.getElementById('video-play-pause');
+    if (videoPlayPauseButton) {
+      videoPlayPauseButton.addEventListener('click', togglePlayPause);
+    }
+    
     // Video element events
     if (videoArtDisplay) {
       videoArtDisplay.addEventListener('error', (e) => {
@@ -403,6 +409,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const videoControlsOverlay = document.getElementById('video-controls-overlay');
       if (videoControlsOverlay) {
         videoControlsOverlay.style.display = 'flex';
+        
+        // Make sure the initial play/pause state is correct
+        updateVideoPlayPauseButton(isPlaying);
       }
       
       // Hide album art elements
@@ -516,12 +525,14 @@ document.addEventListener('DOMContentLoaded', () => {
             <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
           </svg>
         `;
+        videoPlayPauseButton.setAttribute('aria-label', 'Pause');
       } else {
         videoPlayPauseButton.innerHTML = `
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path d="M8 5v14l11-7z"/>
           </svg>
         `;
+        videoPlayPauseButton.setAttribute('aria-label', 'Play');
       }
     }
   }
