@@ -60,27 +60,30 @@ h1 {
 
 /* Album Art Section */
 #album-art {
-    width: 280px; /* Larger size for better video viewing */
-    height: 280px; /* Larger size for better video viewing */
+    width: 320px; /* Larger size for better video viewing */
+    height: 320px; /* Larger size for better video viewing */
     margin: 0 auto 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
+    border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
     background-color: var(--bg-controls);
     position: relative; /* Ensure proper stacking context */
     z-index: 1; /* Keep album art behind controls */
+    transition: all 0.3s ease-in-out;
 }
 
 /* When video is active, change album art container properties */
 #album-art.video-active {
-    width: 90%; /* Take up more width */
-    max-width: 480px; /* But limit maximum width */
-    border-radius: 10px;
+    width: 100%; /* Take up more width */
+    max-width: 640px; /* Increased max width for better video viewing */
+    border-radius: 16px;
     background-color: #000;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+    aspect-ratio: 16/9; /* Standard video aspect ratio */
+    height: auto; /* Let the aspect ratio control the height */
 }
 
 #album-art img,
@@ -96,7 +99,6 @@ h1 {
 }
 
 #album-art video {
-    display: none; /* Hide video by default */
     background-color: #000; /* Black background while loading */
     width: 100%; /* Ensure it fills the container */
     height: 100%;
@@ -104,6 +106,68 @@ h1 {
     top: 0;
     left: 0;
     object-fit: contain; /* Default to contain to prevent cropping */
+}
+
+/* Video Controls Overlay */
+#video-controls-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    padding: 15px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 80px; /* Taller for better touch targets */
+}
+
+#album-art:hover #video-controls-overlay,
+#video-controls-overlay:hover {
+    opacity: 1;
+}
+
+.video-controls-container {
+    display: flex;
+    gap: 12px;
+    margin-left: auto; /* Push to right side */
+}
+
+.video-control-button {
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(4px);
+}
+
+.video-control-button:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+    transform: scale(1.1);
+}
+
+.video-control-button svg {
+    width: 22px;
+    height: 22px;
+    fill: white;
+}
+
+/* Video time indicators */
+.video-time-display {
+    color: white;
+    font-size: 14px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    margin-left: 15px;
+    font-weight: 500;
 }
 
 #album-art img {
@@ -122,10 +186,17 @@ h1 {
 
 /* Player Controls Section */
 #player-controls {
-    padding: 20px;
+    padding: 24px;
     background-color: var(--bg-controls);
     border-radius: var(--border-radius-lg);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    margin-bottom: 25px;
+    transition: all 0.3s ease;
+}
+
+#player-controls:hover {
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    transform: translateY(-2px);
 }
 
 .time-control {
@@ -144,43 +215,69 @@ h1 {
 #seek-bar {
     flex-grow: 1;
     margin: 0 10px;
-    height: 10px;
+    height: 6px;
     cursor: pointer;
     -webkit-appearance: none;
     appearance: none;
-    background: var(--slider-track-color);
-    border-radius: 4px;
+    background: rgba(var(--accent-rgb), 0.2);
+    border-radius: 3px;
     outline: none;
+    position: relative;
+}
+
+/* Create a progress effect */
+#seek-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: var(--seek-progress, 0%);
+    background: var(--accent-color);
+    border-radius: 3px;
+    pointer-events: none;
+    z-index: 1;
 }
 
 #seek-bar::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
     background: var(--accent-color);
     border-radius: 50%;
     cursor: pointer;
-    box-shadow: 0 0 5px rgba(var(--accent-rgb), 0.5);
-    transition: background 0.3s ease;
+    box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.6);
+    transition: all 0.2s ease;
+    position: relative;
+    z-index: 2;
 }
 
 #seek-bar::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
     background: var(--accent-color);
     border-radius: 50%;
     cursor: pointer;
     border: none;
-    box-shadow: 0 0 5px rgba(var(--accent-rgb), 0.5);
-    transition: background 0.3s ease;
+    box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.6);
+    transition: all 0.2s ease;
+    position: relative;
+    z-index: 2;
 }
 
 #seek-bar:hover::-webkit-slider-thumb {
-    background: #4cae4f; /* Slightly darker on hover */
+    transform: scale(1.2);
+    box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.8);
 }
+
 #seek-bar:hover::-moz-range-thumb {
-    background: #4cae4f;
+    transform: scale(1.2);
+    box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.8);
+}
+
+#seek-bar:focus {
+    outline: none;
 }
 
 .main-control {
@@ -188,6 +285,7 @@ h1 {
     justify-content: center;
     align-items: center;
     margin-bottom: 20px;
+    gap: 20px;
 }
 
 .control-button {
@@ -196,8 +294,8 @@ h1 {
     color: var(--text-primary);
     cursor: pointer;
     padding: 10px;
-    margin: 0 10px; /* Spacing between buttons */
-    transition: color 0.2s ease, transform 0.1s ease;
+    transition: all 0.2s ease;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -205,6 +303,43 @@ h1 {
 
 .control-button:hover {
     color: var(--accent-color);
+    transform: scale(1.1);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.skip-button svg {
+    width: 28px;
+    height: 28px;
+}
+
+.play-button {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--accent-color);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 15px rgba(var(--accent-rgb), 0.4);
+    transition: all 0.2s ease-in-out;
+}
+
+.play-button:hover {
+    background-color: var(--accent-darker);
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.6);
+}
+
+.play-button svg {
+    width: 30px;
+    height: 30px;
+    position: relative;
+    left: 2px; /* Slight adjustment for the play icon */
+}
+
+.pause-icon {
+    left: 0 !important; /* Reset the adjustment for pause icon */
 }
 
 .control-button:active {
@@ -1790,24 +1925,31 @@ header h2 {
     justify-content: center;
     align-items: center;
     margin-top: 15px; /* Space from main controls */
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 6px 10px;
+    width: fit-content;
+    margin: 15px auto 0;
 }
 
 .speed-label {
     font-size: 0.85em;
     color: var(--text-secondary);
     margin-right: 10px;
+    font-weight: 500;
 }
 
 .speed-button {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
+    background: transparent;
+    border: none;
     color: var(--text-secondary);
-    font-size: 0.8em;
+    font-size: 0.85em;
     padding: 5px 10px;
     margin: 0 3px;
-    border-radius: var(--border-radius-sm);
+    border-radius: 15px;
     cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    transition: all 0.2s ease;
+    font-weight: 500;
 }
 
 .speed-button:hover {
