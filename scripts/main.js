@@ -383,10 +383,15 @@ document.addEventListener('DOMContentLoaded', () => {
         
         videoArtDisplay.style.display = 'none';
         
-        // Show default art instead
+        // Show cassette art instead
+        if (albumArt) {
+          albumArt.src = 'images/cassette-single.jpg';
+          albumArt.classList.remove('hidden');
+          albumArt.style.display = 'block';
+        }
         if (defaultArt) {
-          defaultArt.classList.remove('hidden');
-          defaultArt.style.display = 'block';
+          defaultArt.classList.add('hidden');
+          defaultArt.style.display = 'none';
         }
         
         // Hide video controls
@@ -645,12 +650,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       } else {
         if (albumArt) {
-          albumArt.classList.add('hidden');
-          albumArt.style.display = 'none';
+          albumArt.src = 'images/cassette-single.jpg';
+          albumArt.classList.remove('hidden');
+          albumArt.style.display = 'block';
         }
         if (defaultArt) {
-          defaultArt.classList.remove('hidden');
-          defaultArt.style.display = 'block';
+          defaultArt.classList.add('hidden');
+          defaultArt.style.display = 'none';
         }
       }
     }
