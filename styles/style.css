@@ -3599,3 +3599,158 @@ a:hover {
   font-size: 0.85rem;
   line-height: 1.4;
 }
+/* Add Feed Form */
+.add-feed-section {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+.add-feed-section h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: var(--text-primary);
+}
+
+.add-feed-form .form-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.add-feed-form input {
+  flex: 1;
+  padding: 8px 12px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.add-feed-form input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.add-feed-btn {
+  padding: 8px 16px;
+  background-color: var(--accent-color);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.add-feed-btn:hover {
+  background-color: var(--accent-darker);
+}
+
+.help-text {
+  margin: 8px 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.feed-suggestion {
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.feed-suggestion a {
+  color: var(--neon-blue);
+  text-decoration: none;
+}
+
+.feed-suggestion a:hover {
+  text-decoration: underline;
+}
+
+/* Custom Feeds List */
+.custom-feeds-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.custom-feeds-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  margin-bottom: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.custom-feeds-list li:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.feed-info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.feed-title {
+  font-weight: 500;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.feed-url {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.delete-feed {
+  background: none;
+  border: none;
+  color: var(--accent-color);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.delete-feed:hover {
+  background-color: rgba(255, 90, 95, 0.1);
+}
+
+/* Settings Controls */
+.settings-controls {
+  margin-top: 15px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.danger-button {
+  background-color: rgba(255, 59, 48, 0.2);
+  color: #ff3b30;
+  border: 1px solid rgba(255, 59, 48, 0.3);
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.danger-button:hover {
+  background-color: rgba(255, 59, 48, 0.3);
+  border-color: rgba(255, 59, 48, 0.5);
+}
+
+.danger-button:active {
+  background-color: rgba(255, 59, 48, 0.4);
+}

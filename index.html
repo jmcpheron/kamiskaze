@@ -116,6 +116,24 @@
                             <div id="playlist-buttons" class="playlist-buttons"></div>
                         </div>
                         
+                        <!-- Add Feed Form -->
+                        <div class="add-feed-section">
+                            <h4>Add Podcast Feed</h4>
+                            <form id="add-feed-form" class="add-feed-form">
+                                <div class="form-input-group">
+                                    <input type="text" id="feed-url" placeholder="Enter feed URL or podcast RSS feed" required>
+                                    <button type="submit" class="add-feed-btn">Add</button>
+                                </div>
+                                <p class="help-text">Enter a podcast RSS feed URL or another feed.json URL</p>
+                                <div id="feed-suggestion" class="feed-suggestion">
+                                    <p>Try our <a href="#">sample feed</a> (palm-springs-feed.json)</p>
+                                </div>
+                            </form>
+                            <div class="settings-controls">
+                                <button id="clear-cache-button" class="danger-button">Clear Custom Feeds & Data</button>
+                            </div>
+                        </div>
+                        
                         <!-- Track List -->
                         <div id="track-list-container">
                             <h3>Palm Springs w/ The Jawas <span id="track-count" class="track-count"></span></h3>
@@ -142,6 +160,6 @@
             </footer>
         </div>
     </div>
-    <script src="scripts/main.js"></script>
+    <script src="scripts/main.js" type="module"></script>
 </body>
 </html> 
