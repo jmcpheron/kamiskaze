@@ -265,6 +265,7 @@ h1 {
 
 .time-control {
     display: flex;
+    flex-direction: column; /* Stack items vertically */
     align-items: center;
     margin-bottom: 20px;
     background-color: #000;
@@ -273,6 +274,13 @@ h1 {
     border: 2px solid var(--neon-yellow);
     box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8), 0 0 10px rgba(247, 255, 0, 0.4);
     transition: all 0.3s ease;
+}
+
+.time-display-container {
+    display: flex;
+    justify-content: space-between; /* Put time at ends */
+    width: 100%; /* Take full width */
+    margin-bottom: 10px; /* Add space below time */
 }
 
 .time-control:hover {
@@ -296,7 +304,8 @@ h1 {
 
 #seek-bar {
     flex-grow: 1;
-    margin: 0 15px;
+    /* margin: 0 15px; NO - we want full width */
+    width: 100%; /* Make seek bar take full width */
     height: 8px;
     cursor: pointer;
     -webkit-appearance: none;

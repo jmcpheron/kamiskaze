@@ -78,12 +78,6 @@
 
                     <!-- Player Controls -->
                     <div id="player-controls">
-                         <!-- Seek Bar and Time -->
-                        <div class="time-control">
-                            <span id="current-time" class="time-display">0:00</span>
-                            <input type="range" id="seek-bar" value="0" max="0" aria-label="Seek bar">
-                            <span id="duration" class="time-display">--:--</span>
-                        </div>
                          <!-- Main Buttons -->
                         <div class="main-control">
                             <button id="prev-button" class="control-button skip-button" aria-label="Previous track">
@@ -100,6 +94,14 @@
                                 <!-- SVG for Next -->
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
                             </button>
+                        </div>
+                         <!-- Seek Bar and Time -->
+                        <div class="time-control">
+                            <div class="time-display-container">
+                                <span id="current-time" class="time-display">0:00</span>
+                                <span id="duration" class="time-display">--:--</span>
+                            </div>
+                            <input type="range" id="seek-bar" value="0" max="0" aria-label="Seek bar">
                         </div>
                          <!-- Hide Speed Controls -->
                         <div class="speed-controls-container" style="display: none;">

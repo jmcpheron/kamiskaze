@@ -665,42 +665,70 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function seekTrack() {
-    if (!audioPlayer.duration) return;
-    const seekTime = audioPlayer.duration * (seekBar.value / 100);
-    audioPlayer.currentTime = seekTime;
+    // Ensure duration is available and is a number greater than 0
+    if (!audioPlayer.duration || isNaN(audioPlayer.duration) || audioPlayer.duration <= 0) return;
+    // Directly set the audio's current time to the seek bar's value
+    // The seek bar's max value should be set to the audio duration
+    audioPlayer.currentTime = seekBar.value;
   }
 
   function updateProgress() {
-    // Prevent NaN when duration is not available
-    if (!audioPlayer.duration) return;
-    
-    const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100 || 0;
-    
-    // Update the seek bar value
-    seekBar.value = progress;
-    
+    // Prevent NaN when duration is not available or zero
+    if (!audioPlayer.duration || isNaN(audioPlayer.duration) || audioPlayer.duration <= 0) {
+        // Reset progress if duration is invalid
+        if (seekBar) seekBar.value = 0;
+        if (currentTimeDisplay) currentTimeDisplay.textContent = formatTime(0);
+        document.documentElement.style.setProperty('--seek-progress', '0%');
+        if (seekBar) seekBar.style.background = `linear-gradient(to right, var(--accent-color) 0%, var(--accent-color) 0%, rgba(var(--accent-rgb), 0.2) 0%, rgba(var(--accent-rgb), 0.2) 100%)`;
+        return;
+    }
+
+    const currentTime = audioPlayer.currentTime;
+    const duration = audioPlayer.duration;
+    const progressPercent = (currentTime / duration) * 100 || 0;
+
+    // Update the seek bar value directly to the current time
+    // Ensure seekBar exists before attempting to set its value
+    if (seekBar) {
+        seekBar.value = currentTime;
+    }
+
     // Update the seek bar's custom progress styling using CSS variables
-    document.documentElement.style.setProperty('--seek-progress', `${progress}%`);
-    
+    document.documentElement.style.setProperty('--seek-progress', `${progressPercent}%`);
+
     // Apply a direct background gradient for better browser compatibility
-    const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim();
-    const bgColorLight = `rgba(${getComputedStyle(document.documentElement).getPropertyValue('--accent-rgb').trim()}, 0.2)`;
-    seekBar.style.background = `linear-gradient(to right, ${accentColor} 0%, ${accentColor} ${progress}%, ${bgColorLight} ${progress}%, ${bgColorLight} 100%)`;
-    
-    // Update time display
-    currentTimeDisplay.textContent = formatTime(audioPlayer.currentTime);
-    
-    // Save state periodically (every 5 seconds)
-    if (Math.floor(audioPlayer.currentTime) % 5 === 0) {
-      savePlayerState();
+    // Ensure seekBar exists before attempting to style it
+    if (seekBar) {
+      const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim();
+      const bgColorLight = `rgba(${getComputedStyle(document.documentElement).getPropertyValue('--accent-rgb').trim()}, 0.2)`;
+      seekBar.style.background = `linear-gradient(to right, ${accentColor} 0%, ${accentColor} ${progressPercent}%, ${bgColorLight} ${progressPercent}%, ${bgColorLight} 100%)`;
     }
     
+    // Update time display
+    // Ensure currentTimeDisplay exists
+    if (currentTimeDisplay) {
+        currentTimeDisplay.textContent = formatTime(currentTime);
+    }
+
+    // Save state periodically (every 5 seconds) - moved check inside to avoid error if audioPlayer not ready
+    if (Math.floor(currentTime) % 5 === 0) {
+      savePlayerState();
+    }
+
     // Update track progress in list
-    updateTrackProgress();
+    updateTrackProgress(); // Assumes this function exists and handles potential errors
   }
 
   function updateDuration() {
-    durationDisplay.textContent = formatTime(audioPlayer.duration);
+    const duration = audioPlayer.duration;
+    // Ensure durationDisplay and seekBar exist
+    if (durationDisplay) {
+        durationDisplay.textContent = formatTime(duration);
+    }
+    // Set the max attribute of the seek bar to the audio duration
+    if (seekBar && !isNaN(duration)) {
+        seekBar.max = duration;
+    }
   }
 
   function formatTime(seconds) {
