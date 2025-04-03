@@ -360,52 +360,49 @@ document.addEventListener('DOMContentLoaded', () => {
       // Reset previous video state
       videoArtDisplay.pause();
       
-      // Set new source
-      videoArtDisplay.src = videoSource;
+      // Clear any previous error handlers
+      videoArtDisplay.onerror = null;
       
-      // Show video element and make it visible (ensure it's not display: none)
-      videoArtDisplay.style.display = 'block';
-      videoArtDisplay.classList.remove('hidden');
-      
-      // Add error handler
-      videoArtDisplay.onerror = (e) => {
+      // Add error handler before setting source
+      videoArtDisplay.onerror = function(e) {
         const errorMessage = getVideoErrorMessage(videoArtDisplay.error);
         console.error(`Video error: ${errorMessage}`, videoArtDisplay.error);
         showNotification(`Video error: ${errorMessage}`, 'error');
+        
+        // Fall back to audio-only mode
+        const albumArtContainer = document.getElementById('album-art');
+        if (albumArtContainer) {
+          albumArtContainer.classList.remove('video-active');
+        }
+        
+        videoArtDisplay.style.display = 'none';
+        
+        // Show default art instead
+        if (defaultArt) {
+          defaultArt.classList.remove('hidden');
+          defaultArt.style.display = 'block';
+        }
+        
+        // Hide video controls
+        const videoControlsOverlay = document.getElementById('video-controls-overlay');
+        if (videoControlsOverlay) {
+          videoControlsOverlay.style.display = 'none';
+        }
+        
         return false;
       };
       
-      // Add the video-active class to the album art container for proper styling
-      const albumArtContainer = document.getElementById('album-art');
-      if (albumArtContainer) {
-        albumArtContainer.classList.add('video-active');
-      } else {
-        console.error('Album art container not found');
-      }
+      // Set new source
+      videoArtDisplay.src = videoSource;
       
-      // Show video controls
-      const videoControlsContainer = document.querySelector('.video-controls-container');
-      if (videoFullscreenButton && videoControlsContainer) {
-        videoControlsContainer.style.display = 'flex';
-        videoFullscreenButton.classList.remove('hidden');
-        console.log('Video controls enabled');
-      } else {
-        console.warn('Video fullscreen button or controls container not found');
-      }
+      // Show video element and controls
+      videoArtDisplay.style.display = 'block';
+      videoArtDisplay.classList.remove('hidden');
       
-      // Set up video play/pause button
-      const videoPlayPauseButton = document.getElementById('video-play-pause');
-      if (videoPlayPauseButton) {
-        // Remove existing event listeners to prevent duplicates
-        videoPlayPauseButton.replaceWith(videoPlayPauseButton.cloneNode(true));
-        const newVideoPlayPauseButton = document.getElementById('video-play-pause');
-        
-        if (newVideoPlayPauseButton) {
-          newVideoPlayPauseButton.addEventListener('click', togglePlayPause);
-          console.log('Video play/pause button event listener added');
-        }
-      } else {
-        console.warn('Video play/pause button not found');
+      // Show video controls overlay
+      const videoControlsOverlay = document.getElementById('video-controls-overlay');
+      if (videoControlsOverlay) {
+        videoControlsOverlay.style.display = 'flex';
       }
       
       // Hide album art elements
@@ -447,10 +444,9 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const playHandler = () => {
         if (videoArtDisplay.paused) {
-          console.log('Audio playing - starting video playback');
           videoArtDisplay.play().catch(e => {
             console.error('Video play error:', e);
-            showNotification('Error playing video: ' + e.message, 'error');
+            // Don't show notification here as it's likely already handled by onerror
           });
         }
         
@@ -460,7 +456,6 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const pauseHandler = () => {
         if (!videoArtDisplay.paused) {
-          console.log('Audio paused - pausing video');
           videoArtDisplay.pause();
         }
         
@@ -474,19 +469,16 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Initial sync when metadata is loaded
       videoArtDisplay.addEventListener('loadedmetadata', () => {
-        console.log('Video metadata loaded, duration:', videoArtDisplay.duration);
         syncVideo();
         
         if (isPlaying) {
-          console.log('Audio is already playing - starting video');
           videoArtDisplay.play().catch(e => {
             console.error('Initial video play error:', e);
-            showNotification('Error playing video: ' + e.message, 'error');
+            // Don't show notification here as it's likely already handled by onerror
           });
         }
       });
       
-      console.log('Video playback setup successful');
       return true;
     } catch (error) {
       console.error('Error setting up video:', error);
@@ -549,10 +541,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Update audio source with error handling
     try {
-      // Check if URL exists
-      const testImg = new Image();
-      testImg.src = track.audioUrl;
-      
       audioPlayer.src = track.audioUrl;
       audioPlayer.load();
       
@@ -585,10 +573,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Get album art container
     const albumArtContainer = document.getElementById('album-art');
     
-    // Check if this is a video file
-    const isVideoFile = track.audioUrl.endsWith('.mp4') || 
-                        track.audioUrl.endsWith('.webm') || 
-                        track.audioUrl.endsWith('.mkv');
+    // Check if this is a video file by extension
+    const isVideoFile = track.audioUrl.toLowerCase().endsWith('.mp4') || 
+                        track.audioUrl.toLowerCase().endsWith('.webm') || 
+                        track.audioUrl.toLowerCase().endsWith('.mkv');
     
     console.log(`Track ${index} is ${isVideoFile ? 'a video file' : 'not a video file'}: ${track.audioUrl}`);
     
@@ -603,17 +591,8 @@ document.addEventListener('DOMContentLoaded', () => {
       // Add video-active class to album art container
       if (albumArtContainer) {
         albumArtContainer.classList.add('video-active');
-        console.log('Added video-active class to album art container');
       }
       
-      // Ensure video controls overlay is visible when hovering
-      const videoControlsOverlay = document.getElementById('video-controls-overlay');
-      if (videoControlsOverlay) {
-        videoControlsOverlay.style.display = 'flex';
-        console.log('Video controls overlay set to display:flex');
-      } else {
-        console.log('Video controls overlay element not found');
-      }
     } else {
       console.log('Setting up audio-only playback...');
       
@@ -642,7 +621,6 @@ document.addEventListener('DOMContentLoaded', () => {
           albumArt.src = track.albumArt;
           albumArt.classList.remove('hidden');
           albumArt.style.display = 'block';
-          console.log('Showing custom album art');
         }
         if (defaultArt) {
           defaultArt.classList.add('hidden');
@@ -656,7 +634,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (defaultArt) {
           defaultArt.classList.remove('hidden');
           defaultArt.style.display = 'block';
-          console.log('Showing default album art');
         }
       }
     }
