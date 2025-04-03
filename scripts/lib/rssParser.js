@@ -11,13 +11,42 @@ class RSSParser {
    */
   static async parseFeed(url) {
     try {
-      // Fetch the feed
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch feed: ${response.statusText}`);
+      // Check if it's a remote URL or a local file
+      const isRemote = url.startsWith('http') && !url.includes(window.location.hostname);
+      
+      // Use a CORS proxy for remote feeds
+      const fetchUrl = isRemote 
+        ? `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
+        : url;
+      
+      console.log(`Fetching feed from: ${fetchUrl}`);
+      
+      // Fetch the feed with timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+      
+      let text;
+      try {
+        const response = await fetch(fetchUrl, { 
+          signal: controller.signal,
+          headers: {
+            'Accept': 'application/xml, application/rss+xml, application/json, text/xml'
+          }
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch feed: ${response.statusText}`);
+        }
+        
+        text = await response.text();
+      } catch (error) {
+        if (error.name === 'AbortError') {
+          throw new Error('Feed request timed out. The server might be down or responding too slowly.');
+        }
+        throw error;
       }
-
-      const text = await response.text();
       
       // Check if it's JSON or XML
       if (text.trim().startsWith('{')) {
@@ -257,15 +286,17 @@ class RSSParser {
    */
   static async detectFeedType(url) {
     try {
-      const response = await fetch(url, { method: 'HEAD' });
-      const contentType = response.headers.get('content-type') || '';
+      // Check if it's a remote URL or a local file
+      const isRemote = url.startsWith('http') && !url.includes(window.location.hostname);
       
-      // Check for common feed content types
+      // Use a CORS proxy for remote feeds
+      const fetchUrl = isRemote 
+        ? `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
+        : url;
+      
+      // Skip HEAD request as proxy might not support it
+      // Instead rely on URL extension and content check
       if (
-        contentType.includes('application/rss+xml') ||
-        contentType.includes('application/xml') ||
-        contentType.includes('text/xml') ||
-        contentType.includes('application/json') ||
         url.endsWith('.rss') ||
         url.endsWith('.xml') ||
         url.endsWith('.json')
@@ -273,10 +304,8 @@ class RSSParser {
         return true;
       }
       
-      // If content type doesn't give a clear answer, fetch a small part
-      const textResponse = await fetch(url, { 
-        headers: { Range: 'bytes=0-1000' } 
-      });
+      // Fetch a small part of the content
+      const textResponse = await fetch(fetchUrl);
       const text = await textResponse.text();
       
       // Check for RSS or JSON signatures

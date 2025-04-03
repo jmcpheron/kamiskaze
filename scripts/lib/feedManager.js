@@ -129,6 +129,12 @@ class FeedManager {
         throw new Error('This feed is already in your library');
       }
       
+      // First try to detect if it's a valid feed
+      const isValidFeed = await RSSParser.detectFeedType(url);
+      if (!isValidFeed) {
+        throw new Error('URL does not appear to be a valid feed');
+      }
+      
       // Parse feed
       const feed = await RSSParser.parseFeed(url);
       
