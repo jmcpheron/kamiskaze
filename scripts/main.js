@@ -243,6 +243,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Key controls
     document.addEventListener('keydown', handleKeyboardControls);
+    
+    // Feed suggestion handler
+    const feedSuggestion = document.getElementById('feed-suggestion');
+    if (feedSuggestion) {
+      console.log('Setting up feed suggestion handler');
+      feedSuggestion.addEventListener('click', (e) => {
+        const linkElem = e.target.tagName === 'A' ? e.target : e.target.closest('a');
+        if (linkElem) {
+          e.preventDefault();
+          console.log('Sample feed clicked');
+          const feedUrlInput = document.getElementById('feed-url');
+          if (feedUrlInput) {
+            feedUrlInput.value = 'palm-springs-feed.json';
+            // Trigger the form submission
+            const form = document.getElementById('add-feed-form');
+            if (form) {
+              console.log('Submitting form automatically');
+              const submitEvent = new Event('submit', { cancelable: true });
+              form.dispatchEvent(submitEvent);
+            }
+          }
+        }
+      });
+    }
   }
   
   /**
@@ -321,11 +345,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
     
+    console.log('Attempting to add feed:', url);
+    
     try {
       uiManager.showNotification('Loading feed...', 'info');
       
+      // Add debug for CORS issues
+      console.log('Adding feed to FeedManager...');
+      
       // Add feed
       const feed = await feedManager.addFeed(url);
+      console.log('Feed successfully loaded:', feed);
       
       // Update feed buttons
       uiManager.renderFeedButtons(feedManager.getAllFeeds(), feed.id);
@@ -339,6 +369,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       uiManager.showNotification(`Added new feed: ${feed.title}`, 'success');
       
     } catch (error) {
+      console.error('Error adding feed:', error);
       uiManager.showNotification('Error adding feed: ' + error.message, 'error');
     }
   }

@@ -286,13 +286,18 @@ class RSSParser {
    */
   static async detectFeedType(url) {
     try {
+      console.log('Detecting feed type for URL:', url);
+      
       // Check if it's a remote URL or a local file
       const isRemote = url.startsWith('http') && !url.includes(window.location.hostname);
+      console.log('Is remote URL:', isRemote);
       
       // Use a CORS proxy for remote feeds
       const fetchUrl = isRemote 
         ? `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
         : url;
+      
+      console.log('Using fetch URL:', fetchUrl);
       
       // Skip HEAD request as proxy might not support it
       // Instead rely on URL extension and content check
@@ -301,12 +306,38 @@ class RSSParser {
         url.endsWith('.xml') ||
         url.endsWith('.json')
       ) {
+        console.log('URL has valid extension');
         return true;
       }
       
+      console.log('Fetching content to check feed type...');
+      
       // Fetch a small part of the content
-      const textResponse = await fetch(fetchUrl);
-      const text = await textResponse.text();
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+      
+      let text;
+      try {
+        const textResponse = await fetch(fetchUrl, {
+          signal: controller.signal,
+          headers: {
+            'Accept': 'application/xml, application/rss+xml, application/json, text/xml'
+          }
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (!textResponse.ok) {
+          console.error('Fetch response not OK:', textResponse.status, textResponse.statusText);
+          return false;
+        }
+        
+        text = await textResponse.text();
+        console.log('Fetched content sample:', text.substring(0, 100) + '...');
+      } catch (error) {
+        console.error('Error fetching content sample:', error);
+        return false;
+      }
       
       // Check for RSS or JSON signatures
       return (
