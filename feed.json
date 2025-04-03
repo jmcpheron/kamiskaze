@@ -70,6 +70,104 @@
       ]
     },
     {
+      "id": "8track-audio",
+      "title": "8track Audio Collection",
+      "description": "Main audio tracks from the 8track collection",
+      "tracks": [
+        {
+          "id": "track-01",
+          "title": "Track 01",
+          "audioUrl": "audio/8track/Track-01.mp3",
+          "description": "Track 1 from the 8track collection",
+          "albumArt": "sample_audio/clwb.svg"
+        },
+        {
+          "id": "track-02",
+          "title": "Track 02",
+          "audioUrl": "audio/8track/Track-02.mp3",
+          "description": "Track 2 from the 8track collection",
+          "albumArt": "sample_audio/clwb.svg"
+        },
+        {
+          "id": "track-03",
+          "title": "Track 03",
+          "audioUrl": "audio/8track/Track-03.mp3",
+          "description": "Track 3 from the 8track collection",
+          "albumArt": "sample_audio/clwb.svg"
+        },
+        {
+          "id": "track-04",
+          "title": "Track 04",
+          "audioUrl": "audio/8track/Track-04.mp3",
+          "description": "Track 4 from the 8track collection",
+          "albumArt": "sample_audio/clwb.svg"
+        },
+        {
+          "id": "track-05",
+          "title": "Track 05",
+          "audioUrl": "audio/8track/Track-05.mp3",
+          "description": "Track 5 from the 8track collection",
+          "albumArt": "sample_audio/clwb.svg"
+        },
+        {
+          "id": "track-06",
+          "title": "Track 06",
+          "audioUrl": "audio/8track/Track-06.mp3",
+          "description": "Track 6 from the 8track collection",
+          "albumArt": "sample_audio/clwb.svg"
+        },
+        {
+          "id": "track-07",
+          "title": "Track 07",
+          "audioUrl": "audio/8track/Track-07.mp3",
+          "description": "Track 7 from the 8track collection",
+          "albumArt": "sample_audio/clwb.svg"
+        },
+        {
+          "id": "track-08",
+          "title": "Track 08",
+          "audioUrl": "audio/8track/Track-08.mp3",
+          "description": "Track 8 from the 8track collection",
+          "albumArt": "sample_audio/clwb.svg"
+        },
+        {
+          "id": "track-09",
+          "title": "Track 09",
+          "audioUrl": "audio/8track/Track-09.mp3",
+          "description": "Track 9 from the 8track collection",
+          "albumArt": "sample_audio/clwb.svg"
+        },
+        {
+          "id": "track-10",
+          "title": "Track 10",
+          "audioUrl": "audio/8track/Track-10.mp3",
+          "description": "Track 10 from the 8track collection",
+          "albumArt": "sample_audio/clwb.svg"
+        }
+      ]
+    },
+    {
+      "id": "cubase-audio",
+      "title": "Cubase Sessions",
+      "description": "Audio tracks from Cubase sessions",
+      "tracks": [
+        {
+          "id": "little-ricky",
+          "title": "Little Ricky",
+          "audioUrl": "audio/cubase/01-Little Ricky.mp3",
+          "description": "Little Ricky track from Cubase sessions",
+          "albumArt": "sample_audio/clwb.svg"
+        },
+        {
+          "id": "toast",
+          "title": "Toast",
+          "audioUrl": "audio/cubase/03-Toast.mp3",
+          "description": "Toast track from Cubase sessions",
+          "albumArt": "sample_audio/clwb.svg"
+        }
+      ]
+    },
+    {
       "id": "sample-feed",
       "title": "Sample Feed",
       "tracks": [
