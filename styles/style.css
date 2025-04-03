@@ -265,66 +265,61 @@ h1 {
 
 .time-control {
     display: flex;
-    flex-direction: column; /* Stack items vertically */
+    flex-direction: column;
     align-items: center;
     margin-bottom: 20px;
-    background-color: #000;
-    border-radius: 12px;
-    padding: 10px 15px;
-    border: 2px solid var(--neon-yellow);
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8), 0 0 10px rgba(247, 255, 0, 0.4);
+    background-color: rgba(0, 51, 102, 0.3);
+    border-radius: 16px;
+    padding: 12px 18px;
+    border: 2px solid var(--neon-blue);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.4), 0 0 10px rgba(0, 204, 255, 0.2);
     transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
 }
 
 .time-display-container {
     display: flex;
-    justify-content: space-between; /* Put time at ends */
-    width: 100%; /* Take full width */
-    margin-bottom: 10px; /* Add space below time */
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 12px;
 }
 
 .time-control:hover {
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8), 0 0 15px rgba(247, 255, 0, 0.7);
-    border-color: #ffff00;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.4), 0 0 15px rgba(0, 204, 255, 0.4);
+    border-color: #00ddff;
     transform: translateY(-2px);
 }
 
 .time-display {
     font-family: 'VT323', monospace;
-    font-size: 1.4em;
-    color: var(--neon-yellow);
-    min-width: 50px; /* Ensure space for time */
+    font-size: 1.3em;
+    color: var(--neon-blue);
+    min-width: 50px;
     text-align: center;
-    text-shadow: 0 0 5px rgba(247, 255, 0, 0.7);
-    background-color: rgba(0, 0, 0, 0.5);
-    padding: 3px 5px;
-    border-radius: 4px;
+    text-shadow: 0 0 5px rgba(0, 204, 255, 0.7);
+    background-color: rgba(0, 20, 40, 0.7);
+    padding: 4px 8px;
+    border-radius: 6px;
     letter-spacing: 1px;
+    border: 1px solid rgba(0, 204, 255, 0.3);
 }
 
 #seek-bar {
-    flex-grow: 1;
-    /* margin: 0 15px; NO - we want full width */
-    width: 100%; /* Make seek bar take full width */
-    height: 8px;
+    width: 100%;
+    height: 10px;
     cursor: pointer;
     -webkit-appearance: none;
     appearance: none;
-    background: rgba(var(--accent-rgb), 0.2);
-    border-radius: 4px;
+    background: rgba(0, 51, 102, 0.5);
+    border-radius: 5px;
     outline: none;
     position: relative;
+    margin: 5px 0;
+    z-index: 2;
 }
 
-/* Create a progress effect */
-/* Seek progress track - more compatible method */
-#seek-bar {
-    background: linear-gradient(to right, var(--accent-color) 0%, var(--accent-color) var(--seek-progress, 0%), rgba(var(--accent-rgb), 0.2) var(--seek-progress, 0%), rgba(var(--accent-rgb), 0.2) 100%);
-    box-shadow: 0 0 8px rgba(255, 90, 95, 0.3);
-    overflow: hidden;
-}
-
-/* Keep for browsers that support it */
+/* Modern seek bar with improved visualization */
 #seek-bar::before {
     content: '';
     position: absolute;
@@ -332,61 +327,70 @@ h1 {
     left: 0;
     height: 100%;
     width: var(--seek-progress, 0%);
-    background: var(--accent-color);
-    border-radius: 4px;
+    background: linear-gradient(90deg, #0066cc, #00ccff);
+    border-radius: 5px;
     pointer-events: none;
     z-index: 1;
-    box-shadow: 0 0 8px rgba(255, 90, 95, 0.7);
-    display: none; /* Hide by default and use the background gradient instead */
+    box-shadow: 0 0 8px rgba(0, 204, 255, 0.7);
+    transition: width 0.1s ease;
 }
 
 #seek-bar::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 16px;
-    height: 16px;
-    background: var(--neon-yellow);
+    width: 18px;
+    height: 18px;
+    background: white;
     border-radius: 50%;
     cursor: pointer;
-    box-shadow: 0 0 8px rgba(247, 255, 0, 0.8);
+    box-shadow: 0 0 8px rgba(0, 204, 255, 0.8);
     transition: all 0.2s ease;
     position: relative;
-    z-index: 2;
-    border: 2px solid #000;
+    z-index: 3;
+    border: 2px solid #00aaff;
 }
 
 #seek-bar::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
-    background: var(--neon-yellow);
+    width: 18px;
+    height: 18px;
+    background: white;
     border-radius: 50%;
     cursor: pointer;
-    border: 2px solid #000;
-    box-shadow: 0 0 8px rgba(247, 255, 0, 0.8);
+    border: 2px solid #00aaff;
+    box-shadow: 0 0 8px rgba(0, 204, 255, 0.8);
     transition: all 0.2s ease;
     position: relative;
-    z-index: 2;
+    z-index: 3;
 }
 
 /* Firefox specific progress track styles */
 #seek-bar::-moz-range-progress {
-    background-color: var(--accent-color);
-    height: 8px;
-    border-radius: 4px;
+    background: linear-gradient(90deg, #0066cc, #00ccff);
+    height: 10px;
+    border-radius: 5px;
 }
 
 #seek-bar:hover::-webkit-slider-thumb {
     transform: scale(1.3);
-    box-shadow: 0 0 12px rgba(247, 255, 0, 1);
+    box-shadow: 0 0 12px rgba(0, 204, 255, 1);
+    background: #f0f8ff;
 }
 
 #seek-bar:hover::-moz-range-thumb {
     transform: scale(1.3);
-    box-shadow: 0 0 12px rgba(247, 255, 0, 1);
+    box-shadow: 0 0 12px rgba(0, 204, 255, 1);
+    background: #f0f8ff;
 }
 
 #seek-bar:focus {
     outline: none;
+}
+
+/* Fix for Firefox to ensure progress track shows correctly */
+#seek-bar::-moz-range-track {
+    background: rgba(0, 51, 102, 0.5);
+    height: 10px;
+    border-radius: 5px;
 }
 
 .main-control {
@@ -418,10 +422,10 @@ h1 {
     letter-spacing: 1px;
 }
 
-/* 90s Hit Clips style buttons with raised, plastic look */
+/* Modern Control Buttons with Subtle Animations */
 .control-button {
-    background: linear-gradient(to bottom, #333 0%, #222 100%);
-    border: 2px solid #444;
+    background: linear-gradient(to bottom, #191970 0%, #0a0a50 100%);
+    border: 2px solid var(--neon-blue);
     color: var(--text-primary);
     cursor: pointer;
     padding: 10px;
@@ -430,14 +434,14 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5), 0 0 5px rgba(0, 255, 255, 0.3);
 }
 
 .control-button:hover {
     color: var(--neon-yellow);
     transform: scale(1.1);
     border-color: var(--neon-yellow);
-    box-shadow: 0 0 10px rgba(247, 255, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 10px rgba(247, 255, 0, 0.5), 0 0 8px rgba(0, 255, 255, 0.5);
 }
 
 .skip-button svg {
@@ -449,15 +453,15 @@ h1 {
     width: 70px;
     height: 70px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-darker) 100%);
-    color: var(--text-primary);
+    background: linear-gradient(135deg, #00ccff 0%, #0033cc 100%);
+    color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 15px rgba(var(--accent-rgb), 0.6), inset 0 1px 3px rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 15px rgba(0, 204, 255, 0.6), inset 0 1px 3px rgba(255, 255, 255, 0.3);
     transition: all 0.2s ease-in-out;
     margin: 0 30px;
-    border: 3px solid #333;
+    border: 3px solid #000033;
     position: relative;
     overflow: hidden;
 }
@@ -470,15 +474,15 @@ h1 {
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
-    opacity: 0.5;
+    background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%);
+    opacity: 0.6;
     pointer-events: none;
 }
 
 .play-button:hover {
-    background: linear-gradient(135deg, #ff6b70 0%, var(--accent-color) 100%);
+    background: linear-gradient(135deg, #33ddff 0%, #0055ff 100%);
     transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.8), inset 0 1px 3px rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 20px rgba(0, 204, 255, 0.8), inset 0 1px 3px rgba(255, 255, 255, 0.5);
 }
 
 .play-button:disabled {
@@ -487,42 +491,43 @@ h1 {
     transform: scale(0.95);
 }
 
-/* Smooth icon transitions */
-.play-button svg {
-    transition: all 0.3s ease;
-    position: absolute;
-}
-
-.play-icon {
-    transform: scale(1);
-    opacity: 1;
-}
-
-.pause-icon {
-    transform: scale(0);
-    opacity: 0;
-}
-
-.play-button.playing .play-icon {
-    transform: scale(0);
-    opacity: 0;
-}
-
-.play-button.playing .pause-icon {
-    transform: scale(1);
-    opacity: 1;
-}
-
+/* Improved icon transitions */
 .play-button svg {
     width: 35px;
     height: 35px;
     transition: all 0.3s ease;
     position: absolute;
-    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+    filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.5));
+}
+
+.play-icon, .pause-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    transition: all 0.3s ease;
+    width: 32px;
+    height: 32px;
+}
+
+.play-icon {
+    /* Adjust play icon positioning - it tends to look optically off-center */
+    transform: translate(-43%, -50%) scale(1);
 }
 
 .pause-icon {
-    left: 0 !important; /* Reset the adjustment for pause icon */
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0);
+}
+
+.play-button.playing .play-icon {
+    opacity: 0;
+    transform: translate(-43%, -50%) scale(0);
+}
+
+.play-button.playing .pause-icon {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
 }
 
 .control-button:active {
@@ -534,7 +539,7 @@ h1 {
     position: relative;
     width: 50px;
     height: 50px;
-    background: linear-gradient(to bottom, #333 0%, #222 100%);
+    background: linear-gradient(to bottom, #191970 0%, #0a0a50 100%);
 }
 
 .skip-button svg {
@@ -543,22 +548,22 @@ h1 {
     filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.3));
 }
 
-/* Add pulsing effect when playing */
+/* Subtle glow effect when playing */
 .play-button.playing {
-    animation: pulse-glow 2s infinite;
-    background: linear-gradient(135deg, #ff6b70 0%, var(--accent-color) 100%);
-    box-shadow: 0 0 25px rgba(var(--accent-rgb), 0.9), inset 0 1px 3px rgba(255, 255, 255, 0.5);
+    background: linear-gradient(135deg, #00ccff 0%, #0055ff 100%);
+    box-shadow: 0 0 20px rgba(0, 204, 255, 0.7);
+    animation: subtle-pulse 3s infinite;
 }
 
-@keyframes pulse-glow {
+@keyframes subtle-pulse {
     0% {
-        box-shadow: 0 0 15px rgba(var(--accent-rgb), 0.7), inset 0 1px 3px rgba(255, 255, 255, 0.5);
+        box-shadow: 0 0 15px rgba(0, 204, 255, 0.5);
     }
     50% {
-        box-shadow: 0 0 30px rgba(var(--accent-rgb), 1), inset 0 1px 5px rgba(255, 255, 255, 0.7);
+        box-shadow: 0 0 25px rgba(0, 204, 255, 0.8);
     }
     100% {
-        box-shadow: 0 0 15px rgba(var(--accent-rgb), 0.7), inset 0 1px 3px rgba(255, 255, 255, 0.5);
+        box-shadow: 0 0 15px rgba(0, 204, 255, 0.5);
     }
 }
 
