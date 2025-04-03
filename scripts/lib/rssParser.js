@@ -15,9 +15,18 @@ class RSSParser {
       const isRemote = url.startsWith('http') && !url.includes(window.location.hostname);
       
       // Use a CORS proxy for remote feeds
-      const fetchUrl = isRemote 
-        ? `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
-        : url;
+      let fetchUrl = url;
+      if (isRemote) {
+        // Try with a more reliable CORS proxy
+        try {
+          fetchUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+          console.log('Using corsproxy.io as CORS proxy');
+        } catch (e) {
+          // Fallback to alternate proxy if encoding fails
+          fetchUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+          console.log('Using allorigins.win as CORS proxy');
+        }
+      }
       
       console.log(`Fetching feed from: ${fetchUrl}`);
       
@@ -293,9 +302,18 @@ class RSSParser {
       console.log('Is remote URL:', isRemote);
       
       // Use a CORS proxy for remote feeds
-      const fetchUrl = isRemote 
-        ? `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
-        : url;
+      let fetchUrl = url;
+      if (isRemote) {
+        // Try with a more reliable CORS proxy
+        try {
+          fetchUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+          console.log('Using corsproxy.io as CORS proxy');
+        } catch (e) {
+          // Fallback to alternate proxy if encoding fails
+          fetchUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+          console.log('Using allorigins.win as CORS proxy');
+        }
+      }
       
       console.log('Using fetch URL:', fetchUrl);
       
