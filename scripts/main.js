@@ -686,6 +686,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Update the seek bar's custom progress styling using CSS variables
     document.documentElement.style.setProperty('--seek-progress', `${progressPercent}%`);
     
+    // Update the seek-progress-bar element if it exists
+    const seekProgressBar = document.querySelector('.seek-progress-bar');
+    if (seekProgressBar) {
+        seekProgressBar.style.width = `${progressPercent}%`;
+    }
+    
     // Update time display
     if (currentTimeDisplay) {
         currentTimeDisplay.textContent = formatTime(currentTime);

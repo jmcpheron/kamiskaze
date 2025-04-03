@@ -227,21 +227,21 @@ h1 {
 
 /* Player Controls Section - Hit Clips style */
 #player-controls {
-    padding: 20px;
-    background-color: var(--bg-controls);
-    border-radius: var(--border-radius-player);
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
-    margin-bottom: 20px;
+    padding: 25px;
+    background: radial-gradient(circle at center, rgba(20, 20, 40, 0.4), rgba(5, 5, 15, 0.2));
+    border-radius: 30px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    margin-bottom: 25px;
     transition: all 0.3s ease;
-    border: 1px solid rgba(0, 255, 255, 0.3);
+    border: none;
     position: relative;
-    max-width: 600px;
+    max-width: 700px;
     margin-left: auto;
     margin-right: auto;
     background-image: 
-        linear-gradient(135deg, rgba(20, 20, 40, 0.7) 0%, rgba(10, 10, 20, 0.9) 100%),
-        radial-gradient(circle at 10% 20%, rgba(57, 255, 20, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 90% 80%, rgba(255, 90, 95, 0.1) 0%, transparent 50%);
+        radial-gradient(circle at 30% 20%, rgba(0, 255, 255, 0.05) 0%, transparent 60%),
+        radial-gradient(circle at 70% 80%, rgba(188, 19, 254, 0.05) 0%, transparent 60%);
+    backdrop-filter: blur(5px);
 }
 
 #player-controls::before {
@@ -272,21 +272,31 @@ h1 {
     flex-direction: column;
     align-items: center;
     margin-bottom: 15px;
-    background: linear-gradient(to right, rgba(10, 20, 40, 0.7), rgba(0, 51, 102, 0.5), rgba(10, 20, 40, 0.7));
-    border-radius: 16px;
-    padding: 15px 20px;
-    border: 1px solid rgba(0, 204, 255, 0.4);
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.4), 0 0 10px rgba(0, 204, 255, 0.2);
+    background: radial-gradient(circle at center, rgba(20, 20, 40, 0.6), rgba(10, 10, 20, 0.3));
+    border-radius: 30px;
+    padding: 20px 25px;
+    border: none;
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15), 
+                inset 0 0 30px rgba(0, 255, 255, 0.05);
     transition: all 0.3s ease;
     position: relative;
     z-index: 1;
+    margin-top: 10px;
 }
 
 .time-display-container {
     display: flex;
     justify-content: space-between;
     width: 100%;
-    margin-bottom: 12px;
+    margin-bottom: 15px;
+}
+
+.seek-bar-container {
+    position: relative;
+    width: 100%;
+    height: 20px;
+    display: flex;
+    align-items: center;
 }
 
 .time-control:hover {
@@ -312,47 +322,70 @@ h1 {
 
 #seek-bar {
     width: 100%;
-    height: 10px;
+    height: 20px;
     cursor: pointer;
     -webkit-appearance: none;
     appearance: none;
-    background: rgba(0, 51, 102, 0.5);
-    border-radius: 5px;
+    background: transparent;
     outline: none;
     position: relative;
-    margin: 5px 0;
-    z-index: 2;
+    margin: 0;
+    z-index: 5;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
+#seek-bar:hover {
+    opacity: 1;
 }
 
 /* Modern seek bar with improved visualization */
-#seek-bar::before {
-    content: '';
+.seek-progress-bar {
     position: absolute;
-    top: 0;
+    top: 4px;
     left: 0;
-    height: 100%;
+    height: 12px;
     width: var(--seek-progress, 0%);
-    background: linear-gradient(90deg, #0066cc, #00ccff);
-    border-radius: 5px;
+    background: linear-gradient(90deg, 
+        var(--neon-blue) 0%, 
+        var(--neon-purple) 50%,
+        var(--neon-blue) 100%);
+    background-size: 200% 100%;
+    animation: progress-gradient 3s linear infinite;
+    border-radius: 8px;
     pointer-events: none;
     z-index: 1;
-    box-shadow: 0 0 8px rgba(0, 204, 255, 0.7);
+    box-shadow: 0 0 10px var(--neon-blue);
     transition: width 0.1s ease;
+}
+
+@keyframes progress-gradient {
+    0% { background-position: 0% 0; }
+    100% { background-position: 200% 0; }
 }
 
 #seek-bar::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 18px;
-    height: 18px;
-    background: white;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
+    background: var(--neon-yellow);
     cursor: pointer;
-    box-shadow: 0 0 8px rgba(0, 204, 255, 0.8);
-    transition: all 0.2s ease;
     position: relative;
     z-index: 3;
-    border: 2px solid #00aaff;
+    border: 2px solid rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 10px rgba(247, 255, 0, 0.7);
+    margin-top: -6px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#seek-bar:hover::-webkit-slider-thumb {
+    transform: scale(1.2);
+    box-shadow: 0 0 15px rgba(247, 255, 0, 0.9);
 }
 
 #seek-bar::-moz-range-thumb {
@@ -402,14 +435,15 @@ h1 {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 20px;
-    gap: 25px;
+    margin-bottom: 25px;
+    gap: 35px;
     position: relative;
-    padding: 25px 0;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, rgba(10, 10, 30, 0.6) 100%);
-    border-radius: 20px;
-    border: 1px solid rgba(0, 255, 255, 0.2);
-    box-shadow: inset 0 0 15px rgba(0, 255, 255, 0.1);
+    padding: 30px 0;
+    background: radial-gradient(ellipse at center, rgba(30, 30, 50, 0.5) 0%, rgba(10, 10, 30, 0.3) 70%);
+    border-radius: 30px;
+    border: none;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 
+                inset 0 0 40px rgba(0, 255, 255, 0.05);
 }
 
 /* Modern Control Buttons with Subtle Animations */
@@ -1408,12 +1442,12 @@ footer a:hover {
 
     #player-controls {
         margin-bottom: 0;
-        padding: 20px;
+        padding: 30px;
         border-bottom: none;
-        background: linear-gradient(135deg, rgba(30, 30, 40, 0.6) 0%, rgba(10, 10, 20, 0.8) 100%);
-        border-radius: 12px;
-        border: 1px solid rgba(0, 255, 255, 0.1);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+        background: radial-gradient(ellipse at center, rgba(30, 30, 50, 0.3) 0%, rgba(10, 10, 20, 0.1) 100%);
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     }
     
     #current-track-info {
