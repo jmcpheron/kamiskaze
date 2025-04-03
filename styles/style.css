@@ -227,11 +227,11 @@ h1 {
 
 /* Player Controls Section - Hit Clips style */
 #player-controls {
-    padding: 30px;
+    padding: 20px;
     background: radial-gradient(circle at center, rgba(20, 20, 40, 0.4), rgba(5, 5, 15, 0.2));
-    border-radius: 30px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-    margin-bottom: 25px;
+    border-radius: 20px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
     transition: all 0.3s ease;
     border: none;
     position: relative;
@@ -271,17 +271,17 @@ h1 {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     background: radial-gradient(circle at center, rgba(20, 20, 40, 0.6), rgba(10, 10, 20, 0.3));
-    border-radius: 30px;
-    padding: 25px 30px;
+    border-radius: 20px;
+    padding: 15px 20px;
     border: none;
-    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15), 
-                inset 0 0 30px rgba(0, 255, 255, 0.05);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15), 
+                inset 0 0 20px rgba(0, 255, 255, 0.05);
     transition: all 0.3s ease;
     position: relative;
     z-index: 1;
-    margin-top: 10px;
+    margin-top: 5px;
     width: 100%;
 }
 
@@ -308,14 +308,14 @@ h1 {
 
 .time-display {
     font-family: 'VT323', monospace;
-    font-size: 1.4em;
+    font-size: 1.2em;
     color: var(--neon-yellow);
-    min-width: 60px;
+    min-width: 50px;
     text-align: center;
     text-shadow: 0 0 5px rgba(247, 255, 0, 0.7);
     background-color: rgba(0, 20, 40, 0.8);
-    padding: 5px 10px;
-    border-radius: 8px;
+    padding: 4px 8px;
+    border-radius: 6px;
     letter-spacing: 1px;
     border: 1px solid rgba(247, 255, 0, 0.3);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -436,12 +436,12 @@ h1 {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 25px;
-    gap: 45px;
+    margin-bottom: 15px;
+    gap: 25px;
     position: relative;
-    padding: 40px 0;
+    padding: 20px 0;
     background: radial-gradient(ellipse at center, rgba(30, 30, 50, 0.5) 0%, rgba(10, 10, 30, 0.3) 70%);
-    border-radius: 30px;
+    border-radius: 20px;
     border: none;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 
                 inset 0 0 40px rgba(0, 255, 255, 0.05);
@@ -476,8 +476,8 @@ h1 {
 }
 
 .play-button {
-  width: 70px;
-  height: 70px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
   position: relative;
@@ -570,15 +570,15 @@ h1 {
 
 .skip-button {
     position: relative;
-    width: 55px;
-    height: 55px;
+    width: 48px;
+    height: 48px;
     background: linear-gradient(to bottom, #191970 0%, #0a0a50 100%);
     border: 2px solid var(--neon-blue);
 }
 
 .skip-button svg {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.4));
 }
 
@@ -649,7 +649,7 @@ h1 {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding: 0.75rem 1rem;
+    padding: 0.6rem 0.8rem;
     border-radius: 8px;
     background: linear-gradient(135deg, rgba(40, 40, 40, 0.7) 0%, rgba(20, 20, 20, 0.9) 100%);
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
@@ -1294,10 +1294,10 @@ footer a:hover {
     .player-controls-group {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 0.4rem;
         background-color: rgba(20, 20, 20, 0.8);
         border-radius: 12px;
-        padding: 1.5rem;
+        padding: 1.2rem 1rem;
         box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25), inset 0 1px 2px rgba(255, 255, 255, 0.05);
         border: 1px solid rgba(255, 255, 255, 0.05);
         position: relative;
@@ -1444,10 +1444,10 @@ footer a:hover {
 
     #player-controls {
         margin-bottom: 0;
-        padding: 35px;
+        padding: 25px;
         border-bottom: none;
         background: radial-gradient(ellipse at center, rgba(30, 30, 50, 0.3) 0%, rgba(10, 10, 20, 0.1) 100%);
-        border-radius: 30px;
+        border-radius: 20px;
         border: none;
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
         width: 100%;
@@ -1455,17 +1455,17 @@ footer a:hover {
     
     #current-track-info {
         margin-top: 0; /* Reset margin */
-        margin-bottom: 25px;
-        transform: scale(1.02);
-        padding: 1rem 1.5rem;
+        margin-bottom: 15px;
+        transform: scale(1);
+        padding: 0.75rem 1rem;
     }
     
     #track-info-text h2 {
-        font-size: 1.4rem;
+        font-size: 1.2rem;
     }
     
     #track-info-text p {
-        font-size: 1rem;
+        font-size: 0.9rem;
     }
 
     #playlist-selector {
@@ -1530,41 +1530,41 @@ footer a:hover {
     }
     
     #play-pause-button {
-        width: 80px;
-        height: 80px;
-    }
-    
-    .skip-button {
         width: 65px;
         height: 65px;
     }
     
+    .skip-button {
+        width: 52px;
+        height: 52px;
+    }
+    
     .skip-button svg {
-        width: 35px;
-        height: 35px;
+        width: 30px;
+        height: 30px;
     }
     
     .main-control {
-        gap: 50px;
-        padding: 50px 0;
+        gap: 35px;
+        padding: 30px 0;
     }
     
     .time-control {
-        padding: 30px 35px;
+        padding: 20px 25px;
     }
 
     .time-display {
-        font-size: 1.6em;
-        min-width: 80px;
-        padding: 8px 15px;
+        font-size: 1.4em;
+        min-width: 70px;
+        padding: 6px 12px;
     }
     
     #seek-bar {
-        height: 25px;
+        height: 22px;
     }
     
     .seek-progress-bar {
-        height: 15px;
+        height: 12px;
         top: 5px;
     }
     
