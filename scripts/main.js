@@ -385,7 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Show cassette art instead
         if (albumArt) {
-          albumArt.src = 'images/cassette-single.jpg';
+          albumArt.src = 'images/cassette-single.png';
           albumArt.classList.remove('hidden');
           albumArt.style.display = 'block';
         }
@@ -650,7 +650,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       } else {
         if (albumArt) {
-          albumArt.src = 'images/cassette-single.jpg';
+          albumArt.src = 'images/cassette-single.png';
           albumArt.classList.remove('hidden');
           albumArt.style.display = 'block';
         }
