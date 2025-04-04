@@ -151,7 +151,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (videoArtDisplay) {
       videoArtDisplay.addEventListener('error', (e) => {
         console.error('Video error:', e);
-        showNotification('Error loading video: ' + (e.message || 'Unknown error'), 'error');
+        
+        // Only show notification for video files, not for audio files
+        const currentTrack = currentFeed?.tracks?.[currentTrackIndex];
+        const isAudioFile = currentTrack?.audioUrl?.toLowerCase().endsWith('.mp3') ||
+                          currentTrack?.audioUrl?.toLowerCase().endsWith('.wav') ||
+                          currentTrack?.audioUrl?.toLowerCase().endsWith('.ogg');
+        
+        if (!isAudioFile) {
+          showNotification('Error loading video: ' + (e.message || 'Unknown error'), 'error');
+        }
       });
     }
     
@@ -360,6 +369,14 @@ document.addEventListener('DOMContentLoaded', () => {
       return false;
     }
     
+    // Exit early if this is an audio file format
+    if (videoSource.toLowerCase().endsWith('.mp3') || 
+        videoSource.toLowerCase().endsWith('.wav') || 
+        videoSource.toLowerCase().endsWith('.ogg')) {
+      console.log('Audio-only file detected, skipping video setup');
+      return false;
+    }
+    
     try {
       console.log('Setting up video playback for source:', videoSource);
       
@@ -549,6 +566,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const track = currentFeed.tracks[index];
     currentTrackIndex = index;
     
+    // Reset video element state first to prevent errors
+    if (videoArtDisplay) {
+      // Clear any previous source and errors
+      videoArtDisplay.pause();
+      videoArtDisplay.removeAttribute('src');
+      videoArtDisplay.load();
+      videoArtDisplay.style.display = 'none';
+      
+      // Hide video controls overlay
+      const videoControlsOverlay = document.getElementById('video-controls-overlay');
+      if (videoControlsOverlay) {
+        videoControlsOverlay.style.display = 'none';
+      }
+    }
+    
     // Temporarily disable play button during load
     if (playPauseButton) {
       playPauseButton.disabled = true;
@@ -624,10 +656,11 @@ document.addEventListener('DOMContentLoaded', () => {
         albumArtContainer.classList.remove('video-active');
       }
       
-      // Hide video element
+      // Fully disable video element to prevent errors
       if (videoArtDisplay) {
         videoArtDisplay.pause();
-        videoArtDisplay.src = '';
+        videoArtDisplay.removeAttribute('src'); // Use removeAttribute instead of setting to empty string
+        videoArtDisplay.load(); // Important: call load() after changing src to reset the element
         videoArtDisplay.style.display = 'none';
       }
       
