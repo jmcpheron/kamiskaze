@@ -672,6 +672,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Show appropriate album art
       if (track.albumArt) {
+        // Track has custom album art
         if (albumArt) {
           albumArt.src = track.albumArt;
           albumArt.classList.remove('hidden');
@@ -682,6 +683,7 @@ document.addEventListener('DOMContentLoaded', () => {
           defaultArt.style.display = 'none';
         }
       } else {
+        // No album art - use cassette single as default
         if (albumArt) {
           albumArt.src = 'images/cassette-single.png';
           albumArt.classList.remove('hidden');
@@ -690,6 +692,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (defaultArt) {
           defaultArt.classList.add('hidden');
           defaultArt.style.display = 'none';
+        }
+        // Hide the default SVG art
+        const defaultSvgArt = document.getElementById('default-album-art');
+        if (defaultSvgArt) {
+          defaultSvgArt.style.display = 'none';
         }
       }
     }
