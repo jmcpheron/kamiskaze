@@ -1,4 +1,3 @@
-// Modern Minimal Audio Player JavaScript
 document.addEventListener('DOMContentLoaded', () => {
   // CSS Variable Setup
   document.documentElement.style.setProperty('--space-xs', '4px');
@@ -9,9 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.documentElement.style.setProperty('--transition-fast', '150ms ease');
   document.documentElement.style.setProperty('--transition-normal', '250ms ease');
   document.documentElement.style.setProperty('--transition-slow', '350ms ease');
-  document.documentElement.style.setProperty('--shadow-sm', '0 1px 2px rgba(0, 0, 0, 0.1)');
-  document.documentElement.style.setProperty('--shadow-md', '0 4px 8px rgba(0, 0, 0, 0.12)');
-  document.documentElement.style.setProperty('--shadow-lg', '0 8px 16px rgba(0, 0, 0, 0.14)');
+  document.documentElement.style.setProperty('--shadow-sm', '0 1px 2px rgba(0, 0, 0, .1)');
+  document.documentElement.style.setProperty('--shadow-md', '0 4px 8px rgba(0, 0, 0, .12)');
+  document.documentElement.style.setProperty('--shadow-lg', '0 8px 16px rgba(0, 0, 0, .14)');
   document.documentElement.style.setProperty('--header-height', '60px');
   document.documentElement.style.setProperty('--footer-height', '40px');
   document.documentElement.style.setProperty('--player-width-max', '500px');
@@ -1354,4 +1353,4 @@ document.addEventListener('DOMContentLoaded', () => {
     showNotification('Promise error: ' + e.reason, 'error');
     console.error('Unhandled promise rejection:', e);
   });
-}); 
+});
