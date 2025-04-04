@@ -10,6 +10,10 @@ Kamiskaze was a Southern California ska band active in the 90s-2000s. I (Jason M
 
 The repository currently includes:
 - **Palm Springs w/ The Jawas** - Live performance recording -- December 13th 1996. 
+- **MP3 Folder** - Contains audio recordings from different sessions:
+  - The 8-track collection was recorded with a guy who had an audio 8-track player.
+  - The Cubase playlist was recorded with a different guy who had a more advanced Max setup in a studio in his garage.
+  - These descriptions are a rough idea of what the MP3s are, but the exact details are not fully remembered.
 - More to be added as materials are uncovered or submitted
 
 ## How to Access the Media
