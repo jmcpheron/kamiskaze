@@ -399,9 +399,18 @@ document.addEventListener('DOMContentLoaded', () => {
         
         videoArtDisplay.style.display = 'none';
         
-        // Show cassette art instead
+        // Show random image instead
         if (albumArt) {
-          albumArt.src = 'images/cassette-single.png';
+          // Define available default images
+          const defaultImages = [
+            'images/cassette-single.png',
+            'images/i-still-have-that-shirt.jpg',
+            'images/pasadena-maybe.jpg'
+          ];
+          
+          // Select random image
+          const randomIndex = Math.floor(Math.random() * defaultImages.length);
+          albumArt.src = defaultImages[randomIndex];
           albumArt.classList.remove('hidden');
           albumArt.style.display = 'block';
         }
@@ -682,9 +691,18 @@ document.addEventListener('DOMContentLoaded', () => {
           defaultArt.style.display = 'none';
         }
       } else {
-        // No album art - use cassette single as default
+        // No album art - use random image from images folder
         if (albumArt) {
-          albumArt.src = 'images/cassette-single.png';
+          // Define available default images
+          const defaultImages = [
+            'images/cassette-single.png',
+            'images/i-still-have-that-shirt.jpg',
+            'images/pasadena-maybe.jpg'
+          ];
+          
+          // Select random image
+          const randomIndex = Math.floor(Math.random() * defaultImages.length);
+          albumArt.src = defaultImages[randomIndex];
           albumArt.classList.remove('hidden');
           albumArt.style.display = 'block';
         }
