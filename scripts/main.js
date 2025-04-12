@@ -399,18 +399,10 @@ document.addEventListener('DOMContentLoaded', () => {
         
         videoArtDisplay.style.display = 'none';
         
-        // Show random image instead
+        // Show cassette-single.png as default image
         if (albumArt) {
-          // Define available default images
-          const defaultImages = [
-            'images/cassette-single.png',
-            'images/i-still-have-that-shirt.jpg',
-            'images/pasadena-maybe.jpg'
-          ];
-          
-          // Select random image
-          const randomIndex = Math.floor(Math.random() * defaultImages.length);
-          albumArt.src = defaultImages[randomIndex];
+          // Always use cassette-single.png as the default album art
+          albumArt.src = 'images/cassette-single.png';
           albumArt.classList.remove('hidden');
           albumArt.style.display = 'block';
         }
@@ -679,7 +671,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       
       // Show appropriate album art
-      if (track.albumArt) {
+      // Check if track has album art that is not an SVG file
+      if (track.albumArt && !track.albumArt.toLowerCase().endsWith('.svg')) {
         // Track has custom album art
         if (albumArt) {
           albumArt.src = track.albumArt;
