@@ -691,18 +691,10 @@ document.addEventListener('DOMContentLoaded', () => {
           defaultArt.style.display = 'none';
         }
       } else {
-        // No album art - use random image from images folder
+        // No album art - use cassette-single.png as default
         if (albumArt) {
-          // Define available default images
-          const defaultImages = [
-            'images/cassette-single.png',
-            'images/i-still-have-that-shirt.jpg',
-            'images/pasadena-maybe.jpg'
-          ];
-          
-          // Select random image
-          const randomIndex = Math.floor(Math.random() * defaultImages.length);
-          albumArt.src = defaultImages[randomIndex];
+          // Always use cassette-single.png as the default album art
+          albumArt.src = 'images/cassette-single.png';
           albumArt.classList.remove('hidden');
           albumArt.style.display = 'block';
         }
