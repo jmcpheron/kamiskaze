@@ -49,6 +49,6 @@ If you were a fan, friend, or member of Kamiskaze, please feel free to reach out
 
 This repository contains media that may have various copyright restrictions. The archival nature of this project is intended for preservation and historical documentation purposes.
 
----
+----
 
 *This archive is maintained by Jason McPheron.*
