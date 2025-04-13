@@ -1,0 +1,324 @@
+/* BBS/ASCII Art Theme for Kamiskaze Player */
+/* Inspired by old dial-up BBS ASCII art pages */
+
+@font-face {
+  font-family: 'VT323';
+  src: url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+}
+
+@font-face {
+  font-family: 'PxPlus IBM VGA8';
+  src: url('https://int10h.org/oldschool-pc-fonts/fontpacks/PxPlus_IBM_VGA8.ttf') format('truetype');
+}
+
+/* Main BBS Theme Container */
+#player-container, .bbs-theme {
+  background-color: #000080; /* Classic BBS blue */
+  color: #33ff33; /* Terminal green */
+  font-family: 'VT323', 'PxPlus IBM VGA8', monospace;
+  border: 2px solid #33ff33;
+  padding: 10px;
+  box-shadow: 0 0 10px rgba(51, 255, 51, 0.5);
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* BBS Header with ASCII Art Banner */
+.bbs-header {
+  text-align: center;
+  margin-bottom: 20px;
+  padding: 10px;
+  border-bottom: 1px solid #33ff33;
+  white-space: pre;
+  font-size: 10px;
+  line-height: 1.2;
+  overflow: hidden;
+}
+
+/* ASCII Art Banner */
+.bbs-ascii-banner {
+  color: #ffff33; /* Yellow for banner */
+  font-weight: bold;
+  white-space: pre;
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+/* BBS Player Controls */
+.bbs-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+  border: 1px solid #33ff33;
+  margin-bottom: 10px;
+  background-color: #000033;
+}
+
+.bbs-control-button {
+  color: #33ff33;
+  background-color: #000033;
+  border: 1px solid #33ff33;
+  padding: 2px 8px;
+  margin: 0 2px;
+  cursor: pointer;
+  font-family: 'VT323', monospace;
+  font-size: 16px;
+}
+
+.bbs-control-button:hover {
+  background-color: #33ff33;
+  color: #000033;
+}
+
+.bbs-play-button {
+  color: #ffff33; /* Yellow for play button */
+}
+
+.bbs-progress {
+  height: 10px;
+  width: 100%;
+  background-color: #000033;
+  border: 1px solid #33ff33;
+  margin: 10px 0;
+  position: relative;
+}
+
+.bbs-progress-bar {
+  height: 100%;
+  background-color: #33ff33;
+  width: 0%;
+}
+
+.bbs-progress-text {
+  position: absolute;
+  top: -18px;
+  right: 0;
+  font-size: 14px;
+  color: #33ff33;
+}
+
+/* BBS Playlist */
+.bbs-playlist {
+  border: 1px solid #33ff33;
+  background-color: #000033;
+  margin-top: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.bbs-playlist-tabs {
+  display: flex;
+  border-bottom: 1px solid #33ff33;
+}
+
+.bbs-playlist-tab {
+  padding: 5px 10px;
+  cursor: pointer;
+  border-right: 1px solid #33ff33;
+}
+
+.bbs-playlist-tab.active {
+  background-color: #33ff33;
+  color: #000033;
+}
+
+.bbs-track {
+  padding: 5px;
+  border-bottom: 1px dotted #33ff33;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.bbs-track:hover {
+  background-color: #001a00;
+}
+
+.bbs-track.active {
+  background-color: #003300;
+}
+
+.bbs-track-number {
+  width: 30px;
+  text-align: right;
+  margin-right: 10px;
+  color: #ffff33;
+}
+
+.bbs-track-info {
+  flex-grow: 1;
+}
+
+.bbs-track-title {
+  font-weight: bold;
+}
+
+.bbs-track-artist {
+  font-size: 0.9em;
+  color: #aaffaa;
+}
+
+/* BBS Visualizer */
+.bbs-visualizer {
+  height: 50px;
+  border: 1px solid #33ff33;
+  margin: 10px 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 5px;
+  background-color: #000033;
+}
+
+.bbs-visualizer-bar {
+  width: 10px;
+  background-color: #33ff33;
+  margin: 0 1px;
+  height: 5px;
+}
+
+/* BBS Album Art */
+.bbs-album-art {
+  text-align: center;
+  margin: 10px 0;
+  position: relative;
+  border: 1px solid #33ff33;
+  padding: 5px;
+  background-color: #000033;
+}
+
+.bbs-album-art-ascii {
+  white-space: pre;
+  font-size: 8px;
+  line-height: 1.2;
+  color: #ffff33;
+  text-align: left;
+  display: inline-block;
+}
+
+/* BBS Video Display */
+.bbs-video-container {
+  position: relative;
+  margin: 10px 0;
+  border: 1px solid #33ff33;
+  padding: 5px;
+  background-color: #000033;
+}
+
+.bbs-video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 51, 0.5);
+  color: #33ff33;
+  font-size: 24px;
+}
+
+/* BBS Notifications */
+.bbs-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px;
+  background-color: #000033;
+  border: 1px solid #33ff33;
+  color: #33ff33;
+  font-family: 'VT323', monospace;
+  z-index: 1000;
+  max-width: 300px;
+}
+
+.bbs-notification.error {
+  border-color: #ff3333;
+  color: #ff3333;
+}
+
+/* ASCII Art for controls */
+.bbs-play-icon::before {
+  content: "▶";
+}
+
+.bbs-pause-icon::before {
+  content: "⏸";
+}
+
+.bbs-stop-icon::before {
+  content: "⏹";
+}
+
+.bbs-prev-icon::before {
+  content: "◀◀";
+}
+
+.bbs-next-icon::before {
+  content: "▶▶";
+}
+
+.bbs-shuffle-icon::before {
+  content: "⤧";
+}
+
+.bbs-repeat-icon::before {
+  content: "⟳";
+}
+
+/* BBS Theme Footer */
+.bbs-footer {
+  text-align: center;
+  margin-top: 20px;
+  padding: 10px;
+  border-top: 1px solid #33ff33;
+  font-size: 14px;
+}
+
+/* ASCII Art for the cassette */
+.bbs-cassette-ascii {
+  white-space: pre;
+  font-size: 10px;
+  line-height: 1.2;
+  color: #ffff33;
+  text-align: center;
+  margin: 10px 0;
+}
+
+/* Animations for BBS theme */
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.bbs-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 14px;
+  background-color: #33ff33;
+  animation: blink 1s infinite;
+  vertical-align: middle;
+}
+
+/* Responsive design for BBS theme */
+@media (max-width: 600px) {
+  .bbs-header {
+    font-size: 8px;
+  }
+  
+  .bbs-controls {
+    flex-wrap: wrap;
+  }
+  
+  .bbs-control-button {
+    font-size: 14px;
+    padding: 1px 6px;
+  }
+  
+  .bbs-album-art-ascii {
+    font-size: 6px;
+  }
+}

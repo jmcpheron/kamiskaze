@@ -19,186 +19,206 @@
     <!-- End Cache Control Meta Tags -->
     <title>Kamiskaze Archives</title>
     <link rel="stylesheet" href="styles/style.css">
-    <link rel="stylesheet" href="styles/winamp.css">
+    <link rel="stylesheet" href="styles/bbs.css">
 </head>
 <body>
-    <div id="audio-player-container">
-        <div class="content-area">
-            <!-- Header with Kamiskaze Branding -->
-            <header>
-                <h1>Kamiskaze</h1>
-                <p class="subtitle">SoCal ska band archives</p>
-            </header>
-
-            <!-- Add Notification Area -->
-            <div id="notification-area"></div>
-
-            <!-- Main content area with integrated layout -->
-            <div class="main-layout-container">
-                <!-- Player Column -->
-                <div class="player-column">
-                    <!-- Album Art -->
-                    <div id="album-art">
-                        <img id="custom-album-art" src="images/cassette-single.png" alt="Album artwork">
-                        <svg id="default-album-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-                        </svg>
-                        <video id="video-art-display" muted playsinline preload="metadata" webkit-playsinline="true" x-webkit-airplay="allow" disablePictureInPlace="true" controlsList="nodownload"></video>
-                        <!-- Video Controls Overlay -->
-                        <div id="video-controls-overlay" class="video-controls-overlay">
-                            <span class="video-time-display" id="video-time-display">0:00 / 0:00</span>
-                            <div class="video-controls-container">
-                                <button id="video-play-pause" class="video-control-button" aria-label="Play/Pause">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                        <path d="M8 5v14l11-7z"/>
-                                    </svg>
-                                </button>
-                                <button id="video-fullscreen" class="video-control-button" aria-label="Fullscreen">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                        <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
-                                    </svg>
-                                </button>
+    <!-- BBS-style terminal container -->
+    <div id="bbs-terminal">
+        <!-- BBS Header with ASCII Art Banner -->
+        <div class="bbs-header">
+            <pre class="bbs-ascii-banner">
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                                                                           ║
+║   ██╗  ██╗ █████╗ ███╗   ███╗██╗███████╗██╗  ██╗ █████╗ ███████╗███████╗  ║
+║   ██║ ██╔╝██╔══██╗████╗ ████║██║██╔════╝██║ ██╔╝██╔══██╗╚══███╔╝██╔════╝  ║
+║   █████╔╝ ███████║██╔████╔██║██║███████╗█████╔╝ ███████║  ███╔╝ █████╗    ║
+║   ██╔═██╗ ██╔══██║██║╚██╔╝██║██║╚════██║██╔═██╗ ██╔══██║ ███╔╝  ██╔══╝    ║
+║   ██║  ██╗██║  ██║██║ ╚═╝ ██║██║███████║██║  ██╗██║  ██║███████╗███████╗  ║
+║   ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝  ║
+║                                                                           ║
+║                       BBS STYLE MUSIC PLAYER v1.0                        ║
+║                                                                           ║
+║                  [SysOp: Jason] [Node: 1] [Baud: 56k]                     ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+            </pre>
+        </div>
+        
+        <!-- BBS Notification Area -->
+        <div id="notification-area" class="bbs-notification-area"></div>
+        
+        <!-- Main BBS content area -->
+        <div id="player-container" class="bbs-main-container">
+            <!-- Player Column -->
+                <!-- BBS Player Interface -->
+                <div class="bbs-player-interface">
+                    <!-- ASCII Art Album Display -->
+                    <div id="album-art" class="bbs-album-art">
+                        <div class="bbs-album-art-container">
+                            <pre class="bbs-album-art-ascii">
+    ╔═════════════════════════════════════════╗
+    ║                                         ║
+    ║ ┌───┐                 ┌───┐   ║
+    ║ │ O │                 │ O │   ║
+    ║ └───┘                 └───┘   ║
+    ║                               ║
+    ║      ╔═══════════════════╗       ║
+    ║      ║               ║       ║
+    ║      ║  KAMISKAZE    ║       ║
+    ║      ║  MIXTAPE      ║       ║
+    ║      ║               ║       ║
+    ║      ╚═══════════════════╝       ║
+    ║                               ║
+    ╚═════════════════════════════════════════╝
+                            </pre>
+                            <img id="custom-album-art" src="images/cassette-single.png" alt="Album artwork" class="hidden">
+                            <svg id="default-album-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="hidden">
+                                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                            </svg>
+                            <video id="video-art-display" muted playsinline preload="metadata" webkit-playsinline="true" x-webkit-airplay="allow" disablePictureInPlace="true" controlsList="nodownload" class="hidden"></video>
+                            
+                            <!-- Video Controls Overlay -->
+                            <div id="video-controls-overlay" class="bbs-video-controls-overlay" style="display: none;">
+                                <span class="bbs-video-time-display" id="video-time-display">0:00 / 0:00</span>
+                                <div class="bbs-video-controls-container">
+                                    <button id="video-play-pause" class="bbs-control-button" aria-label="Play/Pause">▶</button>
+                                    <button id="video-fullscreen" class="bbs-control-button" aria-label="Fullscreen">⛶</button>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Current Track Info & Controls Group -->
-                    <div class="player-controls-group">
-                        <!-- Current Track Info -->
-                        <div id="current-track-info">
+                    <!-- Current Track Info -->
+                    <div class="bbs-track-info-container">
+                        <div class="bbs-track-info-header">
+                            ╔═════════════════════ CURRENT TRACK ═════════════════════╗
+                        </div>
+                        <div id="current-track-info" class="bbs-track-info">
                             <div id="track-info-text">
-                                <h2>No Track Selected</h2>
-                                <p>Select a track from the list below to start playing.</p>
+                                <div class="bbs-track-title">No Track Selected</div>
+                                <div class="bbs-track-artist">Select a track from the list below to start playing</div>
                             </div>
                         </div>
+                        <div class="bbs-track-info-footer">
+                            ╚═════════════════════════════════════════════════════════╝
+                        </div>
+                    </div>
 
-                        <!-- Player Controls -->
-                        <div id="player-controls">
-                            <!-- Main Buttons - Winamp Style -->
-                            <div class="main-control">
-                                <button id="prev-button" class="control-button skip-button" aria-label="Previous track">
-                                    <!-- SVG for Previous -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
-                                </button>
-                                <button id="play-pause-button" class="play-button" aria-label="Play/Pause">
-                                    <!-- Play Icon -->
-                                    <svg class="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                                    <!-- Pause Icon -->
-                                    <svg class="pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-                                </button>
-                                <button id="stop-button" class="control-button" aria-label="Stop">
-                                    <!-- SVG for Stop -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h12v12H6z"/></svg>
-                                </button>
-                                <button id="next-button" class="control-button skip-button" aria-label="Next track">
-                                    <!-- SVG for Next -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
-                                </button>
-                                <button id="shuffle-button" class="control-button" aria-label="Shuffle">
-                                    <!-- SVG for Shuffle -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
-                                </button>
-                                <button id="repeat-button" class="control-button" aria-label="Repeat">
-                                    <!-- SVG for Repeat -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
-                                </button>
+                    <!-- BBS Player Controls -->
+                    <div class="bbs-controls-container">
+                        <div class="bbs-controls-header">
+                            ╔═════════════════════ PLAYER CONTROLS ════════════════════╗
+                        </div>
+                        <div id="player-controls" class="bbs-controls">
+                            <!-- Main Control Buttons -->
+                            <div class="bbs-main-controls">
+                                <button id="prev-button" class="bbs-control-button" aria-label="Previous track">◀◀</button>
+                                <button id="play-pause-button" class="bbs-control-button bbs-play-button" aria-label="Play/Pause">▶</button>
+                                <button id="stop-button" class="bbs-control-button" aria-label="Stop">■</button>
+                                <button id="next-button" class="bbs-control-button" aria-label="Next track">▶▶</button>
+                                <button id="shuffle-button" class="bbs-control-button" aria-label="Shuffle">⤧</button>
+                                <button id="repeat-button" class="bbs-control-button" aria-label="Repeat">↻</button>
                             </div>
                             
-                            <!-- Seek Bar and Time - Winamp Style -->
-                            <div class="time-control">
-                                <div class="time-display-container">
-                                    <span id="current-time" class="time-display">0:00</span>
-                                    <span id="duration" class="time-display">--:--</span>
+                            <!-- Progress Bar -->
+                            <div class="bbs-progress">
+                                <div class="bbs-time-display-container">
+                                    <span id="current-time" class="bbs-time-display">0:00</span>
+                                    <span id="duration" class="bbs-time-display">--:--</span>
                                 </div>
-                                <div class="seek-bar-container">
-                                    <input type="range" id="seek-bar" value="0" max="0" aria-label="Seek bar">
-                                    <div class="seek-progress-bar"></div>
+                                <div class="bbs-progress-bar-container">
+                                    <div class="bbs-progress-bar-outline">
+                                        <input type="range" id="seek-bar" value="0" max="0" aria-label="Seek bar" class="bbs-seek-bar">
+                                        <div id="bbs-progress-bar" class="bbs-progress-bar"></div>
+                                    </div>
                                 </div>
                             </div>
                             
-                            <!-- Winamp-style visualization -->
-                            <div class="visualization-placeholder">
-                                <div class="visualization-bar"></div>
-                                <div class="visualization-bar"></div>
-                                <div class="visualization-bar"></div>
-                                <div class="visualization-bar"></div>
-                                <div class="visualization-bar"></div>
-                                <div class="visualization-bar"></div>
-                                <div class="visualization-bar"></div>
-                                <div class="visualization-bar"></div>
-                                <div class="visualization-bar"></div>
-                                <div class="visualization-bar"></div>
-                                <div class="visualization-bar"></div>
-                                <div class="visualization-bar"></div>
-                                <div class="visualization-bar"></div>
-                                <div class="visualization-bar"></div>
-                                <div class="visualization-bar"></div>
+                            <!-- BBS Visualizer -->
+                            <div class="bbs-visualizer" id="bbs-visualizer">
+                                <div class="bbs-visualizer-bar"></div>
+                                <div class="bbs-visualizer-bar"></div>
+                                <div class="bbs-visualizer-bar"></div>
+                                <div class="bbs-visualizer-bar"></div>
+                                <div class="bbs-visualizer-bar"></div>
+                                <div class="bbs-visualizer-bar"></div>
+                                <div class="bbs-visualizer-bar"></div>
+                                <div class="bbs-visualizer-bar"></div>
+                                <div class="bbs-visualizer-bar"></div>
+                                <div class="bbs-visualizer-bar"></div>
+                                <div class="bbs-visualizer-bar"></div>
+                                <div class="bbs-visualizer-bar"></div>
+                                <div class="bbs-visualizer-bar"></div>
+                                <div class="bbs-visualizer-bar"></div>
+                                <div class="bbs-visualizer-bar"></div>
+                                <div class="bbs-visualizer-bar"></div>
+                                <div class="bbs-visualizer-bar"></div>
+                                <div class="bbs-visualizer-bar"></div>
+                                <div class="bbs-visualizer-bar"></div>
+                                <div class="bbs-visualizer-bar"></div>
                             </div>
-                            
-                            <!-- Speed Controls (Hidden) -->
-                            <div class="speed-controls-container" style="display: none;">
-                                <span class="speed-label" aria-hidden="true">Speed:</span>
-                                <button class="speed-button" data-speed="0.5" aria-label="Set speed to 0.5x">0.5x</button>
-                                <button class="speed-button active" data-speed="1.0" aria-label="Set speed to 1x">1x</button>
-                                <button class="speed-button" data-speed="1.5" aria-label="Set speed to 1.5x">1.5x</button>
-                                <button class="speed-button" data-speed="2.0" aria-label="Set speed to 2x">2x</button>
-                            </div>
+                        </div>
+                        <div class="bbs-controls-footer">
+                            ╚═════════════════════════════════════════════════════════╝
                         </div>
                     </div>
                     
-                    <!-- Winamp-style Playlist -->
-                    <div class="winamp-playlist">
-                        <!-- Playlist Header -->
-                        <div class="winamp-playlist-header">
-                            <div class="winamp-playlist-title">Playlist Editor</div>
-                            <div class="winamp-playlist-controls">
-                                <button class="winamp-playlist-control" id="playlist-add" aria-label="Add files">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                                </button>
-                                <button class="winamp-playlist-control" id="playlist-remove" aria-label="Remove selected">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 13H5v-2h14v2z"/></svg>
-                                </button>
-                                <button class="winamp-playlist-control" id="playlist-select-all" aria-label="Select all">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 5h2V3H3v2zm0 4h2V7H3v2zm4 0h14V7H7v2zm0 4h14v-2H7v2zm-4 0h2v-2H3v2zm0 4h2v-2H3v2zm0 4h2v-2H3v2zm4 0h14v-2H7v2zm0-4h14v-2H7v2z"/></svg>
-                                </button>
-                            </div>
+                    <!-- BBS Playlist -->
+                    <div class="bbs-playlist-container">
+                        <div class="bbs-playlist-header">
+                            ╔═════════════════════ PLAYLIST EDITOR ════════════════════╗
                         </div>
                         
                         <!-- Playlist Tabs -->
-                        <div class="winamp-playlist-tabs">
-                            <div id="playlist-selector-tab" class="winamp-playlist-tab">Playlists</div>
-                            <div id="current-playlist-tab" class="winamp-playlist-tab active">Current</div>
+                        <div class="bbs-playlist-tabs">
+                            <div id="playlist-selector-tab" class="bbs-playlist-tab">[ PLAYLISTS ]</div>
+                            <div id="current-playlist-tab" class="bbs-playlist-tab active">[ CURRENT ]</div>
                         </div>
                         
-                        <!-- Playlist Selector (initially hidden) -->
-                        <div id="playlist-selector-panel" class="winamp-playlist-content" style="display: none;">
-                            <div id="playlist-buttons" class="playlist-buttons"></div>
+                        <!-- Playlist Selector Panel -->
+                        <div id="playlist-selector-panel" class="bbs-playlist-panel" style="display: none;">
+                            <div id="playlist-buttons" class="bbs-playlist-buttons"></div>
                         </div>
                         
-                        <!-- Current Playlist Content -->
-                        <div id="current-playlist-panel" class="winamp-playlist-content">
-                            <ul id="track-list"></ul>
+                        <!-- Current Playlist Panel -->
+                        <div id="current-playlist-panel" class="bbs-playlist-panel">
+                            <div id="track-list" class="bbs-track-list"></div>
                         </div>
                         
                         <!-- Playlist Status Bar -->
-                        <div class="winamp-playlist-status">
-                            <div class="playlist-info">
+                        <div class="bbs-playlist-status">
+                            <div class="bbs-playlist-info">
                                 <span id="current-playlist-name">Current Playlist</span>
                             </div>
-                            <div class="playlist-stats">
-                                <span id="track-count" class="playlist-count">0</span> items
+                            <div class="bbs-playlist-stats">
+                                <span id="track-count" class="bbs-playlist-count">0</span> items
                             </div>
                         </div>
+                        
+                        <div class="bbs-playlist-footer">
+                            ╚═════════════════════════════════════════════════════════╝
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- BBS Footer -->
+            <div class="bbs-footer">
+                <div class="bbs-footer-stats">
+                    <div class="bbs-stat-line">
+                        [SysOp: Jason] [Node: 1] [Baud: 56k] [Users: 1/1] [Time: <span id="bbs-time"></span>]
+                    </div>
+                    <div class="bbs-stat-line">
+                        [Press H for Help] [ESC to Exit] [Connected to Kamiskaze BBS] <span class="bbs-cursor"></span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="player-ui-area">
-            <!-- Audio Element -->
-            <audio id="audio-player" preload="metadata"></audio>
-            
-            <!-- Footer -->
+        <!-- Audio Element -->
+        <audio id="audio-player" preload="metadata"></audio>
+        
+        <!-- BBS Functions Script -->
+        <script src="scripts/bbs-functions.js"></script>
             <footer>
                 <div class="footer-links">
                     <p class="band-credit"><strong>Kamiskaze</strong> - SoCal Ska Band</p>
@@ -210,5 +230,6 @@
         </div>
     </div>
     <script src="scripts/main.js"></script>
+    <script src="scripts/bbs-theme.js"></script>
 </body>
 </html>

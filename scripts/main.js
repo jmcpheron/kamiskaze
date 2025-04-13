@@ -440,26 +440,28 @@ document.addEventListener('DOMContentLoaded', () => {
       audioPlayer.currentTime = 0;
       isPlaying = false;
       updatePlayPauseButton();
-      updateProgress(); // Update the progress display
     }
   }
   
   function updatePlayPauseButton() {
+    // Get the play/pause button
+    const playPauseButton = document.getElementById('play-pause-button');
+    if (!playPauseButton) return;
+    
+    // In BBS theme, we're using text characters instead of SVG icons
     if (isPlaying) {
-      playIcon.style.opacity = '0';
-      playIcon.style.transform = 'translate(-43%, -50%) scale(0)';
-      pauseIcon.style.opacity = '1';
-      pauseIcon.style.transform = 'translate(-50%, -50%) scale(1)';
+      // Use pause symbol (double vertical bars) for BBS theme
+      playPauseButton.textContent = '⏸';
+      playPauseButton.setAttribute('aria-label', 'Pause');
       playPauseButton.classList.add('playing');
     } else {
-      playIcon.style.opacity = '1';
-      playIcon.style.transform = 'translate(-43%, -50%) scale(1)';
-      pauseIcon.style.opacity = '0';
-      pauseIcon.style.transform = 'translate(-50%, -50%) scale(0)';
+      // Use play symbol (triangle) for BBS theme
+      playPauseButton.textContent = '▶';
+      playPauseButton.setAttribute('aria-label', 'Play');
       playPauseButton.classList.remove('playing');
     }
   }
-  
+
   function toggleShuffle() {
     shuffleMode = !shuffleMode;
     const shuffleButton = document.getElementById('shuffle-button');
