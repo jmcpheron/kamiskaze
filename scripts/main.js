@@ -562,7 +562,25 @@ document.addEventListener('DOMContentLoaded', () => {
       playNextTrack();
     }
   }
-
+  
+  // Helper function to get meaningful error messages from video error codes
+  function getVideoErrorMessage(error) {
+    if (!error) return 'Unknown error';
+    
+    switch (error.code) {
+      case MediaError.MEDIA_ERR_ABORTED:
+        return 'Playback aborted by the user';
+      case MediaError.MEDIA_ERR_NETWORK:
+        return 'Network error occurred while loading the video';
+      case MediaError.MEDIA_ERR_DECODE:
+        return 'Video decoding error or corrupted data';
+      case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+        return 'Video format not supported by your browser';
+      default:
+        return `Error code: ${error.code}`;
+    }
+  }
+  
   // Handle video playback
   function setupVideoPlayback(videoSource) {
     // Make sure we have the video element
@@ -585,38 +603,169 @@ document.addEventListener('DOMContentLoaded', () => {
       // Reset previous video state
       videoArtDisplay.pause();
       
-      // Clear any previous source and errors
-      videoArtDisplay.removeAttribute('src');
-      videoArtDisplay.load();
-      videoArtDisplay.style.display = 'none';
+      // Clear any previous error handlers
+      videoArtDisplay.onerror = null;
       
-      // Hide video controls overlay
+      // Add error handler before setting source
+      videoArtDisplay.onerror = function(e) {
+        const errorMessage = getVideoErrorMessage(videoArtDisplay.error);
+        console.error(`Video error: ${errorMessage}`, videoArtDisplay.error);
+        showNotification(`Video error: ${errorMessage}`, 'error');
+        
+        // Fall back to audio-only mode
+        const albumArtContainer = document.getElementById('album-art');
+        if (albumArtContainer) {
+          albumArtContainer.classList.remove('video-active');
+        }
+        
+        videoArtDisplay.style.display = 'none';
+        
+        // Show cassette-single.png as default image
+        if (albumArt) {
+          // Always use cassette-single.png as the default album art
+          albumArt.src = 'images/cassette-single.png';
+          albumArt.classList.remove('hidden');
+          albumArt.style.display = 'block';
+        }
+        if (defaultArt) {
+          defaultArt.classList.add('hidden');
+          defaultArt.style.display = 'none';
+        }
+        
+        // Hide video controls
+        const videoControlsOverlay = document.getElementById('video-controls-overlay');
+        if (videoControlsOverlay) {
+          videoControlsOverlay.style.display = 'none';
+        }
+        
+        return false;
+      };
+      
+      // Ensure video URL is properly formed using base URL of the document
+      // This works universally for all hosting environments
+      let fullVideoUrl = videoSource;
+      
+      // Only process relative URLs (not already absolute)
+      if (!videoSource.startsWith('http') && !videoSource.startsWith('blob:')) {
+        // Get the base URL from the current document
+        const baseUrl = document.baseURI || window.location.href.split('#')[0].split('?')[0];
+        const baseDir = baseUrl.substring(0, baseUrl.lastIndexOf('/') + 1);
+        
+        // Resolve the relative URL against the base directory
+        try {
+          fullVideoUrl = new URL(videoSource, baseDir).href;
+          console.log('Resolved video URL:', fullVideoUrl);
+        } catch (e) {
+          console.error('Error resolving video URL:', e);
+          // Fallback to simple concatenation if URL constructor fails
+          if (videoSource.startsWith('/')) {
+            // Absolute path from domain root
+            const origin = window.location.origin;
+            fullVideoUrl = `${origin}${videoSource}`;
+          } else {
+            // Relative path from current directory
+            fullVideoUrl = `${baseDir}${videoSource}`;
+          }
+        }
+      }
+      
+      console.log('Using video URL:', fullVideoUrl);
+      
+      // Set new source
+      videoArtDisplay.src = fullVideoUrl;
+      
+      // Show video element and controls
+      videoArtDisplay.style.display = 'block';
+      videoArtDisplay.classList.remove('hidden');
+      
+      // Show video controls overlay
       const videoControlsOverlay = document.getElementById('video-controls-overlay');
       if (videoControlsOverlay) {
-        videoControlsOverlay.style.display = 'none';
+        videoControlsOverlay.style.display = 'flex';
+        
+        // Make sure the initial play/pause state is correct
+        updateVideoPlayPauseButton(isPlaying);
       }
+      
+      // Hide album art elements
+      if (albumArt) {
+        albumArt.classList.add('hidden');
+        albumArt.style.display = 'none';
+      }
+      if (defaultArt) {
+        defaultArt.classList.add('hidden');
+        defaultArt.style.display = 'none';
+      }
+      
+      // Add event listeners for synchronization
+      const syncVideo = () => {
+        if (Math.abs(videoArtDisplay.currentTime - audioPlayer.currentTime) > 0.3) {
+          videoArtDisplay.currentTime = audioPlayer.currentTime;
+        }
+        
+        // Update video time display
+        const videoTimeDisplay = document.getElementById('video-time-display');
+        if (videoTimeDisplay) {
+          videoTimeDisplay.textContent = `${formatTime(audioPlayer.currentTime)} / ${formatTime(audioPlayer.duration)}`;
+        }
+      };
+      
+      // Clean up previous event listeners
+      const oldSync = videoArtDisplay._syncFunction;
+      if (oldSync) {
+        audioPlayer.removeEventListener('timeupdate', oldSync);
+        audioPlayer.removeEventListener('play', oldSync);
+        audioPlayer.removeEventListener('pause', oldSync);
+      }
+      
+      // Store the sync function for future cleanup
+      videoArtDisplay._syncFunction = syncVideo;
+      
+      // Add our new timeupdate listener
+      audioPlayer.addEventListener('timeupdate', syncVideo);
+      
+      const playHandler = () => {
+        if (videoArtDisplay.paused) {
+          videoArtDisplay.play().catch(e => {
+            console.error('Video play error:', e);
+            // Don't show notification here as it's likely already handled by onerror
+          });
+        }
+        
+        // Update play/pause button icon if it exists
+        updateVideoPlayPauseButton(true);
+      };
+      
+      const pauseHandler = () => {
+        if (!videoArtDisplay.paused) {
+          videoArtDisplay.pause();
+        }
+        
+        // Update play/pause button icon if it exists
+        updateVideoPlayPauseButton(false);
+      };
+      
+      // Add play/pause event listeners
+      audioPlayer.addEventListener('play', playHandler);
+      audioPlayer.addEventListener('pause', pauseHandler);
+      
+      // Initial sync when metadata is loaded
+      videoArtDisplay.addEventListener('loadedmetadata', () => {
+        syncVideo();
+        
+        if (isPlaying) {
+          videoArtDisplay.play().catch(e => {
+            console.error('Initial video play error:', e);
+            // Don't show notification here as it's likely already handled by onerror
+          });
+        }
+      });
+      
+      return true;
     } catch (error) {
       console.error('Error setting up video:', error);
       showNotification('Error setting up video: ' + error.message, 'error');
       return false;
-    }
-  }
-  
-  // Helper function to get meaningful error messages from video error codes
-  function getVideoErrorMessage(error) {
-    if (!error) return 'Unknown error';
-    
-    switch (error.code) {
-      case MediaError.MEDIA_ERR_ABORTED:
-        return 'Playback aborted by the user';
-      case MediaError.MEDIA_ERR_NETWORK:
-        return 'Network error occurred while loading the video';
-      case MediaError.MEDIA_ERR_DECODE:
-        return 'Video decoding error or corrupted data';
-      case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
-        return 'Video format not supported by your browser';
-      default:
-        return `Error code: ${error.code}`;
     }
   }
   
