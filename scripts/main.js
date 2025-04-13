@@ -57,7 +57,11 @@ document.addEventListener('DOMContentLoaded', () => {
   let customFeeds = [];
   let videoMode = false;
   let notification = null; // Will be created when needed
+  let shuffleMode = false;
+  let repeatMode = 'none'; // 'none', 'all', or 'one'
 
+  // State variables for Winamp-style player
+  
   // Initialize
   initializeApp();
 
@@ -177,6 +181,87 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
     
+    // Winamp-style controls
+    const stopButton = document.getElementById('stop-button');
+    if (stopButton) {
+      stopButton.addEventListener('click', stopAudio);
+    }
+    
+    const shuffleButton = document.getElementById('shuffle-button');
+    if (shuffleButton) {
+      shuffleButton.addEventListener('click', toggleShuffle);
+    }
+    
+    const repeatButton = document.getElementById('repeat-button');
+    if (repeatButton) {
+      repeatButton.addEventListener('click', toggleRepeat);
+    }
+    
+    // Winamp-style playlist controls - simplified approach
+    const playlistSelectorTab = document.getElementById('playlist-selector-tab');
+    const currentPlaylistTab = document.getElementById('current-playlist-tab');
+    const playlistSelectorPanel = document.getElementById('playlist-selector-panel');
+    const currentPlaylistPanel = document.getElementById('current-playlist-panel');
+    
+    console.log('Setting up playlist tabs');
+    
+    // Function to switch to playlist selector tab
+    function switchToPlaylistSelector() {
+      if (playlistSelectorTab) playlistSelectorTab.classList.add('active');
+      if (currentPlaylistTab) currentPlaylistTab.classList.remove('active');
+      if (playlistSelectorPanel) playlistSelectorPanel.style.display = 'block';
+      if (currentPlaylistPanel) currentPlaylistPanel.style.display = 'none';
+    }
+    
+    // Function to switch to current playlist tab
+    function switchToCurrentPlaylist() {
+      if (currentPlaylistTab) currentPlaylistTab.classList.add('active');
+      if (playlistSelectorTab) playlistSelectorTab.classList.remove('active');
+      if (currentPlaylistPanel) currentPlaylistPanel.style.display = 'block';
+      if (playlistSelectorPanel) playlistSelectorPanel.style.display = 'none';
+    }
+    
+    // Add click event listeners directly
+    if (playlistSelectorTab) {
+      playlistSelectorTab.addEventListener('click', switchToPlaylistSelector);
+    }
+    
+    if (currentPlaylistTab) {
+      currentPlaylistTab.addEventListener('click', switchToCurrentPlaylist);
+    }
+    
+    // Playlist action buttons
+    const playlistAddButton = document.getElementById('playlist-add');
+    const playlistRemoveButton = document.getElementById('playlist-remove');
+    const playlistSelectAllButton = document.getElementById('playlist-select-all');
+    
+    if (playlistAddButton) {
+      playlistAddButton.addEventListener('click', () => {
+        // In a real app, this would open a file dialog
+        // For now, just show a notification
+        showNotification('Add files functionality would go here', 'info');
+      });
+    }
+    
+    if (playlistRemoveButton) {
+      playlistRemoveButton.addEventListener('click', () => {
+        // Would remove selected tracks
+        showNotification('Remove selected functionality would go here', 'info');
+      });
+    }
+    
+    if (playlistSelectAllButton) {
+      playlistSelectAllButton.addEventListener('click', () => {
+        // Would select all tracks
+        showNotification('Select all functionality would go here', 'info');
+      });
+    }
+    
+    // Seek bar
+    if (seekBar) {
+      seekBar.addEventListener('input', seekTrack);
+    }
+    
     // Playlist and feeds
     if (feedsToggle) feedsToggle.addEventListener('click', togglePlaylistSelector);
     
@@ -247,45 +332,76 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function restorePlayerState() {
     const savedState = localStorage.getItem('playerState');
-    if (savedState) {
-      try {
-        const state = JSON.parse(savedState);
-        if (state.feedId) {
-          const feed = feeds.find(f => f.id === state.feedId);
-          if (feed) {
-            setCurrentFeed(feed);
-            currentTrackIndex = state.trackIndex || 0;
-            renderTrackList();
-            loadTrack(currentTrackIndex);
+    if (!savedState) return;
+    
+    try {
+      const state = JSON.parse(savedState);
+      
+      // Find the feed
+      if (state.feedId) {
+        const feed = feeds.find(f => f.id === state.feedId);
+        if (feed) {
+          setCurrentFeed(feed);
+          renderPlaylistButtons();
+          renderTrackList();
+          
+          // Load the track
+          if (typeof state.trackIndex === 'number' && feed.tracks && feed.tracks[state.trackIndex]) {
+            loadTrack(state.trackIndex);
             
             // Restore playback position
-            if (state.currentTime) {
+            if (typeof state.currentTime === 'number' && state.currentTime > 0) {
               audioPlayer.currentTime = state.currentTime;
             }
             
-            // Restore speed
-            if (state.playbackSpeed) {
-              setPlaybackSpeed(state.playbackSpeed);
+            // Resume playback if it was playing
+            if (state.isPlaying) {
+              playAudio();
+            }
+            
+            // Restore shuffle and repeat modes
+            if (typeof state.shuffleMode === 'boolean') {
+              shuffleMode = state.shuffleMode;
+              const shuffleButton = document.getElementById('shuffle-button');
+              if (shuffleButton) {
+                if (shuffleMode) {
+                  shuffleButton.classList.add('active');
+                } else {
+                  shuffleButton.classList.remove('active');
+                }
+              }
+            }
+            
+            if (state.repeatMode) {
+              repeatMode = state.repeatMode;
+              const repeatButton = document.getElementById('repeat-button');
+              if (repeatButton) {
+                repeatButton.className = 'control-button';
+                if (repeatMode !== 'none') {
+                  repeatButton.classList.add('active');
+                  repeatButton.classList.add(`repeat-${repeatMode}`);
+                }
+              }
             }
           }
         }
-      } catch (error) {
-        console.error('Error restoring player state:', error);
       }
+    } catch (error) {
+      console.error('Error restoring player state:', error);
     }
   }
 
   function savePlayerState() {
-    if (!currentFeed) return;
-    
-    const state = {
-      feedId: currentFeed.id,
+    const playerState = {
+      feedId: currentFeed ? currentFeed.id : null,
       trackIndex: currentTrackIndex,
-      currentTime: audioPlayer.currentTime,
-      playbackSpeed: audioPlayer.playbackRate
+      currentTime: audioPlayer ? audioPlayer.currentTime : 0,
+      isPlaying: isPlaying,
+      shuffleMode: shuffleMode,
+      repeatMode: repeatMode
     };
     
-    localStorage.setItem('playerState', JSON.stringify(state));
+    localStorage.setItem('playerState', JSON.stringify(playerState));
   }
 
   // Playback Controls
@@ -311,13 +427,23 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function pauseAudio() {
-    audioPlayer.pause();
-    isPlaying = false;
-    updatePlayPauseButton();
-    
-    // Video is now handled via event listeners in loadTrack
+    if (audioPlayer && !audioPlayer.paused) {
+      audioPlayer.pause();
+      isPlaying = false;
+      updatePlayPauseButton();
+    }
   }
-
+  
+  function stopAudio() {
+    if (audioPlayer) {
+      audioPlayer.pause();
+      audioPlayer.currentTime = 0;
+      isPlaying = false;
+      updatePlayPauseButton();
+      updateProgress(); // Update the progress display
+    }
+  }
+  
   function updatePlayPauseButton() {
     if (isPlaying) {
       playIcon.style.opacity = '0';
@@ -332,6 +458,56 @@ document.addEventListener('DOMContentLoaded', () => {
       pauseIcon.style.transform = 'translate(-50%, -50%) scale(0)';
       playPauseButton.classList.remove('playing');
     }
+  }
+  
+  function toggleShuffle() {
+    shuffleMode = !shuffleMode;
+    const shuffleButton = document.getElementById('shuffle-button');
+    
+    if (shuffleButton) {
+      if (shuffleMode) {
+        shuffleButton.classList.add('active');
+        showNotification('Shuffle mode enabled', 'info');
+      } else {
+        shuffleButton.classList.remove('active');
+        showNotification('Shuffle mode disabled', 'info');
+      }
+    }
+    
+    // Save player state with new shuffle setting
+    savePlayerState();
+  }
+  
+  function toggleRepeat() {
+    const repeatButton = document.getElementById('repeat-button');
+    
+    // Cycle through repeat modes: none -> all -> one -> none
+    switch (repeatMode) {
+      case 'none':
+        repeatMode = 'all';
+        showNotification('Repeat all tracks', 'info');
+        break;
+      case 'all':
+        repeatMode = 'one';
+        showNotification('Repeat current track', 'info');
+        break;
+      case 'one':
+        repeatMode = 'none';
+        showNotification('Repeat disabled', 'info');
+        break;
+    }
+    
+    // Update button appearance
+    if (repeatButton) {
+      repeatButton.className = 'control-button';
+      if (repeatMode !== 'none') {
+        repeatButton.classList.add('active');
+        repeatButton.classList.add(`repeat-${repeatMode}`);
+      }
+    }
+    
+    // Save player state with new repeat setting
+    savePlayerState();
   }
 
   function playPreviousTrack() {
@@ -351,13 +527,40 @@ document.addEventListener('DOMContentLoaded', () => {
   function playNextTrack() {
     if (!currentFeed || !currentFeed.tracks) return;
     
-    currentTrackIndex = (currentTrackIndex + 1) % currentFeed.tracks.length;
-    loadTrack(currentTrackIndex);
+    let nextIndex;
+    
+    if (shuffleMode) {
+      // Get random track index that's different from current
+      do {
+        nextIndex = Math.floor(Math.random() * currentFeed.tracks.length);
+      } while (nextIndex === currentTrackIndex && currentFeed.tracks.length > 1);
+    } else {
+      // Normal sequential play
+      nextIndex = (currentTrackIndex + 1) % currentFeed.tracks.length;
+      
+      // If we're at the end and repeat all is not enabled, don't loop
+      if (nextIndex === 0 && repeatMode !== 'all') {
+        if (isPlaying) {
+          pauseAudio();
+        }
+        return;
+      }
+    }
+    
+    loadTrack(nextIndex);
     playAudio();
   }
 
   function handleTrackEnd() {
-    playNextTrack();
+    // Handle track end based on repeat mode
+    if (repeatMode === 'one') {
+      // Repeat the current track
+      audioPlayer.currentTime = 0;
+      playAudio();
+    } else {
+      // Move to next track (or repeat all if at the end)
+      playNextTrack();
+    }
   }
 
   // Handle video playback
@@ -382,135 +585,16 @@ document.addEventListener('DOMContentLoaded', () => {
       // Reset previous video state
       videoArtDisplay.pause();
       
-      // Clear any previous error handlers
-      videoArtDisplay.onerror = null;
+      // Clear any previous source and errors
+      videoArtDisplay.removeAttribute('src');
+      videoArtDisplay.load();
+      videoArtDisplay.style.display = 'none';
       
-      // Add error handler before setting source
-      videoArtDisplay.onerror = function(e) {
-        const errorMessage = getVideoErrorMessage(videoArtDisplay.error);
-        console.error(`Video error: ${errorMessage}`, videoArtDisplay.error);
-        showNotification(`Video error: ${errorMessage}`, 'error');
-        
-        // Fall back to audio-only mode
-        const albumArtContainer = document.getElementById('album-art');
-        if (albumArtContainer) {
-          albumArtContainer.classList.remove('video-active');
-        }
-        
-        videoArtDisplay.style.display = 'none';
-        
-        // Show cassette-single.png as default image
-        if (albumArt) {
-          // Always use cassette-single.png as the default album art
-          albumArt.src = 'images/cassette-single.png';
-          albumArt.classList.remove('hidden');
-          albumArt.style.display = 'block';
-        }
-        if (defaultArt) {
-          defaultArt.classList.add('hidden');
-          defaultArt.style.display = 'none';
-        }
-        
-        // Hide video controls
-        const videoControlsOverlay = document.getElementById('video-controls-overlay');
-        if (videoControlsOverlay) {
-          videoControlsOverlay.style.display = 'none';
-        }
-        
-        return false;
-      };
-      
-      // Set new source
-      videoArtDisplay.src = videoSource;
-      
-      // Show video element and controls
-      videoArtDisplay.style.display = 'block';
-      videoArtDisplay.classList.remove('hidden');
-      
-      // Show video controls overlay
+      // Hide video controls overlay
       const videoControlsOverlay = document.getElementById('video-controls-overlay');
       if (videoControlsOverlay) {
-        videoControlsOverlay.style.display = 'flex';
-        
-        // Make sure the initial play/pause state is correct
-        updateVideoPlayPauseButton(isPlaying);
+        videoControlsOverlay.style.display = 'none';
       }
-      
-      // Hide album art elements
-      if (albumArt) {
-        albumArt.classList.add('hidden');
-        albumArt.style.display = 'none';
-      }
-      if (defaultArt) {
-        defaultArt.classList.add('hidden');
-        defaultArt.style.display = 'none';
-      }
-      
-      // Add event listeners for synchronization
-      const syncVideo = () => {
-        if (Math.abs(videoArtDisplay.currentTime - audioPlayer.currentTime) > 0.3) {
-          videoArtDisplay.currentTime = audioPlayer.currentTime;
-        }
-        
-        // Update video time display
-        const videoTimeDisplay = document.getElementById('video-time-display');
-        if (videoTimeDisplay) {
-          videoTimeDisplay.textContent = `${formatTime(audioPlayer.currentTime)} / ${formatTime(audioPlayer.duration)}`;
-        }
-      };
-      
-      // Clean up previous event listeners
-      const oldSync = videoArtDisplay._syncFunction;
-      if (oldSync) {
-        audioPlayer.removeEventListener('timeupdate', oldSync);
-        audioPlayer.removeEventListener('play', oldSync);
-        audioPlayer.removeEventListener('pause', oldSync);
-      }
-      
-      // Store the sync function for future cleanup
-      videoArtDisplay._syncFunction = syncVideo;
-      
-      // Add our new timeupdate listener
-      audioPlayer.addEventListener('timeupdate', syncVideo);
-      
-      const playHandler = () => {
-        if (videoArtDisplay.paused) {
-          videoArtDisplay.play().catch(e => {
-            console.error('Video play error:', e);
-            // Don't show notification here as it's likely already handled by onerror
-          });
-        }
-        
-        // Update play/pause button icon if it exists
-        updateVideoPlayPauseButton(true);
-      };
-      
-      const pauseHandler = () => {
-        if (!videoArtDisplay.paused) {
-          videoArtDisplay.pause();
-        }
-        
-        // Update play/pause button icon if it exists
-        updateVideoPlayPauseButton(false);
-      };
-      
-      // Add play/pause event listeners
-      audioPlayer.addEventListener('play', playHandler);
-      audioPlayer.addEventListener('pause', pauseHandler);
-      
-      // Initial sync when metadata is loaded
-      videoArtDisplay.addEventListener('loadedmetadata', () => {
-        syncVideo();
-        
-        if (isPlaying) {
-          videoArtDisplay.play().catch(e => {
-            console.error('Initial video play error:', e);
-            // Don't show notification here as it's likely already handled by onerror
-          });
-        }
-      });
-      
-      return true;
     } catch (error) {
       console.error('Error setting up video:', error);
       showNotification('Error setting up video: ' + error.message, 'error');
@@ -570,8 +654,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (videoArtDisplay) {
       // Clear any previous source and errors
       videoArtDisplay.pause();
-      videoArtDisplay.removeAttribute('src');
-      videoArtDisplay.load();
+      videoArtDisplay.removeAttribute('src'); // Use removeAttribute instead of setting to empty string
+      videoArtDisplay.load(); // Important: call load() after changing src to reset the element
       videoArtDisplay.style.display = 'none';
       
       // Hide video controls overlay
@@ -887,73 +971,52 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderPlaylistButtons() {
-    // Check for new playlist buttons element first
-    if (playlistButtons) {
-      playlistButtons.innerHTML = '';
-      
-      feeds.forEach(feed => {
-        const button = document.createElement('button');
-        button.className = 'playlist-button';
-        button.dataset.feedId = feed.id;
-        
-        if (currentFeed && feed.id === currentFeed.id) {
-          button.classList.add('active');
-        }
-        
-        button.textContent = feed.title;
-        
-        button.addEventListener('click', () => {
-          setCurrentFeed(feed);
-        });
-        
-        playlistButtons.appendChild(button);
-      });
-      
+    // Make sure we have the playlist buttons container
+    const playlistButtons = document.getElementById('playlist-buttons');
+    if (!playlistButtons) {
+      console.error('Playlist buttons container not found');
       return;
     }
     
-    // Fall back to old playlist selector if it exists
-    if (playlistSelector) {
-      console.log('Using legacy playlist selector');
-      playlistSelector.innerHTML = '';
+    // Clear existing buttons
+    playlistButtons.innerHTML = '';
+    
+    console.log('Rendering playlist buttons, found feeds:', feeds.length);
+    
+    // Create a button for each feed in Winamp style
+    feeds.forEach(feed => {
+      const button = document.createElement('button');
+      button.className = 'playlist-button';
+      button.textContent = feed.title;
+      button.dataset.feedId = feed.id;
       
-      feeds.forEach(feed => {
-        const button = document.createElement('button');
-        button.className = 'playlist-button';
-        button.dataset.feedId = feed.id;
+      // Add click handler
+      button.addEventListener('click', () => {
+        setCurrentFeed(feed);
+        renderTrackList();
         
-        if (currentFeed && feed.id === currentFeed.id) {
-          button.classList.add('active');
+        // Switch to current playlist tab after selecting
+        const currentPlaylistTab = document.getElementById('current-playlist-tab');
+        const playlistSelectorTab = document.getElementById('playlist-selector-tab');
+        const currentPlaylistPanel = document.getElementById('current-playlist-panel');
+        const playlistSelectorPanel = document.getElementById('playlist-selector-panel');
+        
+        if (currentPlaylistTab && playlistSelectorTab) {
+          currentPlaylistTab.classList.add('active');
+          playlistSelectorTab.classList.remove('active');
         }
         
-        const titleSpan = document.createElement('span');
-        titleSpan.className = 'playlist-name';
-        titleSpan.textContent = feed.title;
-        
-        const tracksSpan = document.createElement('span');
-        tracksSpan.className = 'playlist-tracks';
-        tracksSpan.textContent = `${feed.tracks.length} tracks`;
-        
-        button.appendChild(titleSpan);
-        button.appendChild(tracksSpan);
-        
-        button.addEventListener('click', () => {
-          setCurrentFeed(feed);
-          if (typeof togglePlaylistSelector === 'function') {
-            togglePlaylistSelector();
-          }
-        });
-        
-        playlistSelector.appendChild(button);
+        if (currentPlaylistPanel && playlistSelectorPanel) {
+          currentPlaylistPanel.style.display = 'block';
+          playlistSelectorPanel.style.display = 'none';
+        }
       });
-    } else {
-      console.log('No playlist selector found, skipping renderPlaylistButtons');
-    }
+      
+      playlistButtons.appendChild(button);
+    });
     
-    // Refresh Feather icons
-    if (window.feather) {
-      feather.replace();
-    }
+    // Update active button
+    updateActivePlaylistButton();
   }
 
   function togglePlaylistSelector() {
@@ -1004,58 +1067,41 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderTrackList() {
+    if (!trackList || !currentFeed || !currentFeed.tracks) return;
+    
+    // Clear existing list
     trackList.innerHTML = '';
     
-    if (!currentFeed || !currentFeed.tracks) return;
-    
-    // Update track list container title and description
-    const trackListContainerTitle = document.querySelector('#track-list-container h2');
-    const trackListContainerDesc = document.querySelector('#track-list-container .playlist-description');
-    
-    if (trackListContainerTitle) {
-      trackListContainerTitle.textContent = currentFeed.title || 'Playlist';
-      
-      // Update track count if span exists
-      const trackCountSpan = trackListContainerTitle.querySelector('#track-count');
-      if (trackCountSpan) {
-        trackCountSpan.textContent = `(${currentFeed.tracks.length} tracks)`;
-      }
+    // Update track count if element exists
+    const trackCountElement = document.getElementById('track-count');
+    if (trackCountElement) {
+      trackCountElement.textContent = currentFeed.tracks.length;
     }
     
-    if (trackListContainerDesc) {
-      trackListContainerDesc.textContent = currentFeed.description || '';
+    // Update the current playlist name in the status bar
+    const currentPlaylistName = document.getElementById('current-playlist-name');
+    if (currentPlaylistName && currentFeed) {
+      currentPlaylistName.textContent = currentFeed.title || 'Current Playlist';
     }
     
-    // Render tracks
+    // Create track list items in Winamp style
     currentFeed.tracks.forEach((track, index) => {
       const li = document.createElement('li');
-      li.dataset.index = index;
       
-      if (index === currentTrackIndex) {
-        li.classList.add('playing');
-      }
+      // Format track number with leading zero if needed
+      const trackNum = (index + 1).toString().padStart(2, '0');
       
-      const titleDiv = document.createElement('div');
-      titleDiv.className = 'track-info';
+      // Create track title with number prefix
+      li.textContent = `${trackNum}. ${track.title || 'Unknown Track'}`;
       
-      const title = document.createElement('h4');
-      title.textContent = track.title || 'Unknown Track';
-      
-      const artist = document.createElement('p');
-      artist.textContent = track.artist || '';
-      
-      titleDiv.appendChild(title);
-      if (track.artist) titleDiv.appendChild(artist);
-      
-      const progress = document.createElement('div');
-      progress.className = 'track-progress';
-      progress.textContent = 'Not played';
-      
-      li.appendChild(titleDiv);
-      li.appendChild(progress);
-      
+      // Add click handler to play track
       li.addEventListener('click', () => {
-        currentTrackIndex = index;
+        loadTrack(index);
+        playAudio();
+      });
+      
+      // Add double-click handler for immediate play
+      li.addEventListener('dblclick', () => {
         loadTrack(index);
         playAudio();
       });
@@ -1063,19 +1109,22 @@ document.addEventListener('DOMContentLoaded', () => {
       trackList.appendChild(li);
     });
     
-    // Refresh Feather icons
-    if (window.feather) {
-      feather.replace();
-    }
+    // Highlight current track
+    highlightCurrentTrack();
   }
 
   function highlightCurrentTrack() {
-    const items = trackList.querySelectorAll('li');
-    items.forEach((item, index) => {
+    const trackItems = document.querySelectorAll('#track-list li');
+    trackItems.forEach((item, index) => {
       if (index === currentTrackIndex) {
-        item.classList.add('playing');
+        item.classList.add('current-track');
+        // Update the current playlist name in the status bar
+        const currentPlaylistName = document.getElementById('current-playlist-name');
+        if (currentPlaylistName && currentFeed) {
+          currentPlaylistName.textContent = currentFeed.title || 'Current Playlist';
+        }
       } else {
-        item.classList.remove('playing');
+        item.classList.remove('current-track');
       }
     });
   }
