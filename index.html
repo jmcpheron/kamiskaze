@@ -18,10 +18,12 @@
     <meta http-equiv="Expires" content="0">
     <!-- End Cache Control Meta Tags -->
     <title>Kamiskaze Archives</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
     <div id="audio-player-container">
+        <div id="loading-spinner" class="hidden" aria-live="polite" role="status">Loading…</div>
         <div class="content-area">
             <!-- Header with Kamiskaze Branding -->
             <header>
@@ -75,17 +77,17 @@
                         <div id="player-controls">
                             <!-- Main Buttons -->
                             <div class="main-control">
-                                <button id="prev-button" class="control-button skip-button" aria-label="Previous track">
+                                <button id="prev-button" class="control-button skip-button" aria-label="Previous track" tabindex="0" role="button">
                                     <!-- SVG for Previous -->
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
                                 </button>
-                                <button id="play-pause-button" class="control-button play-button" aria-label="Play">
+                                <button id="play-pause-button" class="control-button play-button" aria-label="Play/Pause" tabindex="0" role="button">
                                     <!-- Play Icon -->
                                     <svg class="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                                     <!-- Pause Icon -->
                                     <svg class="pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
                                 </button>
-                                <button id="next-button" class="control-button skip-button" aria-label="Next track">
+                                <button id="next-button" class="control-button skip-button" aria-label="Next track" tabindex="0" role="button">
                                     <!-- SVG for Next -->
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
                                 </button>
@@ -104,12 +106,12 @@
                             </div>
                             
                             <!-- Speed Controls (Hidden) -->
-                            <div class="speed-controls-container" style="display: none;">
+                            <div class="speed-controls-container">
                                 <span class="speed-label" aria-hidden="true">Speed:</span>
-                                <button class="speed-button" data-speed="0.5" aria-label="Set speed to 0.5x">0.5x</button>
-                                <button class="speed-button active" data-speed="1.0" aria-label="Set speed to 1x">1x</button>
-                                <button class="speed-button" data-speed="1.5" aria-label="Set speed to 1.5x">1.5x</button>
-                                <button class="speed-button" data-speed="2.0" aria-label="Set speed to 2x">2x</button>
+                                <button class="speed-button" data-speed="0.5" aria-label="Set speed to 0.5x" tabindex="0">0.5x</button>
+                                <button class="speed-button active" data-speed="1.0" aria-label="Set speed to 1x" tabindex="0">1x</button>
+                                <button class="speed-button" data-speed="1.5" aria-label="Set speed to 1.5x" tabindex="0">1.5x</button>
+                                <button class="speed-button" data-speed="2.0" aria-label="Set speed to 2x" tabindex="0">2x</button>
                             </div>
                         </div>
                     </div>
@@ -125,7 +127,7 @@
                         <div id="track-list-container">
                             <h3>Palm Springs w/ The Jawas <span id="track-count" class="track-count"></span></h3>
                             <p class="playlist-description">Live performance at the Jawas in Palm Springs, CA</p>
-                            <ul id="track-list"></ul>
+                            <ul id="track-list" role="list"></ul>
                         </div>
                     </div>
                 </div>

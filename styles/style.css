@@ -519,6 +519,46 @@ h1 {
 }
 
 .play-button:disabled {
+  outline: none;
+}
+
+/* Focus outlines for all controls */
+.control-button:focus-visible, .speed-button:focus-visible, .playlist-button:focus-visible {
+  outline: 2px solid var(--neon-yellow);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(247,255,0,0.2);
+}
+
+/* Hover states for all player controls */
+.control-button:hover, .speed-button:hover, .playlist-button:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 0 8px var(--neon-yellow, #f7ff00);
+}
+
+/* Loading spinner styles */
+#loading-spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.85);
+  color: var(--neon-yellow, #f7ff00);
+  font-family: 'Press Start 2P', cursive, sans-serif;
+  font-size: 1.5em;
+  padding: 1.2em 2.5em;
+  border-radius: 18px;
+  box-shadow: 0 0 32px rgba(0,0,0,0.3);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+#loading-spinner.hidden {
+  display: none !important;
+}
+
   opacity: 0.5;
   cursor: not-allowed;
   transform: scale(1);

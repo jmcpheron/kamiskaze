@@ -298,16 +298,24 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function playAudio() {
-    // Play the audio
-    audioPlayer.play().then(() => {
-      isPlaying = true;
-      updatePlayPauseButton();
-      
-      // Video is now handled via event listeners in loadTrack
-    }).catch(error => {
-      showNotification('Error playing audio: ' + error.message, 'error');
-      console.error('Error playing audio:', error);
-    });
+    // Only play if audio element is visible (audio file)
+    if (audioPlayer && audioPlayer.style.display !== 'none') {
+      audioPlayer.play().then(() => {
+        isPlaying = true;
+        updatePlayPauseButton();
+      }).catch(error => {
+        showNotification('Error playing audio: ' + error.message, 'error');
+        console.error('Error playing audio:', error);
+      });
+    } else if (videoArtDisplay && videoArtDisplay.style.display !== 'none') {
+      videoArtDisplay.play().then(() => {
+        isPlaying = true;
+        updatePlayPauseButton();
+      }).catch(error => {
+        showNotification('Error playing video: ' + error.message, 'error');
+        console.error('Error playing video:', error);
+      });
+    }
   }
 
   function pauseAudio() {
@@ -561,12 +569,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Load a track by index
   function loadTrack(index) {
+  // Show loading spinner
+  const loadingSpinner = document.getElementById('loading-spinner');
+  if (loadingSpinner) loadingSpinner.classList.remove('hidden');
     if (!currentFeed || !currentFeed.tracks || !currentFeed.tracks[index]) return;
     
     const track = currentFeed.tracks[index];
     currentTrackIndex = index;
     
     // Reset video element state first to prevent errors
+    // Hide spinner after short delay (simulate loading, or hide after metadata loads)
+    setTimeout(() => loadingSpinner.classList.add('hidden'), 500);
     if (videoArtDisplay) {
       // Clear any previous source and errors
       videoArtDisplay.pause();
@@ -621,32 +634,62 @@ document.addEventListener('DOMContentLoaded', () => {
     // Get album art container
     const albumArtContainer = document.getElementById('album-art');
     
-    // Check if this is a video file by extension
+    // Determine file type
     const isVideoFile = track.audioUrl.toLowerCase().endsWith('.mp4') || 
                         track.audioUrl.toLowerCase().endsWith('.webm') || 
                         track.audioUrl.toLowerCase().endsWith('.mkv');
-                        
-    // MP3 files should always be treated as audio-only
     const isAudioFile = track.audioUrl.toLowerCase().endsWith('.mp3') ||
                         track.audioUrl.toLowerCase().endsWith('.wav') ||
                         track.audioUrl.toLowerCase().endsWith('.ogg');
-    
     console.log(`Track ${index} is ${isVideoFile ? 'a video file' : isAudioFile ? 'an audio file' : 'unknown format'}: ${track.audioUrl}`);
-    
-    // Handle media display - only try video if it's explicitly a video file
+
+    // Show/hide elements based on file type
     if (isVideoFile && !isAudioFile) {
-      console.log('Setting up video playback...');
-      
-      // Set up video playback
-      const videoSetupSuccess = setupVideoPlayback(track.audioUrl);
-      console.log(`Video setup ${videoSetupSuccess ? 'successful' : 'failed'}`);
-      
+      // Video file: use video element
+      if (audioPlayer) {
+        audioPlayer.pause();
+        audioPlayer.style.display = 'none';
+        audioPlayer.src = '';
+      }
+      if (videoArtDisplay) {
+        videoArtDisplay.style.display = '';
+        videoArtDisplay.src = track.audioUrl;
+        videoArtDisplay.load();
+      }
       // Add video-active class to album art container
       if (albumArtContainer) {
         albumArtContainer.classList.add('video-active');
       }
-      
+      // Optionally show video controls overlay
+      const videoControlsOverlay = document.getElementById('video-controls-overlay');
+      if (videoControlsOverlay) {
+        videoControlsOverlay.style.display = '';
+      }
     } else {
+      // Audio file: use audio element
+      if (videoArtDisplay) {
+        videoArtDisplay.pause();
+        videoArtDisplay.style.display = 'none';
+        videoArtDisplay.src = '';
+      }
+      if (audioPlayer) {
+        audioPlayer.style.display = '';
+        audioPlayer.src = track.audioUrl;
+        audioPlayer.load();
+      }
+      if (albumArtContainer) {
+        albumArtContainer.classList.remove('video-active');
+      }
+      // Hide video controls overlay
+      const videoControlsOverlay = document.getElementById('video-controls-overlay');
+      if (videoControlsOverlay) {
+        videoControlsOverlay.style.display = 'none';
+      }
+    }
+
+    // The rest of the album art and info logic follows as before
+    // (no changes needed to original art logic)
+
       // Audio-only mode for MP3 files and other audio formats
       console.log('Setting up audio-only playback...');
       
@@ -1028,7 +1071,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Render tracks
     currentFeed.tracks.forEach((track, index) => {
+    // Create <li> for each track
       const li = document.createElement('li');
+      li.setAttribute('role', 'listitem');
+      li.setAttribute('tabindex', '0');
+      let aria = 'Play ' + (track.title || 'Track') + (track.artist ? (' by ' + track.artist) : '');
+      li.setAttribute('aria-label', aria);
       li.dataset.index = index;
       
       if (index === currentTrackIndex) {
