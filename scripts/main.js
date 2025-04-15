@@ -753,6 +753,7 @@ document.addEventListener('DOMContentLoaded', () => {
     savePlayerState();
   }
 
+
   function seekTrack() {
     // Ensure duration is available and is a number greater than 0
     if (!audioPlayer.duration || isNaN(audioPlayer.duration) || audioPlayer.duration <= 0) return;
