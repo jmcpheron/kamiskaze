@@ -46,6 +46,33 @@ body {
     background-size: 20px 20px;
     background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
     font-size: 18px;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Retro scan line effect */
+body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        0deg,
+        transparent 0%,
+        rgba(0, 255, 255, 0.03) 50%,
+        transparent 100%
+    );
+    background-size: 100% 4px;
+    animation: scan-lines 0.1s linear infinite;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+@keyframes scan-lines {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 4px; }
 }
 
 #audio-player-container {
@@ -55,13 +82,81 @@ body {
     max-width: 100%;
     min-height: 100vh;
     margin: 0;
-    background: linear-gradient(140deg, #14145a 0%, var(--bg-dark) 100%);
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(188, 19, 254, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(247, 255, 0, 0.05) 0%, transparent 50%),
+        linear-gradient(140deg, #14145a 0%, var(--bg-dark) 100%);
     padding: var(--container-padding);
     box-sizing: border-box;
     position: relative;
     overflow-x: hidden; /* Prevent horizontal scroll */
-    border: 1px solid var(--neon-blue);
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+    border: 2px solid var(--neon-blue);
+    box-shadow: 
+        0 0 20px rgba(0, 255, 255, 0.4),
+        inset 0 0 30px rgba(0, 255, 255, 0.1);
+    animation: container-border-glow 4s ease-in-out infinite alternate;
+}
+
+@keyframes container-border-glow {
+    0% { 
+        box-shadow: 
+            0 0 20px rgba(0, 255, 255, 0.4),
+            inset 0 0 30px rgba(0, 255, 255, 0.1);
+    }
+    100% { 
+        box-shadow: 
+            0 0 30px rgba(0, 255, 255, 0.6),
+            inset 0 0 40px rgba(0, 255, 255, 0.15);
+    }
+}
+
+/* Enhanced Header Section */
+.main-header-section {
+    position: relative;
+    text-align: center;
+    margin: 20px 0 40px;
+    z-index: 10;
+}
+
+.header-glow {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 80px;
+    background: radial-gradient(ellipse, rgba(247, 255, 0, 0.3) 0%, transparent 70%);
+    filter: blur(20px);
+    z-index: -1;
+    animation: pulse-glow 3s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-glow {
+    0% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+    100% { opacity: 0.8; transform: translateX(-50%) scale(1.1); }
+}
+
+.brand-title {
+    text-align: center;
+    color: var(--neon-yellow);
+    margin: 10px 0 5px 0;
+    font-size: 2.5em;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-family: 'Press Start 2P', cursive;
+    text-shadow: 0 0 10px rgba(247, 255, 0, 0.7), 
+                0 0 20px rgba(247, 255, 0, 0.5),
+                0 0 30px rgba(247, 255, 0, 0.3),
+                0 0 40px rgba(247, 255, 0, 0.2);
+    transform: skew(-2deg);
+    position: relative;
+    animation: title-shimmer 4s ease-in-out infinite alternate;
+}
+
+@keyframes title-shimmer {
+    0% { text-shadow: 0 0 10px rgba(247, 255, 0, 0.7), 0 0 20px rgba(247, 255, 0, 0.5), 0 0 30px rgba(247, 255, 0, 0.3); }
+    100% { text-shadow: 0 0 15px rgba(247, 255, 0, 0.9), 0 0 25px rgba(247, 255, 0, 0.7), 0 0 35px rgba(247, 255, 0, 0.5), 0 0 45px rgba(247, 255, 0, 0.3); }
 }
 
 h1 {
@@ -89,14 +184,32 @@ h1 {
     justify-content: center;
     border-radius: var(--border-radius-player);
     overflow: hidden;
-    box-shadow: 0 0 20px rgba(188, 19, 254, 0.5), 
-                inset 0 0 15px rgba(0, 0, 0, 0.7);
+    box-shadow: 
+        0 0 30px rgba(188, 19, 254, 0.6), 
+        0 0 60px rgba(188, 19, 254, 0.3),
+        inset 0 0 20px rgba(0, 0, 0, 0.8);
     background-color: #000;
     position: relative; /* Ensure proper stacking context */
     z-index: 1; /* Keep album art behind controls */
     transition: all 0.3s ease-in-out;
     border: 4px solid var(--neon-purple);
     padding: 5px;
+    animation: album-art-glow 3s ease-in-out infinite alternate;
+}
+
+@keyframes album-art-glow {
+    0% { 
+        box-shadow: 
+            0 0 30px rgba(188, 19, 254, 0.6), 
+            0 0 60px rgba(188, 19, 254, 0.3),
+            inset 0 0 20px rgba(0, 0, 0, 0.8);
+    }
+    100% { 
+        box-shadow: 
+            0 0 40px rgba(188, 19, 254, 0.8), 
+            0 0 80px rgba(188, 19, 254, 0.4),
+            inset 0 0 25px rgba(0, 0, 0, 0.9);
+    }
 }
 
 #album-art::before {
@@ -1280,8 +1393,34 @@ footer a:hover {
         display: flex;
         flex-direction: column;
         width: 100%;
-        max-width: 900px;
+        max-width: 950px;
         margin: 0 auto;
+        background: rgba(20, 20, 90, 0.3);
+        border-radius: var(--border-radius-lg);
+        padding: 25px;
+        border: 1px solid rgba(103, 103, 255, 0.3);
+        box-shadow: 
+            0 8px 32px rgba(0, 0, 0, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .main-layout-container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, 
+            transparent 0%, 
+            var(--neon-blue) 20%, 
+            var(--neon-yellow) 50%, 
+            var(--neon-blue) 80%, 
+            transparent 100%);
+        opacity: 0.6;
     }
     
     .player-column {
@@ -1295,13 +1434,33 @@ footer a:hover {
         display: flex;
         flex-direction: column;
         gap: 0.4rem;
-        background-color: rgba(20, 20, 20, 0.8);
-        border-radius: 12px;
-        padding: 1.2rem 1rem;
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25), inset 0 1px 2px rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        background: 
+            linear-gradient(135deg, rgba(20, 20, 90, 0.9) 0%, rgba(20, 20, 20, 0.9) 100%);
+        border-radius: 15px;
+        padding: 1.5rem 1.2rem;
+        box-shadow: 
+            0 8px 24px rgba(0, 0, 0, 0.4), 
+            inset 0 1px 2px rgba(255, 255, 255, 0.1),
+            0 0 20px rgba(188, 19, 254, 0.2);
+        border: 1px solid rgba(188, 19, 254, 0.3);
         position: relative;
         overflow: hidden;
+        backdrop-filter: blur(15px);
+    }
+    
+    .player-controls-group::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, 
+            rgba(188, 19, 254, 0.05) 0%, 
+            transparent 50%, 
+            rgba(0, 255, 255, 0.05) 100%);
+        pointer-events: none;
+        z-index: 0;
     }
 
     .player-controls-group::before {
@@ -1324,10 +1483,34 @@ footer a:hover {
     }
     
     .integrated-playlist {
-        background-color: rgba(20, 20, 20, 0.7);
-        border-radius: 12px;
-        padding: 1rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        background: 
+            linear-gradient(135deg, rgba(20, 20, 90, 0.8) 0%, rgba(20, 20, 20, 0.8) 100%);
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 
+            0 8px 24px rgba(0, 0, 0, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1),
+            0 0 20px rgba(0, 255, 255, 0.15);
+        border: 1px solid rgba(0, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .integrated-playlist::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, 
+            transparent 0%, 
+            var(--neon-blue) 25%, 
+            var(--neon-green) 50%, 
+            var(--neon-blue) 75%, 
+            transparent 100%);
+        opacity: 0.8;
     }
     
     .playlist-selector-compact {
@@ -1343,14 +1526,41 @@ footer a:hover {
     }
     
     .playlist-selector-compact .playlist-button {
-        background-color: rgba(40, 40, 40, 0.7);
-        border: none;
+        background: linear-gradient(135deg, rgba(103, 103, 255, 0.3) 0%, rgba(40, 40, 40, 0.7) 100%);
+        border: 1px solid rgba(103, 103, 255, 0.4);
         color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
+        padding: 0.6rem 1.2rem;
+        border-radius: 25px;
         font-size: 0.9rem;
         cursor: pointer;
-        transition: background-color 0.2s;
+        transition: all 0.3s ease;
+        font-family: 'VT323', monospace;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .playlist-selector-compact .playlist-button::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s ease;
+    }
+    
+    .playlist-selector-compact .playlist-button:hover {
+        background: linear-gradient(135deg, rgba(103, 103, 255, 0.5) 0%, rgba(60, 60, 60, 0.9) 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(103, 103, 255, 0.3);
+    }
+    
+    .playlist-selector-compact .playlist-button:hover::before {
+        left: 100%;
     }
     
     .playlist-selector-compact .playlist-button.active {
@@ -2293,13 +2503,43 @@ video:fullscreen {
 
 .subtitle {
     font-family: 'VT323', monospace;
-    font-size: 1.3em;
+    font-size: 1.4em;
     color: var(--neon-blue);
     text-align: center;
-    margin: 5px 0 30px;
-    letter-spacing: 1px;
-    text-shadow: 0 0 5px rgba(0, 255, 255, 0.7);
+    margin: 15px 0 20px;
+    letter-spacing: 2px;
+    text-shadow: 0 0 8px rgba(0, 255, 255, 0.8),
+                0 0 15px rgba(0, 255, 255, 0.5),
+                0 0 25px rgba(0, 255, 255, 0.3);
     position: relative;
+    text-transform: uppercase;
+    font-weight: bold;
+    animation: subtitle-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes subtitle-glow {
+    0% { opacity: 0.8; }
+    100% { opacity: 1; }
+}
+
+.header-accent-line {
+    width: 150px;
+    height: 3px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        var(--neon-purple) 25%, 
+        var(--neon-yellow) 50%, 
+        var(--neon-purple) 75%, 
+        transparent 100%);
+    margin: 20px auto;
+    border-radius: 2px;
+    box-shadow: 0 0 10px rgba(188, 19, 254, 0.6);
+    animation: accent-line-pulse 3s ease-in-out infinite;
+}
+
+@keyframes accent-line-pulse {
+    0%, 100% { transform: scaleX(1); opacity: 0.7; }
+    50% { transform: scaleX(1.1); opacity: 1; }
 }
 
 /* Update h2 after subtitle to ensure proper spacing */
@@ -2767,6 +3007,7 @@ a:hover {
 
 #seek-bar {
   -webkit-appearance: none;
+  appearance: none;
   width: 100%;
   height: 5px;
   background: var(--surface-lighter);
@@ -3611,6 +3852,7 @@ a:hover {
 
 #seek-bar {
   -webkit-appearance: none;
+  appearance: none;
   width: 100%;
   height: 5px;
   background-color: var(--surface-lighter);
