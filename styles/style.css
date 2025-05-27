@@ -1,25 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap');
 
 :root {
-    /* 90s Hit Clips/cassette player theme colors */
-    --bg-dark: #0a0a2c;  /* Deep blue background */
-    --bg-card: #14145a;  /* Slightly lighter blue */
-    --bg-card-hover: #1e1e6e;
-    --bg-controls: #252595;
-    --text-primary: #f5f5f5;
-    --text-secondary: rgba(255, 255, 255, 0.8);
-    --text-tertiary: rgba(255, 255, 255, 0.6);
-    --accent-color: #ff5a5f; /* Vibrant 90s pink/red */
-    --accent-darker: #e63e43;
-    --accent-rgb: 255, 90, 95; /* RGB values for opacity uses */
-    --neon-yellow: #f7ff00;
-    --neon-blue: #00ffff;
-    --neon-purple: #bc13fe;
-    --neon-green: #39ff14;
-    --border-color: #6767ff;
-    --border-light: #8080ff;
-    --shadow-color: rgba(0, 0, 0, 0.6);
+    /* Modern contemporary color palette */
+    --bg-dark: #0f0f0f;  /* Rich black */
+    --bg-card: #1a1a1a;  /* Dark card background */
+    --bg-card-hover: #252525;
+    --bg-controls: #2a2a2a;
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --text-tertiary: rgba(255, 255, 255, 0.5);
+    --accent-color: #3b82f6; /* Modern blue */
+    --accent-darker: #2563eb;
+    --accent-rgb: 59, 130, 246; /* RGB values for opacity uses */
+    --accent-light: #60a5fa;
+    --accent-subtle: #dbeafe;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --border-color: #374151;
+    --border-light: #4b5563;
+    --shadow-color: rgba(0, 0, 0, 0.3);
     
     /* Sizing and spacing */
     --container-padding: 20px;
@@ -30,49 +29,16 @@
 }
 
 body {
-    font-family: 'VT323', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    line-height: 1.5;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.6;
     margin: 0;
     padding: 0;
     background-color: var(--bg-dark);
     color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-image: 
-        linear-gradient(45deg, rgba(255, 90, 95, 0.05) 25%, transparent 25%),
-        linear-gradient(-45deg, rgba(255, 90, 95, 0.05) 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, rgba(255, 90, 95, 0.05) 75%),
-        linear-gradient(-45deg, transparent 75%, rgba(255, 90, 95, 0.05) 75%);
-    background-size: 20px 20px;
-    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-    font-size: 18px;
-    position: relative;
+    font-size: 16px;
     overflow-x: hidden;
-}
-
-/* Retro scan line effect */
-body::after {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(
-        0deg,
-        transparent 0%,
-        rgba(0, 255, 255, 0.03) 50%,
-        transparent 100%
-    );
-    background-size: 100% 4px;
-    animation: scan-lines 0.1s linear infinite;
-    pointer-events: none;
-    z-index: 9999;
-}
-
-@keyframes scan-lines {
-    0% { background-position: 0 0; }
-    100% { background-position: 0 4px; }
 }
 
 #audio-player-container {
@@ -82,81 +48,32 @@ body::after {
     max-width: 100%;
     min-height: 100vh;
     margin: 0;
-    background: 
-        radial-gradient(circle at 20% 30%, rgba(188, 19, 254, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(247, 255, 0, 0.05) 0%, transparent 50%),
-        linear-gradient(140deg, #14145a 0%, var(--bg-dark) 100%);
+    background: var(--bg-dark);
     padding: var(--container-padding);
     box-sizing: border-box;
     position: relative;
-    overflow-x: hidden; /* Prevent horizontal scroll */
-    border: 2px solid var(--neon-blue);
-    box-shadow: 
-        0 0 20px rgba(0, 255, 255, 0.4),
-        inset 0 0 30px rgba(0, 255, 255, 0.1);
-    animation: container-border-glow 4s ease-in-out infinite alternate;
+    overflow-x: hidden;
 }
 
-@keyframes container-border-glow {
-    0% { 
-        box-shadow: 
-            0 0 20px rgba(0, 255, 255, 0.4),
-            inset 0 0 30px rgba(0, 255, 255, 0.1);
-    }
-    100% { 
-        box-shadow: 
-            0 0 30px rgba(0, 255, 255, 0.6),
-            inset 0 0 40px rgba(0, 255, 255, 0.15);
-    }
-}
-
-/* Enhanced Header Section */
+/* Modern Header Section */
 .main-header-section {
-    position: relative;
     text-align: center;
-    margin: 20px 0 40px;
-    z-index: 10;
+    margin: 32px 0 48px;
+    padding: 0 24px;
 }
 
 .header-glow {
-    position: absolute;
-    top: -20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 200px;
-    height: 80px;
-    background: radial-gradient(ellipse, rgba(247, 255, 0, 0.3) 0%, transparent 70%);
-    filter: blur(20px);
-    z-index: -1;
-    animation: pulse-glow 3s ease-in-out infinite alternate;
-}
-
-@keyframes pulse-glow {
-    0% { opacity: 0.5; transform: translateX(-50%) scale(1); }
-    100% { opacity: 0.8; transform: translateX(-50%) scale(1.1); }
+    display: none; /* Remove retro glow effect */
 }
 
 .brand-title {
-    text-align: center;
-    color: var(--neon-yellow);
-    margin: 10px 0 5px 0;
-    font-size: 2.5em;
+    color: var(--text-primary);
+    margin: 0 0 8px 0;
+    font-size: 3rem;
     font-weight: 700;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    font-family: 'Press Start 2P', cursive;
-    text-shadow: 0 0 10px rgba(247, 255, 0, 0.7), 
-                0 0 20px rgba(247, 255, 0, 0.5),
-                0 0 30px rgba(247, 255, 0, 0.3),
-                0 0 40px rgba(247, 255, 0, 0.2);
-    transform: skew(-2deg);
-    position: relative;
-    animation: title-shimmer 4s ease-in-out infinite alternate;
-}
-
-@keyframes title-shimmer {
-    0% { text-shadow: 0 0 10px rgba(247, 255, 0, 0.7), 0 0 20px rgba(247, 255, 0, 0.5), 0 0 30px rgba(247, 255, 0, 0.3); }
-    100% { text-shadow: 0 0 15px rgba(247, 255, 0, 0.9), 0 0 25px rgba(247, 255, 0, 0.7), 0 0 35px rgba(247, 255, 0, 0.5), 0 0 45px rgba(247, 255, 0, 0.3); }
+    letter-spacing: -0.025em;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.1;
 }
 
 h1 {
@@ -176,54 +93,33 @@ h1 {
 
 /* Album Art Section - HitClips/cassette style */
 #album-art {
-    width: 320px; /* Larger size for better video viewing */
-    height: 320px; /* Larger size for better video viewing */
-    margin: 0 auto 20px;
+    width: 320px;
+    height: 320px;
+    margin: 0 auto 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: var(--border-radius-player);
+    border-radius: 16px;
     overflow: hidden;
     box-shadow: 
-        0 0 30px rgba(188, 19, 254, 0.6), 
-        0 0 60px rgba(188, 19, 254, 0.3),
-        inset 0 0 20px rgba(0, 0, 0, 0.8);
-    background-color: #000;
-    position: relative; /* Ensure proper stacking context */
-    z-index: 1; /* Keep album art behind controls */
-    transition: all 0.3s ease-in-out;
-    border: 4px solid var(--neon-purple);
-    padding: 5px;
-    animation: album-art-glow 3s ease-in-out infinite alternate;
+        0 4px 12px rgba(0, 0, 0, 0.15),
+        0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: var(--bg-card);
+    position: relative;
+    z-index: 1;
+    transition: all 0.2s ease;
+    border: 1px solid var(--border-color);
 }
 
-@keyframes album-art-glow {
-    0% { 
-        box-shadow: 
-            0 0 30px rgba(188, 19, 254, 0.6), 
-            0 0 60px rgba(188, 19, 254, 0.3),
-            inset 0 0 20px rgba(0, 0, 0, 0.8);
-    }
-    100% { 
-        box-shadow: 
-            0 0 40px rgba(188, 19, 254, 0.8), 
-            0 0 80px rgba(188, 19, 254, 0.4),
-            inset 0 0 25px rgba(0, 0, 0, 0.9);
-    }
+#album-art:hover {
+    box-shadow: 
+        0 8px 24px rgba(0, 0, 0, 0.2),
+        0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
 }
 
 #album-art::before {
-    content: "";
-    position: absolute;
-    top: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80px;
-    height: 16px;
-    background-color: var(--neon-yellow);
-    border-radius: 8px 8px 0 0;
-    box-shadow: 0 0 10px rgba(247, 255, 0, 0.5);
-    z-index: -1;
+    display: none; /* Remove retro cassette element */
 }
 
 /* When video is active, change album art container properties */
@@ -1393,34 +1289,19 @@ footer a:hover {
         display: flex;
         flex-direction: column;
         width: 100%;
-        max-width: 950px;
+        max-width: 900px;
         margin: 0 auto;
-        background: rgba(20, 20, 90, 0.3);
+        background: var(--bg-card);
         border-radius: var(--border-radius-lg);
-        padding: 25px;
-        border: 1px solid rgba(103, 103, 255, 0.3);
+        padding: 32px;
+        border: 1px solid var(--border-color);
         box-shadow: 
-            0 8px 32px rgba(0, 0, 0, 0.3),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        position: relative;
-        overflow: hidden;
+            0 4px 12px rgba(0, 0, 0, 0.1),
+            0 2px 4px rgba(0, 0, 0, 0.05);
     }
     
     .main-layout-container::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: linear-gradient(90deg, 
-            transparent 0%, 
-            var(--neon-blue) 20%, 
-            var(--neon-yellow) 50%, 
-            var(--neon-blue) 80%, 
-            transparent 100%);
-        opacity: 0.6;
+        display: none; /* Remove retro accent line */
     }
     
     .player-column {
@@ -1433,84 +1314,49 @@ footer a:hover {
     .player-controls-group {
         display: flex;
         flex-direction: column;
-        gap: 0.4rem;
-        background: 
-            linear-gradient(135deg, rgba(20, 20, 90, 0.9) 0%, rgba(20, 20, 20, 0.9) 100%);
-        border-radius: 15px;
-        padding: 1.5rem 1.2rem;
+        gap: 16px;
+        background: var(--bg-controls);
+        border-radius: 12px;
+        padding: 24px;
         box-shadow: 
-            0 8px 24px rgba(0, 0, 0, 0.4), 
-            inset 0 1px 2px rgba(255, 255, 255, 0.1),
-            0 0 20px rgba(188, 19, 254, 0.2);
-        border: 1px solid rgba(188, 19, 254, 0.3);
+            0 2px 8px rgba(0, 0, 0, 0.1),
+            0 1px 2px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-color);
         position: relative;
-        overflow: hidden;
-        backdrop-filter: blur(15px);
     }
     
     .player-controls-group::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(45deg, 
-            rgba(188, 19, 254, 0.05) 0%, 
-            transparent 50%, 
-            rgba(0, 255, 255, 0.05) 100%);
-        pointer-events: none;
-        z-index: 0;
+        display: none; /* Remove retro gradient overlay */
     }
 
     .player-controls-group::before {
-        content: "NOW PLAYING";
+        content: "Now Playing";
         position: absolute;
-        top: -10px;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: var(--neon-yellow);
-        color: #000;
-        padding: 2px 12px;
-        font-size: 0.6rem;
-        border-radius: 10px;
-        font-weight: bold;
-        box-shadow: 0 0 10px rgba(247, 255, 0, 0.5);
-        font-family: 'Press Start 2P', cursive;
-        letter-spacing: 1px;
+        top: -12px;
+        left: 24px;
+        background-color: var(--accent-color);
+        color: white;
+        padding: 4px 12px;
+        font-size: 0.75rem;
+        border-radius: 4px;
+        font-weight: 600;
+        font-family: 'Inter', sans-serif;
+        letter-spacing: 0.025em;
         z-index: 5;
-        border: 1px solid black;
     }
     
     .integrated-playlist {
-        background: 
-            linear-gradient(135deg, rgba(20, 20, 90, 0.8) 0%, rgba(20, 20, 20, 0.8) 100%);
-        border-radius: 15px;
-        padding: 1.5rem;
+        background: var(--bg-controls);
+        border-radius: 12px;
+        padding: 24px;
         box-shadow: 
-            0 8px 24px rgba(0, 0, 0, 0.3),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1),
-            0 0 20px rgba(0, 255, 255, 0.15);
-        border: 1px solid rgba(0, 255, 255, 0.3);
-        backdrop-filter: blur(10px);
-        position: relative;
-        overflow: hidden;
+            0 2px 8px rgba(0, 0, 0, 0.1),
+            0 1px 2px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-color);
     }
     
     .integrated-playlist::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background: linear-gradient(90deg, 
-            transparent 0%, 
-            var(--neon-blue) 25%, 
-            var(--neon-green) 50%, 
-            var(--neon-blue) 75%, 
-            transparent 100%);
-        opacity: 0.8;
+        display: none; /* Remove retro accent line */
     }
     
     .playlist-selector-compact {
@@ -1526,46 +1372,34 @@ footer a:hover {
     }
     
     .playlist-selector-compact .playlist-button {
-        background: linear-gradient(135deg, rgba(103, 103, 255, 0.3) 0%, rgba(40, 40, 40, 0.7) 100%);
-        border: 1px solid rgba(103, 103, 255, 0.4);
-        color: white;
-        padding: 0.6rem 1.2rem;
-        border-radius: 25px;
-        font-size: 0.9rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        color: var(--text-secondary);
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 0.875rem;
         cursor: pointer;
-        transition: all 0.3s ease;
-        font-family: 'VT323', monospace;
-        font-weight: bold;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        position: relative;
-        overflow: hidden;
+        transition: all 0.2s ease;
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
+        letter-spacing: 0;
     }
     
     .playlist-selector-compact .playlist-button::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        transition: left 0.5s ease;
+        display: none; /* Remove shimmer effect */
     }
     
     .playlist-selector-compact .playlist-button:hover {
-        background: linear-gradient(135deg, rgba(103, 103, 255, 0.5) 0%, rgba(60, 60, 60, 0.9) 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(103, 103, 255, 0.3);
-    }
-    
-    .playlist-selector-compact .playlist-button:hover::before {
-        left: 100%;
+        background: var(--bg-card-hover);
+        color: var(--text-primary);
+        border-color: var(--border-light);
     }
     
     .playlist-selector-compact .playlist-button.active {
-        background-color: rgba(255, 255, 255, 0.2);
-        font-weight: bold;
+        background-color: var(--accent-color);
+        color: white;
+        border-color: var(--accent-color);
+        font-weight: 600;
     }
     
     #track-list-container h3 {
@@ -2502,44 +2336,21 @@ video:fullscreen {
 }
 
 .subtitle {
-    font-family: 'VT323', monospace;
-    font-size: 1.4em;
-    color: var(--neon-blue);
+    font-family: 'Inter', sans-serif;
+    font-size: 1.1rem;
+    color: var(--text-secondary);
     text-align: center;
-    margin: 15px 0 20px;
-    letter-spacing: 2px;
-    text-shadow: 0 0 8px rgba(0, 255, 255, 0.8),
-                0 0 15px rgba(0, 255, 255, 0.5),
-                0 0 25px rgba(0, 255, 255, 0.3);
-    position: relative;
-    text-transform: uppercase;
-    font-weight: bold;
-    animation: subtitle-glow 2s ease-in-out infinite alternate;
-}
-
-@keyframes subtitle-glow {
-    0% { opacity: 0.8; }
-    100% { opacity: 1; }
+    margin: 0;
+    font-weight: 400;
+    letter-spacing: 0.025em;
 }
 
 .header-accent-line {
-    width: 150px;
-    height: 3px;
-    background: linear-gradient(90deg, 
-        transparent 0%, 
-        var(--neon-purple) 25%, 
-        var(--neon-yellow) 50%, 
-        var(--neon-purple) 75%, 
-        transparent 100%);
-    margin: 20px auto;
-    border-radius: 2px;
-    box-shadow: 0 0 10px rgba(188, 19, 254, 0.6);
-    animation: accent-line-pulse 3s ease-in-out infinite;
-}
-
-@keyframes accent-line-pulse {
-    0%, 100% { transform: scaleX(1); opacity: 0.7; }
-    50% { transform: scaleX(1.1); opacity: 1; }
+    width: 64px;
+    height: 2px;
+    background: var(--accent-color);
+    margin: 16px auto 0;
+    border-radius: 1px;
 }
 
 /* Update h2 after subtitle to ensure proper spacing */
