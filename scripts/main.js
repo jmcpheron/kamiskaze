@@ -36,6 +36,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const notificationArea = document.getElementById('notification-area');
   const playlistButtons = document.getElementById('playlist-buttons');
   
+  // Tab Navigation Elements
+  const navLinks = document.querySelectorAll('.nav-link[data-tab]');
+  const tabContents = document.querySelectorAll('.tab-content');
+  
+  // Theme toggle
+  const themeToggle = document.getElementById('theme-toggle');
+  
   // Optional elements that may not exist in the current simplified UI
   const feedsToggle = document.getElementById('toggle-playlists-button');
   const playlistSelector = document.getElementById('playlist-buttons-container');
@@ -78,6 +85,9 @@ document.addEventListener('DOMContentLoaded', () => {
       // Set up event listeners
       setupEventListeners();
       
+      // Initialize theme
+      initializeTheme();
+      
       // Initialize with first feed
       if (feeds.length > 0) {
         setCurrentFeed(feeds[0]);
@@ -90,6 +100,9 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Update UI
       updatePlayPauseButton();
+      
+      // Update archive statistics
+      updateArchiveStats();
 
       // Initialize Feather icons again (for dynamic content)
       if (window.feather) {
@@ -416,6 +429,11 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
     
+    // Theme toggle
+    if (themeToggle) {
+      themeToggle.addEventListener('click', toggleTheme);
+    }
+    
     // Clear data button
     if (clearDataButton) {
       clearDataButton.addEventListener('click', confirmClearData);
@@ -441,6 +459,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Key controls
     document.addEventListener('keydown', handleKeyboardControls);
+    
+    // Tab navigation
+    setupTabNavigation();
 
     // Add sample feed handler
     const feedSuggestion = document.getElementById('feed-suggestion');
@@ -1556,6 +1577,9 @@ document.addEventListener('DOMContentLoaded', () => {
       // Switch to new feed
       setCurrentFeed(newFeed);
       
+      // Update archive statistics
+      updateArchiveStats();
+      
       // Reset form and close modal
       feedUrlInput.value = '';
       hideAddFeedModal();
@@ -1645,6 +1669,9 @@ document.addEventListener('DOMContentLoaded', () => {
         trackList.innerHTML = '<li>No feeds available</li>';
       }
     }
+    
+    // Update archive statistics
+    updateArchiveStats();
     
     showNotification(`Deleted feed: ${feedTitle}`, 'success');
   }
@@ -1750,6 +1777,50 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         notification.style.display = 'none';
       }, 3000);
+    }
+  }
+
+  // === THEME MANAGEMENT ===
+  
+  function initializeTheme() {
+    // Check for saved theme preference
+    const savedTheme = localStorage.getItem('theme');
+    
+    if (savedTheme) {
+      // Use saved theme
+      applyTheme(savedTheme);
+    } else {
+      // Use system preference if no saved theme
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      applyTheme(prefersDark ? 'dark' : 'light');
+    }
+    
+    // Listen for system theme changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    mediaQuery.addEventListener('change', (e) => {
+      // Only auto-switch if user hasn't manually set a preference
+      if (!localStorage.getItem('theme')) {
+        applyTheme(e.matches ? 'dark' : 'light');
+      }
+    });
+  }
+  
+  function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    
+    applyTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    
+    // Show notification
+    showNotification(`Switched to ${newTheme} mode`, 'success');
+  }
+  
+  function applyTheme(theme) {
+    if (theme === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
     }
   }
 
