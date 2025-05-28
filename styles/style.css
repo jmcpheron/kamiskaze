@@ -649,3 +649,231 @@ footer {
 .playing .pause-icon {
     display: block;
 }
+
+/* === ADD FEED MODAL === */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.modal.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.modal-content {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-xl);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.modal-header h3 {
+    color: var(--text-dark);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.close-button:hover {
+    background: #f3f4f6;
+    color: var(--text-dark);
+}
+
+.close-button svg {
+    width: 20px;
+    height: 20px;
+}
+
+.modal-body {
+    padding: var(--space-xl);
+}
+
+.modal-body p {
+    color: var(--text-secondary);
+    margin-bottom: var(--space-lg);
+}
+
+.form-group {
+    margin-bottom: var(--space-lg);
+}
+
+.form-group label {
+    display: block;
+    color: var(--text-dark);
+    font-weight: 500;
+    margin-bottom: var(--space-sm);
+}
+
+.form-group input {
+    width: 100%;
+    padding: var(--space-md);
+    border: 2px solid var(--border-light);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.help-text {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-top: var(--space-sm);
+}
+
+.help-details {
+    margin-top: var(--space-md);
+}
+
+.help-details summary {
+    color: var(--accent);
+    cursor: pointer;
+    font-weight: 500;
+    padding: var(--space-sm);
+    border-radius: var(--radius-md);
+    transition: background-color 0.2s ease;
+}
+
+.help-details summary:hover {
+    background: #f8fafc;
+}
+
+.examples {
+    padding: var(--space-md);
+    background: #f8fafc;
+    border-radius: var(--radius-md);
+    margin-top: var(--space-sm);
+}
+
+.examples h4 {
+    color: var(--text-dark);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: var(--space-sm);
+}
+
+.examples code {
+    display: block;
+    background: #e5e7eb;
+    color: var(--text-dark);
+    padding: var(--space-sm);
+    border-radius: var(--radius-sm);
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 0.8rem;
+    margin-bottom: var(--space-sm);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.examples code:hover {
+    background: #d1d5db;
+}
+
+.examples p {
+    font-size: 0.875rem;
+    margin: var(--space-md) 0 0 0;
+}
+
+.form-actions {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: flex-end;
+    margin-top: var(--space-xl);
+}
+
+.button-secondary,
+.button-primary {
+    padding: var(--space-md) var(--space-lg);
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    font-size: 0.875rem;
+}
+
+.button-secondary {
+    background: #f3f4f6;
+    color: var(--text-dark);
+}
+
+.button-secondary:hover {
+    background: #e5e7eb;
+}
+
+.button-primary {
+    background: var(--accent);
+    color: white;
+}
+
+.button-primary:hover {
+    background: var(--accent-hover);
+}
+
+/* === ADD FEED BUTTON === */
+.add-feed-button {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-lg);
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: var(--radius-lg);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-left: var(--space-md);
+}
+
+.add-feed-button:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+}
+
+.add-feed-button svg {
+    width: 18px;
+    height: 18px;
+}

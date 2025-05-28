@@ -48,6 +48,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const helpButton = document.getElementById('help-button');
   const helpDialog = document.getElementById('help-dialog');
   const closeHelpButton = document.getElementById('close-help-dialog');
+  
+  // New modal elements
+  const addFeedButton = document.getElementById('add-feed-button');
+  const addFeedModal = document.getElementById('add-feed-modal');
+  const closeAddFeedModal = document.getElementById('close-add-feed-modal');
+  const cancelAddFeed = document.getElementById('cancel-add-feed');
 
   // State
   let currentFeed = null;
@@ -390,6 +396,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add feed form
     if (addFeedForm) {
       addFeedForm.addEventListener('submit', handleAddFeed);
+    }
+    
+    // Add feed modal
+    if (addFeedButton) {
+      addFeedButton.addEventListener('click', showAddFeedModal);
+    }
+    if (closeAddFeedModal) {
+      closeAddFeedModal.addEventListener('click', hideAddFeedModal);
+    }
+    if (cancelAddFeed) {
+      cancelAddFeed.addEventListener('click', hideAddFeedModal);
+    }
+    if (addFeedModal) {
+      addFeedModal.addEventListener('click', (e) => {
+        if (e.target === addFeedModal) {
+          hideAddFeedModal();
+        }
+      });
     }
     
     // Clear data button
@@ -1341,6 +1365,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Modal Functions
+  function showAddFeedModal() {
+    if (addFeedModal) {
+      addFeedModal.classList.remove('hidden');
+      // Focus the input field
+      if (feedUrlInput) {
+        setTimeout(() => feedUrlInput.focus(), 100);
+      }
+    }
+  }
+
+  function hideAddFeedModal() {
+    if (addFeedModal) {
+      addFeedModal.classList.add('hidden');
+      // Reset form
+      if (feedUrlInput) {
+        feedUrlInput.value = '';
+      }
+    }
+  }
+
   // Feed Management
   async function handleAddFeed(e) {
     e.preventDefault();
@@ -1396,8 +1441,9 @@ document.addEventListener('DOMContentLoaded', () => {
       // Switch to new feed
       setCurrentFeed(newFeed);
       
-      // Reset form
+      // Reset form and close modal
       feedUrlInput.value = '';
+      hideAddFeedModal();
       
       showNotification(`Added ${newFeed._isExternal ? 'external CDN' : 'new'} feed: ${newFeed.title}`, 'success');
     } catch (error) {
