@@ -674,17 +674,18 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Clean up previous event listeners
       const oldSync = videoArtDisplay._syncFunction;
+      const oldPlayHandler = videoArtDisplay._playHandler;
+      const oldPauseHandler = videoArtDisplay._pauseHandler;
+      
       if (oldSync) {
         audioPlayer.removeEventListener('timeupdate', oldSync);
-        audioPlayer.removeEventListener('play', oldSync);
-        audioPlayer.removeEventListener('pause', oldSync);
       }
-      
-      // Store the sync function for future cleanup
-      videoArtDisplay._syncFunction = syncVideo;
-      
-      // Add our new timeupdate listener
-      audioPlayer.addEventListener('timeupdate', syncVideo);
+      if (oldPlayHandler) {
+        audioPlayer.removeEventListener('play', oldPlayHandler);
+      }
+      if (oldPauseHandler) {
+        audioPlayer.removeEventListener('pause', oldPauseHandler);
+      }
       
       const playHandler = () => {
         if (videoArtDisplay.paused) {
@@ -707,7 +708,13 @@ document.addEventListener('DOMContentLoaded', () => {
         updateVideoPlayPauseButton(false);
       };
       
-      // Add play/pause event listeners
+      // Store the handlers for future cleanup
+      videoArtDisplay._syncFunction = syncVideo;
+      videoArtDisplay._playHandler = playHandler;
+      videoArtDisplay._pauseHandler = pauseHandler;
+      
+      // Add our new event listeners
+      audioPlayer.addEventListener('timeupdate', syncVideo);
       audioPlayer.addEventListener('play', playHandler);
       audioPlayer.addEventListener('pause', pauseHandler);
       
@@ -779,9 +786,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const track = currentFeed.tracks[index];
     currentTrackIndex = index;
     
-    // Reset video element state first to prevent errors
+    // Clean up previous event listeners to prevent memory leaks
     if (videoArtDisplay) {
-      // Clear any previous source and errors
+      // Clean up video event listeners
+      if (videoArtDisplay._syncFunction) {
+        audioPlayer.removeEventListener('timeupdate', videoArtDisplay._syncFunction);
+        videoArtDisplay._syncFunction = null;
+      }
+      if (videoArtDisplay._playHandler) {
+        audioPlayer.removeEventListener('play', videoArtDisplay._playHandler);
+        videoArtDisplay._playHandler = null;
+      }
+      if (videoArtDisplay._pauseHandler) {
+        audioPlayer.removeEventListener('pause', videoArtDisplay._pauseHandler);
+        videoArtDisplay._pauseHandler = null;
+      }
+      
+      // Reset video element state first to prevent errors
       videoArtDisplay.pause();
       videoArtDisplay.removeAttribute('src');
       videoArtDisplay.load();
@@ -791,6 +812,18 @@ document.addEventListener('DOMContentLoaded', () => {
       const videoControlsOverlay = document.getElementById('video-controls-overlay');
       if (videoControlsOverlay) {
         videoControlsOverlay.style.display = 'none';
+      }
+    }
+    
+    // Clean up album art event listeners
+    if (albumArt) {
+      if (albumArt._errorHandler) {
+        albumArt.removeEventListener('error', albumArt._errorHandler);
+        albumArt._errorHandler = null;
+      }
+      if (albumArt._loadHandler) {
+        albumArt.removeEventListener('load', albumArt._loadHandler);
+        albumArt._loadHandler = null;
       }
     }
     
@@ -935,18 +968,38 @@ document.addEventListener('DOMContentLoaded', () => {
       if (track.albumArt && !track.albumArt.toLowerCase().endsWith('.svg')) {
         // Track has custom album art (local or external)
         if (albumArt) {
+          // Clean up any existing handlers to prevent memory leaks
+          if (albumArt._errorHandler) {
+            albumArt.removeEventListener('error', albumArt._errorHandler);
+            albumArt._errorHandler = null;
+          }
+          if (albumArt._loadHandler) {
+            albumArt.removeEventListener('load', albumArt._loadHandler);
+            albumArt._loadHandler = null;
+          }
+          
           // Handle external album art with error fallback
           if (track._isExternal) {
-            albumArt.addEventListener('error', function handleAlbumArtError() {
+            const handleAlbumArtError = function() {
               console.warn(`Failed to load external album art: ${track.albumArt}`);
               // Fallback to default
               albumArt.src = 'images/cassette-single.png';
-              albumArt.removeEventListener('error', handleAlbumArtError);
-            }, { once: true });
+              // Clean up reference
+              albumArt._errorHandler = null;
+            };
             
-            albumArt.addEventListener('load', function handleAlbumArtLoad() {
+            const handleAlbumArtLoad = function() {
               console.log(`Successfully loaded external album art: ${track.albumArt}`);
-            }, { once: true });
+              // Clean up reference
+              albumArt._loadHandler = null;
+            };
+            
+            // Store handlers for cleanup
+            albumArt._errorHandler = handleAlbumArtError;
+            albumArt._loadHandler = handleAlbumArtLoad;
+            
+            albumArt.addEventListener('error', handleAlbumArtError, { once: true });
+            albumArt.addEventListener('load', handleAlbumArtLoad, { once: true });
           }
           
           albumArt.src = track.albumArt;
