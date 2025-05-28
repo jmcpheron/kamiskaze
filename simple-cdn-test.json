@@ -1,0 +1,29 @@
+{
+  "id": "simple-cdn-test",
+  "title": "Simple CDN Test",
+  "description": "Basic CDN test with reliable public audio",
+  "source": {
+    "type": "cdn",
+    "baseUrl": "https://www.soundjay.com/misc/sounds-716/"
+  },
+  "tracks": [
+    {
+      "id": "beep",
+      "title": "Test Beep",
+      "artist": "SoundJay",
+      "audioUrl": "beep-07a.wav",
+      "description": "Simple beep sound for testing",
+      "duration": 1,
+      "metadata": {
+        "genre": "Sound Effect",
+        "year": 2024
+      }
+    }
+  ],
+  "metadata": {
+    "genre": "Test",
+    "year": 2024,
+    "label": "SoundJay",
+    "website": "https://www.soundjay.com"
+  }
+}

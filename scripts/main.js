@@ -1255,8 +1255,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!currentFeed || !currentFeed.tracks) return;
     
     // Update track list container title and description
-    const trackListContainerTitle = document.querySelector('#track-list-container h2');
-    const trackListContainerDesc = document.querySelector('#track-list-container .playlist-description');
+    const trackListContainerTitle = document.querySelector('.tracklist-title');
+    const trackListContainerDesc = document.querySelector('.tracklist-description');
     
     if (trackListContainerTitle) {
       trackListContainerTitle.textContent = currentFeed.title || 'Playlist';

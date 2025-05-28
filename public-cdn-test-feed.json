@@ -1,0 +1,53 @@
+{
+  "id": "public-cdn-test",
+  "title": "Public CDN Test Feed",
+  "description": "Test feed using Internet Archive public audio files",
+  "source": {
+    "type": "cdn",
+    "baseUrl": "https://archive.org/download/"
+  },
+  "tracks": [
+    {
+      "id": "classical-test",
+      "title": "Bach - Air on G String",
+      "artist": "Public Domain Recording",
+      "audioUrl": "testmp3testfile/mpthreetest.mp3",
+      "description": "Classical music test from Internet Archive",
+      "duration": 180,
+      "metadata": {
+        "genre": "Classical",
+        "year": 2020
+      }
+    },
+    {
+      "id": "sample-music",
+      "title": "Sample Music Track",
+      "artist": "Archive.org",
+      "audioUrl": "SampleAudio0_44/SampleAudio_0.44_1s_mp3.mp3",
+      "description": "Short sample audio for testing",
+      "duration": 1,
+      "metadata": {
+        "genre": "Sample",
+        "year": 2020
+      }
+    },
+    {
+      "id": "jazz-sample",
+      "title": "Jazz Sample",
+      "artist": "Public Domain",
+      "audioUrl": "78_aint-she-sweet_ted-lewis-and-his-band-jack-yellen-milton-ager_gbia0000281b/Aint%20She%20Sweet%20-%20Ted%20Lewis%20and%20His%20Band.mp3",
+      "description": "Vintage jazz recording from the 1920s",
+      "duration": 180,
+      "metadata": {
+        "genre": "Jazz",
+        "year": 1925
+      }
+    }
+  ],
+  "metadata": {
+    "genre": "Test Audio",
+    "year": 2024,
+    "label": "Internet Archive",
+    "website": "https://archive.org"
+  }
+}
