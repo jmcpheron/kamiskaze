@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Kamiskaze Archives">
-    <meta name="theme-color" content="#121212">
+    <meta name="theme-color" content="#0a0a0a">
     <meta name="format-detection" content="telephone=no">
     <link rel="apple-touch-icon" href="sample_audio/clwb.svg">
     <!-- PWA Support -->
@@ -21,44 +21,45 @@
     <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
-    <div id="audio-player-container">
-        <div class="content-area">
-            <!-- Modern Hero Section -->
-            <header class="hero-section">
-                <nav class="main-nav">
-                    <div class="nav-brand">
-                        <h1 class="brand-title">Kamiskaze</h1>
-                    </div>
-                    <div class="nav-links">
-                        <a href="#music" class="nav-link active">Music</a>
-                        <a href="#videos" class="nav-link">Videos</a>
-                        <a href="#about" class="nav-link">About</a>
-                    </div>
-                </nav>
-                <div class="hero-content">
-                    <h2 class="hero-title">SoCal Ska Band Archives</h2>
-                    <p class="hero-description">Discover our complete collection of recordings, live performances, and rare tracks from the Southern California ska scene.</p>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="brand">
+                    <h1 class="brand-title">Kamiskaze</h1>
+                    <p class="brand-subtitle">SoCal Ska Band Archives</p>
                 </div>
-            </header>
+                <nav class="main-nav">
+                    <a href="#music" class="nav-link active">Music</a>
+                    <a href="#videos" class="nav-link">Videos</a>
+                    <a href="#about" class="nav-link">About</a>
+                </nav>
+            </div>
+        </header>
 
-            <!-- Add Notification Area -->
-            <div id="notification-area"></div>
+        <!-- Notification Area -->
+        <div id="notification-area" class="notification-area"></div>
 
-            <!-- Featured Content Section -->
-            <section class="featured-section">
-                <h2 class="section-title">Featured Release</h2>
-                <div class="featured-card">
-                    <div class="featured-media">
-                        <div id="album-art">
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Player Section -->
+            <section class="player-section">
+                <div class="player-container">
+                    <!-- Media Display -->
+                    <div class="media-container">
+                        <div id="album-art" class="album-art">
                             <img id="custom-album-art" src="images/cassette-single.png" alt="Album artwork">
                             <svg id="default-album-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
                             </svg>
                             <video id="video-art-display" muted playsinline preload="metadata" webkit-playsinline="true" x-webkit-airplay="allow" disablePictureInPlace="true" controlsList="nodownload"></video>
+                            
                             <!-- Video Controls Overlay -->
                             <div id="video-controls-overlay" class="video-controls-overlay">
-                                <span class="video-time-display" id="video-time-display">0:00 / 0:00</span>
-                                <div class="video-controls-container">
+                                <div class="video-controls-top">
+                                    <span class="video-time-display" id="video-time-display">0:00 / 0:00</span>
+                                </div>
+                                <div class="video-controls-bottom">
                                     <button id="video-play-pause" class="video-control-button" aria-label="Play/Pause">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                                             <path d="M8 5v14l11-7z"/>
@@ -73,72 +74,74 @@
                             </div>
                         </div>
                     </div>
-                    <div class="featured-info">
 
-                        <!-- Current Track Info -->
-                        <div id="current-track-info">
-                            <div id="track-info-text">
-                                <h3 class="featured-title">Palm Springs w/ The Jawas</h3>
-                                <p class="featured-description">Live performance at the Jawas in Palm Springs, CA. A high-energy ska set featuring our greatest hits and fan favorites.</p>
-                                <div class="featured-meta">
+                    <!-- Track Info -->
+                    <div class="track-info-container">
+                        <div id="current-track-info" class="current-track-info">
+                            <div id="track-info-text" class="track-info-text">
+                                <h2 class="track-title">Palm Springs w/ The Jawas</h2>
+                                <p class="track-description">Live performance at the Jawas in Palm Springs, CA</p>
+                                <div class="track-meta">
                                     <span class="meta-item">9 tracks</span>
                                     <span class="meta-item">Live recording</span>
-                                    <span class="meta-item">2023</span>
+                                    <span class="meta-item">1996</span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Player Controls -->
                         <div id="player-controls" class="player-controls">
-                            <!-- Main Buttons -->
-                            <div class="main-control">
-                                <button id="prev-button" class="control-button skip-button" aria-label="Previous track">
-                                    <!-- SVG for Previous -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+                            <!-- Main Control Buttons -->
+                            <div class="control-buttons">
+                                <button id="prev-button" class="control-button prev-button" aria-label="Previous track">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/>
+                                    </svg>
                                 </button>
                                 <button id="play-pause-button" class="control-button play-button" aria-label="Play">
-                                    <!-- Play Icon -->
-                                    <svg class="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                                    <!-- Pause Icon -->
-                                    <svg class="pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                                    <svg class="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M8 5v14l11-7z"/>
+                                    </svg>
+                                    <svg class="pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                                    </svg>
                                 </button>
-                                <button id="next-button" class="control-button skip-button" aria-label="Next track">
-                                    <!-- SVG for Next -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                                <button id="next-button" class="control-button next-button" aria-label="Next track">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+                                    </svg>
                                 </button>
                             </div>
                             
-                            <!-- Seek Bar and Time -->
-                            <div class="time-control">
-                                <div class="time-display-container">
-                                    <span id="current-time" class="time-display">0:00</span>
-                                    <span id="duration" class="time-display">--:--</span>
+                            <!-- Progress Section -->
+                            <div class="progress-section">
+                                <div class="time-display">
+                                    <span id="current-time">0:00</span>
+                                    <span id="duration">--:--</span>
                                 </div>
-                                <div class="seek-bar-container">
+                                <div class="seek-container">
                                     <input type="range" id="seek-bar" value="0" max="0" aria-label="Seek bar">
-                                    <div class="seek-progress-bar"></div>
                                 </div>
                             </div>
                             
-                            <!-- Speed Controls (Hidden) -->
-                            <div class="speed-controls-container" style="display: none;">
-                                <span class="speed-label" aria-hidden="true">Speed:</span>
-                                <button class="speed-button" data-speed="0.5" aria-label="Set speed to 0.5x">0.5x</button>
-                                <button class="speed-button active" data-speed="1.0" aria-label="Set speed to 1x">1x</button>
-                                <button class="speed-button" data-speed="1.5" aria-label="Set speed to 1.5x">1.5x</button>
-                                <button class="speed-button" data-speed="2.0" aria-label="Set speed to 2x">2x</button>
+                            <!-- Speed Controls (Hidden by default) -->
+                            <div class="speed-controls" style="display: none;">
+                                <span class="speed-label">Speed:</span>
+                                <button class="speed-button" data-speed="0.5">0.5x</button>
+                                <button class="speed-button active" data-speed="1.0">1x</button>
+                                <button class="speed-button" data-speed="1.5">1.5x</button>
+                                <button class="speed-button" data-speed="2.0">2x</button>
                             </div>
                         </div>
-                    </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Content Grid Section -->
-            <section class="content-grid-section">
-                <div class="content-categories">
-                    <!-- Playlist Selector -->
-                    <div class="category-nav">
+            <!-- Playlist Section -->
+            <section class="playlist-section">
+                <div class="playlist-container">
+                    <!-- Playlist Navigation -->
+                    <div class="playlist-nav">
                         <div id="playlist-buttons" class="playlist-buttons"></div>
                         <button id="add-feed-button" class="add-feed-button" aria-label="Add External Feed">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
@@ -147,11 +150,9 @@
                             Add Feed
                         </button>
                     </div>
-                </div>
-                
-                <!-- Track List -->
-                <div class="tracklist-section">
-                    <div id="track-list-container" class="track-list-container">
+
+                    <!-- Track List -->
+                    <div class="tracklist-container">
                         <div class="tracklist-header">
                             <h3 class="tracklist-title">Palm Springs w/ The Jawas <span id="track-count" class="track-count"></span></h3>
                             <p class="tracklist-description">Live performance at the Jawas in Palm Springs, CA</p>
@@ -160,26 +161,21 @@
                     </div>
                 </div>
             </section>
-        </div>
+        </main>
 
-        <div class="player-ui-area">
-            <!-- Audio Element -->
-            <audio id="audio-player" preload="metadata"></audio>
-            
-            <!-- Footer -->
-            <footer>
-                <div class="footer-links">
-                    <p class="band-credit"><strong>Kamiskaze</strong> - SoCal Ska Band</p>
-                    <p>Media archives at <a href="https://github.com/jmcpheron/kamiskaze">github.com/jmcpheron/kamiskaze</a></p>
-                    <hr style="width: 50%; margin: 8px auto; opacity: 0.3;">
-                    <p class="player-credit">Powered by <a href="https://github.com/jmcpheron/did-you-hear-that">did-you-hear-that</a> <span class="version">v1.0</span></p>
-                </div>
-            </footer>
-        </div>
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="footer-content">
+                <p class="band-credit"><strong>Kamiskaze</strong> - SoCal Ska Band</p>
+                <p class="archive-link">Archives at <a href="https://github.com/jmcpheron/kamiskaze">github.com/jmcpheron/kamiskaze</a></p>
+                <p class="player-credit">Powered by <a href="https://github.com/jmcpheron/did-you-hear-that">did-you-hear-that</a></p>
+            </div>
+        </footer>
     </div>
 
     <!-- Add Feed Modal -->
     <div id="add-feed-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Add External Feed</h3>
@@ -202,7 +198,7 @@
                             <summary>Examples & Help</summary>
                             <div class="examples">
                                 <h4>Test with Local Feed:</h4>
-                                <code onclick="document.getElementById('feed-url').value=this.textContent">http://localhost:8000/github-cdn-test.json</code>
+                                <code onclick="document.getElementById('feed-url').value=this.textContent">http://localhost:8001/github-cdn-test.json</code>
                                 
                                 <h4>GitHub Pages Example:</h4>
                                 <code>https://username.github.io/repo/feed.json</code>
@@ -222,6 +218,9 @@
             </div>
         </div>
     </div>
+
+    <!-- Hidden Audio Element -->
+    <audio id="audio-player" preload="metadata"></audio>
 
     <script src="scripts/main.js"></script>
 </body>
