@@ -1,0 +1,41 @@
+{
+  "id": "github-test-feed",
+  "title": "GitHub Test Audio Feed",
+  "description": "Test feed using public GitHub-hosted audio files",
+  "source": {
+    "type": "cdn",
+    "baseUrl": "https://raw.githubusercontent.com/skratchdot/audio-files/master/"
+  },
+  "tracks": [
+    {
+      "id": "test-tone",
+      "title": "Test Tone",
+      "artist": "Test Audio",
+      "audioUrl": "mp3/440hz.mp3",
+      "description": "440Hz test tone for audio system verification",
+      "duration": 10,
+      "metadata": {
+        "genre": "Test",
+        "year": 2023
+      }
+    },
+    {
+      "id": "silence",
+      "title": "Silence Test",
+      "artist": "Test Audio",
+      "audioUrl": "mp3/silence.mp3", 
+      "description": "Silent audio file for testing",
+      "duration": 5,
+      "metadata": {
+        "genre": "Test",
+        "year": 2023
+      }
+    }
+  ],
+  "metadata": {
+    "genre": "Test Audio",
+    "year": 2023,
+    "label": "Open Source",
+    "website": "https://github.com/skratchdot/audio-files"
+  }
+}

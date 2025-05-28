@@ -48,6 +48,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const helpButton = document.getElementById('help-button');
   const helpDialog = document.getElementById('help-dialog');
   const closeHelpButton = document.getElementById('close-help-dialog');
+  
+  // New modal elements
+  const addFeedButton = document.getElementById('add-feed-button');
+  const addFeedModal = document.getElementById('add-feed-modal');
+  const closeAddFeedModal = document.getElementById('close-add-feed-modal');
+  const cancelAddFeed = document.getElementById('cancel-add-feed');
 
   // State
   let currentFeed = null;
@@ -57,6 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let customFeeds = [];
   let videoMode = false;
   let notification = null; // Will be created when needed
+  let cdnCache = new Map(); // Simple CDN response cache
 
   // Initialize
   initializeApp();
@@ -106,6 +113,190 @@ document.addEventListener('DOMContentLoaded', () => {
       showNotification('Failed to load feeds', 'error');
       console.error('Error loading feeds:', error);
     }
+  }
+
+  // CDN Feed Loading Functions
+  function isAbsoluteUrl(url) {
+    return /^https?:\/\//.test(url);
+  }
+
+  function resolveMediaUrl(baseUrl, mediaUrl, corsProxy = null) {
+    // If mediaUrl is already absolute, use it as-is
+    if (isAbsoluteUrl(mediaUrl)) {
+      return corsProxy ? `${corsProxy}${encodeURIComponent(mediaUrl)}` : mediaUrl;
+    }
+    
+    // Otherwise, resolve relative to baseUrl
+    const fullUrl = new URL(mediaUrl, baseUrl).href;
+    return corsProxy ? `${corsProxy}${encodeURIComponent(fullUrl)}` : fullUrl;
+  }
+
+  async function fetchWithCors(url, options = {}, corsProxy = null, useCache = true) {
+    const cacheKey = `${url}:${JSON.stringify(options)}`;
+    
+    // Check cache first (for feed metadata, not media content)
+    if (useCache && cdnCache.has(cacheKey)) {
+      const cachedData = cdnCache.get(cacheKey);
+      if (Date.now() - cachedData.timestamp < 300000) { // 5 minute cache
+        console.log('Using cached response for:', url);
+        return {
+          ok: true,
+          json: () => Promise.resolve(cachedData.data)
+        };
+      } else {
+        cdnCache.delete(cacheKey); // Remove expired cache
+      }
+    }
+    
+    const fetchUrl = corsProxy ? `${corsProxy}${encodeURIComponent(url)}` : url;
+    
+    const fetchOptions = {
+      method: 'GET',
+      mode: 'cors', // Explicitly request CORS
+      cache: 'default',
+      ...options,
+      headers: {
+        'Accept': 'application/json,audio/*,video/*,image/*',
+        // GitHub Pages friendly headers
+        'Cache-Control': 'no-cache',
+        ...options.headers
+      }
+    };
+
+    try {
+      const response = await fetch(fetchUrl, fetchOptions);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      // Cache JSON responses
+      if (useCache && response.headers.get('content-type')?.includes('application/json')) {
+        const clonedResponse = response.clone();
+        const data = await clonedResponse.json();
+        cdnCache.set(cacheKey, {
+          data: data,
+          timestamp: Date.now()
+        });
+      }
+      
+      return response;
+    } catch (error) {
+      // If CORS fails, try common workarounds for GitHub Pages
+      if (error.name === 'TypeError' && !corsProxy) {
+        console.warn('CORS error detected, trying GitHub Pages compatible approaches...');
+        
+        // Try with jsdelivr CDN proxy for GitHub repos
+        if (url.includes('github.com') || url.includes('githubusercontent.com')) {
+          try {
+            const githubCdnUrl = convertToJsdelivrCdn(url);
+            if (githubCdnUrl !== url) {
+              console.log(`Retrying with jsDelivr CDN: ${githubCdnUrl}`);
+              return await fetch(githubCdnUrl, fetchOptions);
+            }
+          } catch (jsdelivrError) {
+            console.warn('jsDelivr fallback also failed:', jsdelivrError);
+          }
+        }
+        
+        // Suggest CORS proxy as final fallback
+        throw new Error('CORS error detected. For GitHub Pages: ensure your feed is in a public repo, or try using a CORS proxy like https://cors-anywhere.herokuapp.com/ prefix to your URL.');
+      }
+      throw error;
+    }
+  }
+
+  function convertToJsdelivrCdn(githubUrl) {
+    // Convert GitHub URLs to jsDelivr CDN format
+    // https://github.com/user/repo/blob/main/file.json -> https://cdn.jsdelivr.net/gh/user/repo/file.json
+    // https://raw.githubusercontent.com/user/repo/main/file.json -> https://cdn.jsdelivr.net/gh/user/repo/file.json
+    
+    const githubRegex = /https:\/\/(?:github\.com|raw\.githubusercontent\.com)\/([\w-]+)\/([\w-]+)\/(?:blob\/|raw\/)?(?:main|master)\/(.*)/;
+    const match = githubUrl.match(githubRegex);
+    
+    if (match) {
+      const [, user, repo, path] = match;
+      return `https://cdn.jsdelivr.net/gh/${user}/${repo}/${path}`;
+    }
+    
+    return githubUrl; // Return original if no match
+  }
+
+  function isGitHubPages(url) {
+    return url.includes('github.io') || 
+           url.includes('githubusercontent.com') || 
+           url.includes('github.com');
+  }
+
+  function processCdnFeed(feedData) {
+    if (!feedData.source || !feedData.source.baseUrl) {
+      // Not a CDN feed, return as-is
+      return feedData;
+    }
+
+    const { baseUrl, corsProxy, headers } = feedData.source;
+    
+    // Check if this is a GitHub-hosted source and optimize accordingly
+    const isGitHubSource = isGitHubPages(baseUrl);
+    let optimizedBaseUrl = baseUrl;
+    
+    if (isGitHubSource && !corsProxy) {
+      // Try to convert GitHub URLs to jsDelivr CDN for better CORS support
+      optimizedBaseUrl = convertToJsdelivrCdn(baseUrl);
+      console.log(`GitHub source detected, optimizing baseUrl: ${baseUrl} -> ${optimizedBaseUrl}`);
+    }
+    
+    // Process each track to resolve URLs
+    const processedTracks = feedData.tracks.map(track => ({
+      ...track,
+      audioUrl: resolveMediaUrl(optimizedBaseUrl, track.audioUrl, corsProxy),
+      videoUrl: track.videoUrl ? resolveMediaUrl(optimizedBaseUrl, track.videoUrl, corsProxy) : undefined,
+      albumArt: track.albumArt ? resolveMediaUrl(optimizedBaseUrl, track.albumArt, corsProxy) : undefined,
+      thumbnail: track.thumbnail ? resolveMediaUrl(optimizedBaseUrl, track.thumbnail, corsProxy) : undefined,
+      // Mark as external for special handling
+      _isExternal: true,
+      _corsProxy: corsProxy,
+      _headers: headers,
+      _isGitHubSource: isGitHubSource,
+      _optimizedBaseUrl: optimizedBaseUrl
+    }));
+
+    return {
+      ...feedData,
+      tracks: processedTracks,
+      _isExternal: true,
+      _isGitHubSource: isGitHubSource,
+      _optimizedBaseUrl: optimizedBaseUrl
+    };
+  }
+
+  async function validateCdnFeed(feedData) {
+    // Basic structure validation
+    if (!feedData.id || !feedData.title || !Array.isArray(feedData.tracks)) {
+      throw new Error('Invalid feed structure: missing required fields');
+    }
+
+    // Validate tracks
+    for (const track of feedData.tracks) {
+      if (!track.id || !track.title || !track.audioUrl) {
+        throw new Error(`Invalid track structure: ${track.title || 'unnamed track'}`);
+      }
+    }
+
+    // If it's a CDN feed, validate the source configuration
+    if (feedData.source) {
+      if (!feedData.source.baseUrl) {
+        throw new Error('CDN feed missing baseUrl');
+      }
+      
+      try {
+        new URL(feedData.source.baseUrl);
+      } catch (error) {
+        throw new Error('Invalid baseUrl in CDN feed source');
+      }
+    }
+
+    return true;
   }
 
   function loadCustomFeeds() {
@@ -205,6 +396,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add feed form
     if (addFeedForm) {
       addFeedForm.addEventListener('submit', handleAddFeed);
+    }
+    
+    // Add feed modal
+    if (addFeedButton) {
+      addFeedButton.addEventListener('click', showAddFeedModal);
+    }
+    if (closeAddFeedModal) {
+      closeAddFeedModal.addEventListener('click', hideAddFeedModal);
+    }
+    if (cancelAddFeed) {
+      cancelAddFeed.addEventListener('click', hideAddFeedModal);
+    }
+    if (addFeedModal) {
+      addFeedModal.addEventListener('click', (e) => {
+        if (e.target === addFeedModal) {
+          hideAddFeedModal();
+        }
+      });
     }
     
     // Clear data button
@@ -587,8 +796,25 @@ document.addEventListener('DOMContentLoaded', () => {
       playPauseButton.style.opacity = '0.7';
     }
     
-    // Update audio source with error handling
+    // Update audio source with enhanced error handling for external sources
     try {
+      // For external CDN sources, add additional error handling
+      if (track._isExternal) {
+        audioPlayer.addEventListener('error', handleExternalMediaError, { once: true });
+        
+        // Set custom headers if specified
+        if (track._headers) {
+          console.log('External track detected with custom headers:', track._headers);
+        }
+        
+        // Log the resolved URL for debugging
+        console.log(`Loading external track: ${track.audioUrl}`);
+        
+        if (track._isGitHubSource) {
+          console.log('GitHub source detected, using optimized URL handling');
+        }
+      }
+      
       audioPlayer.src = track.audioUrl;
       audioPlayer.load();
       
@@ -601,7 +827,37 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 500);
     } catch (error) {
       console.error('Error loading track:', error);
-      showNotification('Error loading track: ' + error.message, 'error');
+      showNotification(`Error loading ${track._isExternal ? 'external' : ''} track: ${error.message}`, 'error');
+    }
+    
+    function handleExternalMediaError(event) {
+      const error = audioPlayer.error;
+      let errorMessage = 'Unknown error loading external media';
+      
+      if (error) {
+        switch (error.code) {
+          case MediaError.MEDIA_ERR_ABORTED:
+            errorMessage = 'Media loading was aborted';
+            break;
+          case MediaError.MEDIA_ERR_NETWORK:
+            errorMessage = 'Network error loading external media. Check CORS configuration.';
+            break;
+          case MediaError.MEDIA_ERR_DECODE:
+            errorMessage = 'Media decoding error or unsupported format';
+            break;
+          case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+            errorMessage = 'Media format not supported or source not accessible';
+            break;
+        }
+      }
+      
+      console.error('External media error:', errorMessage, error);
+      showNotification(`External media error: ${errorMessage}`, 'error');
+      
+      // For GitHub sources, suggest alternatives
+      if (track._isGitHubSource) {
+        console.warn('GitHub source failed. Consider using GitHub Releases for large media files or enabling GitHub Pages.');
+      }
     }
     
     // Update track info
@@ -670,11 +926,25 @@ document.addEventListener('DOMContentLoaded', () => {
         videoControlsOverlay.style.display = 'none';
       }
       
-      // Show appropriate album art
+      // Show appropriate album art with external source support
       // Check if track has album art that is not an SVG file
       if (track.albumArt && !track.albumArt.toLowerCase().endsWith('.svg')) {
-        // Track has custom album art
+        // Track has custom album art (local or external)
         if (albumArt) {
+          // Handle external album art with error fallback
+          if (track._isExternal) {
+            albumArt.addEventListener('error', function handleAlbumArtError() {
+              console.warn(`Failed to load external album art: ${track.albumArt}`);
+              // Fallback to default
+              albumArt.src = 'images/cassette-single.png';
+              albumArt.removeEventListener('error', handleAlbumArtError);
+            }, { once: true });
+            
+            albumArt.addEventListener('load', function handleAlbumArtLoad() {
+              console.log(`Successfully loaded external album art: ${track.albumArt}`);
+            }, { once: true });
+          }
+          
           albumArt.src = track.albumArt;
           albumArt.classList.remove('hidden');
           albumArt.style.display = 'block';
@@ -1009,8 +1279,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!currentFeed || !currentFeed.tracks) return;
     
     // Update track list container title and description
-    const trackListContainerTitle = document.querySelector('#track-list-container h2');
-    const trackListContainerDesc = document.querySelector('#track-list-container .playlist-description');
+    const trackListContainerTitle = document.querySelector('.tracklist-title');
+    const trackListContainerDesc = document.querySelector('.tracklist-description');
     
     if (trackListContainerTitle) {
       trackListContainerTitle.textContent = currentFeed.title || 'Playlist';
@@ -1095,6 +1365,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Modal Functions
+  function showAddFeedModal() {
+    if (addFeedModal) {
+      addFeedModal.classList.remove('hidden');
+      // Focus the input field
+      if (feedUrlInput) {
+        setTimeout(() => feedUrlInput.focus(), 100);
+      }
+    }
+  }
+
+  function hideAddFeedModal() {
+    if (addFeedModal) {
+      addFeedModal.classList.add('hidden');
+      // Reset form
+      if (feedUrlInput) {
+        feedUrlInput.value = '';
+      }
+    }
+  }
+
   // Feed Management
   async function handleAddFeed(e) {
     e.preventDefault();
@@ -1108,17 +1399,12 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       showNotification('Loading feed...', 'info');
       
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error('Failed to fetch feed: ' + response.statusText);
-      }
-      
+      // Try to fetch the feed with enhanced error handling
+      const response = await fetchWithCors(url);
       const feedData = await response.json();
       
-      // Validate feed structure
-      if (!feedData.title || !feedData.tracks || !Array.isArray(feedData.tracks)) {
-        throw new Error('Invalid feed format');
-      }
+      // Validate the feed structure
+      await validateCdnFeed(feedData);
       
       // Check for duplicate
       if (customFeeds.some(feed => feed.url === url)) {
@@ -1126,13 +1412,19 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       
+      // Process CDN feed if needed (resolve URLs, etc.)
+      const processedFeedData = processCdnFeed(feedData);
+      
       // Create new feed object
       const newFeed = {
-        id: 'custom_' + Date.now(),
-        title: feedData.title,
-        description: feedData.description || '',
-        tracks: feedData.tracks,
-        url: url
+        id: processedFeedData.id || 'custom_' + Date.now(),
+        title: processedFeedData.title,
+        description: processedFeedData.description || '',
+        tracks: processedFeedData.tracks,
+        url: url,
+        source: processedFeedData.source || null,
+        metadata: processedFeedData.metadata || null,
+        _isExternal: processedFeedData._isExternal || false
       };
       
       // Add to feeds
@@ -1149,10 +1441,11 @@ document.addEventListener('DOMContentLoaded', () => {
       // Switch to new feed
       setCurrentFeed(newFeed);
       
-      // Reset form
+      // Reset form and close modal
       feedUrlInput.value = '';
+      hideAddFeedModal();
       
-      showNotification(`Added new feed: ${newFeed.title}`, 'success');
+      showNotification(`Added ${newFeed._isExternal ? 'external CDN' : 'new'} feed: ${newFeed.title}`, 'success');
     } catch (error) {
       showNotification('Error adding feed: ' + error.message, 'error');
       console.error('Error adding feed:', error);

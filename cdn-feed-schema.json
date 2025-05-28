@@ -1,0 +1,114 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "External CDN Feed Schema",
+  "description": "JSON schema for external CDN-hosted audio/video feeds",
+  "type": "object",
+  "required": ["id", "title", "tracks", "source"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the feed"
+    },
+    "title": {
+      "type": "string",
+      "description": "Display name for the feed"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional description of the feed content"
+    },
+    "source": {
+      "type": "object",
+      "required": ["type", "baseUrl"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["cdn", "s3", "generic"],
+          "description": "Type of external source"
+        },
+        "baseUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "Base URL for all media assets in this feed"
+        },
+        "corsProxy": {
+          "type": "string",
+          "format": "uri",
+          "description": "Optional CORS proxy URL for accessing the media"
+        },
+        "headers": {
+          "type": "object",
+          "description": "Optional HTTP headers to include with requests"
+        }
+      }
+    },
+    "tracks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "audioUrl"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique track identifier"
+          },
+          "title": {
+            "type": "string",
+            "description": "Track title"
+          },
+          "artist": {
+            "type": "string",
+            "description": "Track artist"
+          },
+          "audioUrl": {
+            "type": "string",
+            "description": "URL path relative to baseUrl or absolute URL"
+          },
+          "videoUrl": {
+            "type": "string",
+            "description": "Optional video URL for video content"
+          },
+          "albumArt": {
+            "type": "string",
+            "description": "URL path relative to baseUrl or absolute URL for album art"
+          },
+          "thumbnail": {
+            "type": "string",
+            "description": "Optional thumbnail URL for video content"
+          },
+          "description": {
+            "type": "string",
+            "description": "Track description"
+          },
+          "duration": {
+            "type": "number",
+            "description": "Track duration in seconds (optional, for display)"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Additional metadata (genre, year, etc.)"
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Feed-level metadata",
+      "properties": {
+        "genre": {
+          "type": "string"
+        },
+        "year": {
+          "type": "number"
+        },
+        "label": {
+          "type": "string"
+        },
+        "website": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    }
+  }
+}

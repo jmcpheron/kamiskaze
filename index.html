@@ -23,58 +23,73 @@
 <body>
     <div id="audio-player-container">
         <div class="content-area">
-            <!-- Header with Kamiskaze Branding -->
-            <header class="main-header-section">
-                <div class="header-glow"></div>
-                <h1 class="brand-title">Kamiskaze</h1>
-                <p class="subtitle">SoCal ska band archives</p>
-                <div class="header-accent-line"></div>
+            <!-- Modern Hero Section -->
+            <header class="hero-section">
+                <nav class="main-nav">
+                    <div class="nav-brand">
+                        <h1 class="brand-title">Kamiskaze</h1>
+                    </div>
+                    <div class="nav-links">
+                        <a href="#music" class="nav-link active">Music</a>
+                        <a href="#videos" class="nav-link">Videos</a>
+                        <a href="#about" class="nav-link">About</a>
+                    </div>
+                </nav>
+                <div class="hero-content">
+                    <h2 class="hero-title">SoCal Ska Band Archives</h2>
+                    <p class="hero-description">Discover our complete collection of recordings, live performances, and rare tracks from the Southern California ska scene.</p>
+                </div>
             </header>
 
             <!-- Add Notification Area -->
             <div id="notification-area"></div>
 
-            <!-- Main content area with integrated layout -->
-            <div class="main-layout-container">
-                <!-- Player Column -->
-                <div class="player-column">
-                    <!-- Album Art -->
-                    <div id="album-art">
-                        <img id="custom-album-art" src="images/cassette-single.png" alt="Album artwork">
-                        <svg id="default-album-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-                        </svg>
-                        <video id="video-art-display" muted playsinline preload="metadata" webkit-playsinline="true" x-webkit-airplay="allow" disablePictureInPlace="true" controlsList="nodownload"></video>
-                        <!-- Video Controls Overlay -->
-                        <div id="video-controls-overlay" class="video-controls-overlay">
-                            <span class="video-time-display" id="video-time-display">0:00 / 0:00</span>
-                            <div class="video-controls-container">
-                                <button id="video-play-pause" class="video-control-button" aria-label="Play/Pause">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                        <path d="M8 5v14l11-7z"/>
-                                    </svg>
-                                </button>
-                                <button id="video-fullscreen" class="video-control-button" aria-label="Fullscreen">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                        <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
-                                    </svg>
-                                </button>
+            <!-- Featured Content Section -->
+            <section class="featured-section">
+                <h2 class="section-title">Featured Release</h2>
+                <div class="featured-card">
+                    <div class="featured-media">
+                        <div id="album-art">
+                            <img id="custom-album-art" src="images/cassette-single.png" alt="Album artwork">
+                            <svg id="default-album-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                            </svg>
+                            <video id="video-art-display" muted playsinline preload="metadata" webkit-playsinline="true" x-webkit-airplay="allow" disablePictureInPlace="true" controlsList="nodownload"></video>
+                            <!-- Video Controls Overlay -->
+                            <div id="video-controls-overlay" class="video-controls-overlay">
+                                <span class="video-time-display" id="video-time-display">0:00 / 0:00</span>
+                                <div class="video-controls-container">
+                                    <button id="video-play-pause" class="video-control-button" aria-label="Play/Pause">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                            <path d="M8 5v14l11-7z"/>
+                                        </svg>
+                                    </button>
+                                    <button id="video-fullscreen" class="video-control-button" aria-label="Fullscreen">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                            <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <div class="featured-info">
 
-                    <!-- Current Track Info & Controls Group -->
-                    <div class="player-controls-group">
                         <!-- Current Track Info -->
                         <div id="current-track-info">
                             <div id="track-info-text">
-                                <h2>No Track Selected</h2>
-                                <p>Select a track from the list below to start playing.</p>
+                                <h3 class="featured-title">Palm Springs w/ The Jawas</h3>
+                                <p class="featured-description">Live performance at the Jawas in Palm Springs, CA. A high-energy ska set featuring our greatest hits and fan favorites.</p>
+                                <div class="featured-meta">
+                                    <span class="meta-item">9 tracks</span>
+                                    <span class="meta-item">Live recording</span>
+                                    <span class="meta-item">2023</span>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Player Controls -->
-                        <div id="player-controls">
+                        <div id="player-controls" class="player-controls">
                             <!-- Main Buttons -->
                             <div class="main-control">
                                 <button id="prev-button" class="control-button skip-button" aria-label="Previous track">
@@ -115,23 +130,36 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Integrated Track List -->
-                    <div class="integrated-playlist">
-                        <!-- Playlist Selector - Compact Version -->
-                        <div class="playlist-selector-compact">
-                            <div id="playlist-buttons" class="playlist-buttons"></div>
-                        </div>
-                        
-                        <!-- Track List -->
-                        <div id="track-list-container">
-                            <h3>Palm Springs w/ The Jawas <span id="track-count" class="track-count"></span></h3>
-                            <p class="playlist-description">Live performance at the Jawas in Palm Springs, CA</p>
-                            <ul id="track-list"></ul>
-                        </div>
                     </div>
                 </div>
-            </div>
+            </section>
+
+            <!-- Content Grid Section -->
+            <section class="content-grid-section">
+                <div class="content-categories">
+                    <!-- Playlist Selector -->
+                    <div class="category-nav">
+                        <div id="playlist-buttons" class="playlist-buttons"></div>
+                        <button id="add-feed-button" class="add-feed-button" aria-label="Add External Feed">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
+                            </svg>
+                            Add Feed
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Track List -->
+                <div class="tracklist-section">
+                    <div id="track-list-container" class="track-list-container">
+                        <div class="tracklist-header">
+                            <h3 class="tracklist-title">Palm Springs w/ The Jawas <span id="track-count" class="track-count"></span></h3>
+                            <p class="tracklist-description">Live performance at the Jawas in Palm Springs, CA</p>
+                        </div>
+                        <ul id="track-list" class="track-list"></ul>
+                    </div>
+                </div>
+            </section>
         </div>
 
         <div class="player-ui-area">
@@ -149,6 +177,52 @@
             </footer>
         </div>
     </div>
+
+    <!-- Add Feed Modal -->
+    <div id="add-feed-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add External Feed</h3>
+                <button id="close-add-feed-modal" class="close-button" aria-label="Close">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Add playlists from external CDN sources like GitHub Pages, S3, or any CORS-enabled server.</p>
+                <form id="add-feed-form">
+                    <div class="form-group">
+                        <label for="feed-url">Feed URL:</label>
+                        <input type="url" id="feed-url" placeholder="https://example.com/feed.json" required>
+                        <small class="help-text">Enter the URL to your JSON feed file</small>
+                    </div>
+                    <div class="form-group">
+                        <details class="help-details">
+                            <summary>Examples & Help</summary>
+                            <div class="examples">
+                                <h4>Test with Local Feed:</h4>
+                                <code onclick="document.getElementById('feed-url').value=this.textContent">http://localhost:8000/github-cdn-test.json</code>
+                                
+                                <h4>GitHub Pages Example:</h4>
+                                <code>https://username.github.io/repo/feed.json</code>
+                                
+                                <h4>S3/CDN Example:</h4>
+                                <code>https://mybucket.s3.amazonaws.com/feed.json</code>
+                                
+                                <p><strong>Note:</strong> The external source must have CORS enabled. GitHub Pages works automatically!</p>
+                            </div>
+                        </details>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" id="cancel-add-feed" class="button-secondary">Cancel</button>
+                        <button type="submit" class="button-primary">Add Feed</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="scripts/main.js"></script>
 </body>
 </html>

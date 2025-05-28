@@ -1,0 +1,48 @@
+{
+  "id": "github-pages-demo",
+  "title": "GitHub Pages Demo Feed",
+  "description": "Example feed hosted on GitHub Pages with optimized CORS handling",
+  "source": {
+    "type": "cdn",
+    "baseUrl": "https://username.github.io/repository-name/",
+    "headers": {
+      "User-Agent": "Kamiskaze-Player/1.0"
+    }
+  },
+  "tracks": [
+    {
+      "id": "gh-track-1",
+      "title": "GitHub Hosted Track",
+      "artist": "Your Band",
+      "audioUrl": "audio/track1.mp3",
+      "albumArt": "images/album1.jpg",
+      "description": "Audio file hosted on GitHub Pages",
+      "duration": 180,
+      "metadata": {
+        "genre": "Alternative",
+        "year": 2024
+      }
+    },
+    {
+      "id": "gh-track-2", 
+      "title": "GitHub Video Track",
+      "artist": "Your Band",
+      "audioUrl": "video/track2.mp4",
+      "videoUrl": "video/track2.mp4",
+      "albumArt": "images/album2.jpg",
+      "thumbnail": "images/thumb2.jpg",
+      "description": "Video file hosted on GitHub Pages",
+      "duration": 240,
+      "metadata": {
+        "genre": "Alternative",
+        "year": 2024
+      }
+    }
+  ],
+  "metadata": {
+    "genre": "Alternative",
+    "year": 2024,
+    "label": "Independent",
+    "website": "https://username.github.io/repository-name/"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "id": "github-cdn-test",
+  "title": "GitHub CDN Audio Test",
+  "description": "Test feed using GitHub raw content as CDN",
+  "source": {
+    "type": "cdn",
+    "baseUrl": "https://raw.githubusercontent.com/anars/blank-audio/master/"
+  },
+  "tracks": [
+    {
+      "id": "blank-1s",
+      "title": "1 Second Blank",
+      "artist": "Test Audio",
+      "audioUrl": "1-second-of-silence.mp3",
+      "description": "1 second of silence for testing",
+      "duration": 1,
+      "metadata": {
+        "genre": "Test",
+        "year": 2024
+      }
+    },
+    {
+      "id": "blank-10s",
+      "title": "10 Second Blank",
+      "artist": "Test Audio", 
+      "audioUrl": "10-seconds-of-silence.mp3",
+      "description": "10 seconds of silence for testing",
+      "duration": 10,
+      "metadata": {
+        "genre": "Test",
+        "year": 2024
+      }
+    },
+    {
+      "id": "blank-30s",
+      "title": "30 Second Blank",
+      "artist": "Test Audio",
+      "audioUrl": "30-seconds-of-silence.mp3",
+      "description": "30 seconds of silence for testing",
+      "duration": 30,
+      "metadata": {
+        "genre": "Test",
+        "year": 2024
+      }
+    }
+  ],
+  "metadata": {
+    "genre": "Test Audio",
+    "year": 2024,
+    "label": "GitHub",
+    "website": "https://github.com/anars/blank-audio"
+  }
+}
