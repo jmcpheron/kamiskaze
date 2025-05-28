@@ -468,7 +468,7 @@ document.addEventListener('DOMContentLoaded', () => {
             loadTrack(currentTrackIndex);
             
             // Restore playback position
-            if (state.currentTime) {
+            if (state.currentTime && audioPlayer) {
               audioPlayer.currentTime = state.currentTime;
             }
             
@@ -485,7 +485,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function savePlayerState() {
-    if (!currentFeed) return;
+    if (!currentFeed || !audioPlayer) return;
     
     const state = {
       feedId: currentFeed.id,
@@ -507,6 +507,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function playAudio() {
+    if (!audioPlayer) return;
     // Play the audio
     audioPlayer.play().then(() => {
       isPlaying = true;
@@ -520,6 +521,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function pauseAudio() {
+    if (!audioPlayer) return;
     audioPlayer.pause();
     isPlaying = false;
     updatePlayPauseButton();
@@ -528,6 +530,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updatePlayPauseButton() {
+    if (!playIcon || !pauseIcon || !playPauseButton) return;
+    
     if (isPlaying) {
       playIcon.style.opacity = '0';
       playIcon.style.transform = 'translate(-43%, -50%) scale(0)';
@@ -544,7 +548,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function playPreviousTrack() {
-    if (!currentFeed || !currentFeed.tracks) return;
+    if (!currentFeed || !currentFeed.tracks || !audioPlayer) return;
     
     if (audioPlayer.currentTime > 3) {
       // If current track has played for more than 3 seconds, restart it
@@ -983,6 +987,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function seekTrack() {
     // Ensure duration is available and is a number greater than 0
     if (!audioPlayer.duration || isNaN(audioPlayer.duration) || audioPlayer.duration <= 0) return;
+    if (!seekBar) return;
     // Directly set the audio's current time to the seek bar's value
     // The seek bar's max value should be set to the audio duration
     audioPlayer.currentTime = seekBar.value;
@@ -1050,16 +1055,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function setPlaybackSpeed(speed) {
+    if (!audioPlayer) return;
     audioPlayer.playbackRate = speed;
     
     // Update UI
-    speedButtons.forEach(button => {
-      if (parseFloat(button.dataset.speed) === speed) {
-        button.classList.add('active');
-      } else {
-        button.classList.remove('active');
-      }
-    });
+    if (speedButtons) {
+      speedButtons.forEach(button => {
+        if (parseFloat(button.dataset.speed) === speed) {
+          button.classList.add('active');
+        } else {
+          button.classList.remove('active');
+        }
+      });
+    }
     
     // Save state
     savePlayerState();
@@ -1274,6 +1282,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderTrackList() {
+    if (!trackList) return;
     trackList.innerHTML = '';
     
     if (!currentFeed || !currentFeed.tracks) return;
@@ -1573,14 +1582,14 @@ document.addEventListener('DOMContentLoaded', () => {
       case 'ArrowLeft':
         if (e.ctrlKey || e.metaKey) {
           playPreviousTrack();
-        } else {
+        } else if (audioPlayer) {
           audioPlayer.currentTime -= 10; // Rewind 10 seconds
         }
         break;
       case 'ArrowRight':
         if (e.ctrlKey || e.metaKey) {
           playNextTrack();
-        } else {
+        } else if (audioPlayer) {
           audioPlayer.currentTime += 10; // Forward 10 seconds
         }
         break;
