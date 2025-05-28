@@ -55,71 +55,167 @@ body {
     overflow-x: hidden;
 }
 
-/* Modern Header Section */
-.main-header-section {
-    text-align: center;
-    margin: 32px 0 48px;
-    padding: 0 24px;
+/* Modern Hero Section */
+.hero-section {
+    margin-bottom: 48px;
 }
 
-.header-glow {
-    display: none; /* Remove retro glow effect */
+.main-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 40px;
 }
 
-.brand-title {
+.nav-brand .brand-title {
     color: var(--text-primary);
-    margin: 0 0 8px 0;
-    font-size: 3rem;
+    margin: 0;
+    font-size: 1.75rem;
     font-weight: 700;
     letter-spacing: -0.025em;
     font-family: 'Inter', sans-serif;
-    line-height: 1.1;
 }
 
-h1 {
+.nav-links {
+    display: flex;
+    gap: 32px;
+}
+
+.nav-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: color 0.2s ease;
+    position: relative;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: var(--accent-color);
+}
+
+.nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--accent-color);
+    border-radius: 1px;
+}
+
+.hero-content {
     text-align: center;
-    color: var(--neon-yellow);
-    margin: 10px 0 5px 0;
-    font-size: 2.2em;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    font-family: 'Press Start 2P', cursive;
-    text-shadow: 0 0 10px rgba(247, 255, 0, 0.7), 
-                0 0 20px rgba(247, 255, 0, 0.5),
-                0 0 30px rgba(247, 255, 0, 0.3);
-    transform: skew(-5deg);
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 24px;
 }
 
-/* Album Art Section - HitClips/cassette style */
-#album-art {
-    width: 320px;
-    height: 320px;
-    margin: 0 auto 24px;
+.hero-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0 0 16px 0;
+    color: var(--text-primary);
+    letter-spacing: -0.025em;
+}
+
+.hero-description {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Featured Section */
+.featured-section {
+    margin-bottom: 64px;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 24px 0;
+    letter-spacing: -0.025em;
+}
+
+.featured-card {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 40px;
+    background: var(--bg-card);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.featured-card:hover {
+    border-color: var(--border-light);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.featured-media {
+    background: var(--bg-dark);
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 16px;
+}
+
+.featured-info {
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Album Art - Responsive */
+#album-art {
+    width: 100%;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0;
     overflow: hidden;
-    box-shadow: 
-        0 4px 12px rgba(0, 0, 0, 0.15),
-        0 2px 4px rgba(0, 0, 0, 0.1);
-    background-color: var(--bg-card);
+    background-color: var(--bg-dark);
     position: relative;
-    z-index: 1;
-    transition: all 0.2s ease;
-    border: 1px solid var(--border-color);
 }
 
-#album-art:hover {
-    box-shadow: 
-        0 8px 24px rgba(0, 0, 0, 0.2),
-        0 4px 8px rgba(0, 0, 0, 0.15);
-    transform: translateY(-2px);
+.featured-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.3;
 }
 
-#album-art::before {
-    display: none; /* Remove retro cassette element */
+.featured-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.featured-meta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.meta-item {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    background: var(--bg-controls);
+    border-radius: 20px;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
 }
 
 /* When video is active, change album art container properties */
@@ -1285,26 +1381,16 @@ footer a:hover {
         z-index: 5;
     }
     
-    .main-layout-container {
+    .content-grid-section {
         display: flex;
         flex-direction: column;
         width: 100%;
         max-width: 900px;
         margin: 0 auto;
-        background: var(--bg-card);
-        border-radius: var(--border-radius-lg);
-        padding: 32px;
-        border: 1px solid var(--border-color);
-        box-shadow: 
-            0 4px 12px rgba(0, 0, 0, 0.1),
-            0 2px 4px rgba(0, 0, 0, 0.05);
+        gap: 2rem;
     }
     
-    .main-layout-container::before {
-        display: none; /* Remove retro accent line */
-    }
-    
-    .player-column {
+    .content-categories {
         width: 100%;
         display: flex;
         flex-direction: column;
@@ -1345,33 +1431,23 @@ footer a:hover {
         z-index: 5;
     }
     
-    .integrated-playlist {
-        background: var(--bg-controls);
-        border-radius: 12px;
-        padding: 24px;
-        box-shadow: 
-            0 2px 8px rgba(0, 0, 0, 0.1),
-            0 1px 2px rgba(0, 0, 0, 0.05);
-        border: 1px solid var(--border-color);
+    .tracklist-section {
+        margin-top: 2rem;
     }
     
-    .integrated-playlist::before {
-        display: none; /* Remove retro accent line */
-    }
-    
-    .playlist-selector-compact {
+    .category-nav {
         margin-bottom: 1rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 1rem;
     }
     
-    .playlist-selector-compact .playlist-buttons {
+    .category-nav .playlist-buttons {
         display: flex;
         flex-wrap: wrap;
         gap: 0.5rem;
     }
     
-    .playlist-selector-compact .playlist-button {
+    .category-nav .playlist-button {
         background: var(--bg-card);
         border: 1px solid var(--border-color);
         color: var(--text-secondary);
@@ -1385,21 +1461,71 @@ footer a:hover {
         letter-spacing: 0;
     }
     
-    .playlist-selector-compact .playlist-button::before {
-        display: none; /* Remove shimmer effect */
-    }
-    
-    .playlist-selector-compact .playlist-button:hover {
+    .category-nav .playlist-button:hover {
         background: var(--bg-card-hover);
         color: var(--text-primary);
         border-color: var(--border-light);
     }
     
-    .playlist-selector-compact .playlist-button.active {
-        background-color: var(--accent-color);
+    .category-nav .playlist-button.active {
+        background: var(--accent-color);
         color: white;
         border-color: var(--accent-color);
+    }
+    
+    .track-list-container {
+        background: var(--bg-card);
+        border-radius: var(--border-radius-lg);
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+    }
+    
+    .tracklist-header {
+        padding: 24px 24px 16px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .tracklist-title {
+        font-size: 1.25rem;
         font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 8px 0;
+    }
+    
+    .tracklist-description {
+        color: var(--text-secondary);
+        margin: 0;
+        font-size: 0.9rem;
+    }
+    
+    .track-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    
+    /* Responsive Design for Featured Card */
+    @media (max-width: 768px) {
+        .featured-card {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+        
+        .featured-media {
+            aspect-ratio: 16/9;
+        }
+        
+        .hero-title {
+            font-size: 2rem;
+        }
+        
+        .nav-links {
+            gap: 20px;
+        }
+        
+        .nav-link {
+            font-size: 0.875rem;
+        }
     }
     
     #track-list-container h3 {
