@@ -75,6 +75,61 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize
   initializeApp();
 
+  // Tab Navigation Functions
+  function switchTab(targetTab) {
+    // Remove active class from all nav links
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+    });
+
+    // Hide all tab contents
+    tabContents.forEach(content => {
+      content.classList.remove('active');
+    });
+
+    // Activate the target tab
+    const targetNavLink = document.querySelector(`[data-tab="${targetTab}"]`);
+    const targetContent = document.getElementById(`${targetTab}-tab`);
+
+    if (targetNavLink && targetContent) {
+      targetNavLink.classList.add('active');
+      targetContent.classList.add('active');
+      
+      // Update URL hash without triggering page scroll
+      history.pushState(null, null, `#${targetTab}`);
+      
+      // Special handling for About tab - update stats when it becomes visible
+      if (targetTab === 'about') {
+        updateArchiveStats();
+      }
+    }
+  }
+
+  function updateArchiveStats() {
+    // Calculate total tracks across all feeds
+    const totalTracks = feeds.reduce((sum, feed) => sum + (feed.tracks ? feed.tracks.length : 0), 0);
+    const totalCollections = feeds.length;
+
+    // Update statistics in the About section
+    const totalTracksElement = document.getElementById('total-tracks');
+    const totalCollectionsElement = document.getElementById('total-collections');
+
+    if (totalTracksElement) {
+      totalTracksElement.textContent = totalTracks;
+    }
+    if (totalCollectionsElement) {
+      totalCollectionsElement.textContent = totalCollections;
+    }
+  }
+
+  // Handle initial page load with hash
+  function handleInitialHash() {
+    const hash = window.location.hash.substring(1); // Remove the #
+    if (hash && (hash === 'player' || hash === 'about')) {
+      switchTab(hash);
+    }
+  }
+
   // Core Functions
   async function initializeApp() {
     try {
@@ -108,6 +163,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if (window.feather) {
         feather.replace();
       }
+
+      // Set up browser navigation for tabs
+      window.addEventListener('popstate', handleInitialHash);
+      
+      // Handle initial hash on page load
+      setTimeout(handleInitialHash, 100); // Small delay to ensure DOM is ready
     } catch (error) {
       showNotification('Error initializing app: ' + error.message, 'error');
       console.error('Initialization error:', error);
@@ -461,7 +522,18 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('keydown', handleKeyboardControls);
     
     // Tab navigation
-    setupTabNavigation();
+    if (navLinks && navLinks.length > 0) {
+      navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          
+          const targetTab = link.getAttribute('data-tab');
+          if (targetTab) {
+            switchTab(targetTab);
+          }
+        });
+      });
+    }
 
     // Add sample feed handler
     const feedSuggestion = document.getElementById('feed-suggestion');
