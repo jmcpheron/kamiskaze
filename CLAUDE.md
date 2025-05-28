@@ -1,8 +1,11 @@
 # CLAUDE.md - Development Guidelines
 
 ## Build & Testing Commands
-- Open `test-player.html` in browser to test player functionality
+- **Quick Test**: `python3 -m http.server 8001` then open `http://localhost:8001`
+- **Comprehensive Testing**: See `TESTING.md` for full testing procedures and Claude Code workflows
+- **Stop Test Server**: `pkill -f "python3 -m http.server"`
 - No build process required - static HTML/CSS/JS
+- **Important**: Always use local server (not file://) for proper CORS and media file handling
 
 ## Code Style Guidelines
 
