@@ -346,7 +346,6 @@ body {
 }
 
 .control-button {
-    background: var(--bg-secondary);
     border: none;
     border-radius: 50%;
     color: var(--text-primary);
@@ -354,68 +353,96 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
+    box-shadow: var(--shadow-md);
 }
 
 .control-button:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.3);
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.3), var(--shadow-md);
+}
+
+.control-button:active {
+    transform: scale(0.95);
 }
 
 .prev-button,
 .next-button {
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
+    background: linear-gradient(135deg, var(--bg-secondary), var(--border));
+    border: 1px solid var(--border);
 }
 
 .play-button {
-    width: 64px;
-    height: 64px;
-    background: var(--accent);
+    width: 72px;
+    height: 72px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+    box-shadow: 0 4px 16px rgba(255, 107, 53, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
 .play-button:hover {
-    background: var(--accent-hover);
-    transform: scale(1.05);
+    background: linear-gradient(135deg, var(--accent-hover), #d4491f);
+    transform: scale(1.08);
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
 }
 
 .prev-button:hover,
 .next-button:hover {
-    background: var(--border);
-    transform: scale(1.05);
+    background: linear-gradient(135deg, var(--border), #4a4a4a);
+    transform: scale(1.08);
+    color: white;
+    box-shadow: var(--shadow-lg);
 }
 
 .control-button svg {
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
 }
 
 .play-button svg {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 /* Play/Pause button animation */
 .play-icon,
 .pause-icon {
     position: absolute;
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .pause-icon {
     opacity: 0;
-    transform: scale(0);
+    transform: scale(0) rotate(90deg);
 }
 
 .play-button.playing .play-icon {
     opacity: 0;
-    transform: scale(0);
+    transform: scale(0) rotate(-90deg);
 }
 
 .play-button.playing .pause-icon {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1) rotate(0deg);
+}
+
+/* Add a subtle pulse animation to the playing button */
+.play-button.playing {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 4px 16px rgba(255, 107, 53, 0.3);
+    }
+    50% {
+        box-shadow: 0 4px 20px rgba(255, 107, 53, 0.5);
+    }
 }
 
 /* === PROGRESS SECTION === */
@@ -430,53 +457,97 @@ body {
     justify-content: space-between;
     font-size: 0.875rem;
     color: var(--text-secondary);
-    font-weight: 500;
+    font-weight: 600;
+    font-family: 'SF Mono', 'Monaco', monospace;
+    margin-bottom: var(--space-sm);
+    background: var(--bg-secondary);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
 }
 
 .seek-container {
     position: relative;
+    background: var(--bg-secondary);
+    border-radius: 6px;
+    height: 8px;
+    overflow: hidden;
+}
+
+.seek-progress-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #ff8c5a);
+    border-radius: 6px;
+    width: 0%;
+    transition: width 0.1s ease;
+    pointer-events: none;
 }
 
 #seek-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 6px;
-    background: var(--bg-secondary);
-    border-radius: 3px;
+    height: 8px;
+    background: transparent;
+    border-radius: 6px;
     outline: none;
     cursor: pointer;
     -webkit-appearance: none;
     appearance: none;
+    z-index: 2;
 }
 
 #seek-bar::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 16px;
-    height: 16px;
-    background: var(--accent);
+    width: 18px;
+    height: 18px;
+    background: white;
+    border: 3px solid var(--accent);
     border-radius: 50%;
     cursor: pointer;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     transition: all 0.2s ease;
 }
 
 #seek-bar::-webkit-slider-thumb:hover {
-    transform: scale(1.2);
+    transform: scale(1.15);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+}
+
+#seek-bar::-webkit-slider-thumb:active {
+    transform: scale(1.1);
 }
 
 #seek-bar::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
-    background: var(--accent);
+    width: 18px;
+    height: 18px;
+    background: white;
+    border: 3px solid var(--accent);
     border-radius: 50%;
     cursor: pointer;
-    border: none;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     transition: all 0.2s ease;
 }
 
 #seek-bar::-moz-range-thumb:hover {
-    transform: scale(1.2);
+    transform: scale(1.15);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+}
+
+#seek-bar::-moz-range-thumb:active {
+    transform: scale(1.1);
+}
+
+#seek-bar:focus::-webkit-slider-thumb {
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.3), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+#seek-bar:focus::-moz-range-thumb {
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.3), 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* Speed Controls */
@@ -996,13 +1067,24 @@ body {
         font-size: 1.25rem;
     }
 
-    .control-button {
-        width: 44px;
-        height: 44px;
+    .prev-button,
+    .next-button {
+        width: 48px;
+        height: 48px;
     }
 
     .play-button {
-        width: 56px;
-        height: 56px;
+        width: 64px;
+        height: 64px;
+    }
+
+    .control-button svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    .play-button svg {
+        width: 28px;
+        height: 28px;
     }
 }
