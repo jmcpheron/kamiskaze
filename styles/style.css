@@ -704,8 +704,8 @@ body {
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: var(--space-md);
 }
 
 .track-list li:hover {
@@ -717,23 +717,99 @@ body {
     border: 1px solid var(--accent);
 }
 
+/* Track Thumbnail Styling */
+.track-thumbnail {
+    flex-shrink: 0;
+    width: 60px;
+    height: 45px; /* 4:3 aspect ratio */
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: var(--bg-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.track-thumbnail-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s ease;
+}
+
+.track-list li:hover .track-thumbnail-image {
+    transform: scale(1.05);
+}
+
+/* Video track indicator */
+.track-thumbnail.video-track::after {
+    content: '▶';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 0.875rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+}
+
+.track-list li:hover .track-thumbnail.video-track::after {
+    opacity: 1;
+}
+
+/* Fallback styling for missing thumbnails */
+.track-thumbnail.default-thumbnail,
+.track-thumbnail.fallback-thumbnail {
+    background: linear-gradient(135deg, var(--bg-secondary), var(--border));
+}
+
+.track-thumbnail.default-thumbnail::before {
+    content: '♪';
+    color: var(--text-muted);
+    font-size: 1.25rem;
+}
+
+.track-thumbnail.video-track.default-thumbnail::before {
+    content: '▶';
+    color: var(--accent);
+    font-size: 1rem;
+}
+
+/* Track Info Styling */
+.track-info {
+    flex: 1;
+    min-width: 0; /* Allow text truncation */
+}
+
 .track-info h4 {
     font-size: 1rem;
     font-weight: 500;
     color: var(--text-primary);
     margin-bottom: var(--space-xs);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .track-info p {
     font-size: 0.875rem;
     color: var(--text-secondary);
     margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .track-progress {
     font-size: 0.75rem;
     color: var(--text-muted);
     font-weight: 500;
+    flex-shrink: 0;
+    text-align: right;
 }
 
 /* === FOOTER === */
@@ -1018,9 +1094,27 @@ body {
     }
 
     .track-list li {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: row;
+        align-items: center;
         gap: var(--space-sm);
+        padding: var(--space-sm);
+    }
+    
+    .track-thumbnail {
+        width: 50px;
+        height: 38px;
+    }
+    
+    .track-info h4 {
+        font-size: 0.875rem;
+    }
+    
+    .track-info p {
+        font-size: 0.75rem;
+    }
+    
+    .track-progress {
+        font-size: 0.6875rem;
     }
 
     .modal {
@@ -1086,5 +1180,22 @@ body {
     .play-button svg {
         width: 28px;
         height: 28px;
+    }
+    
+    .track-thumbnail {
+        width: 45px;
+        height: 34px;
+    }
+    
+    .track-info h4 {
+        font-size: 0.8125rem;
+    }
+    
+    .track-info p {
+        font-size: 0.6875rem;
+    }
+    
+    .track-progress {
+        font-size: 0.625rem;
     }
 }

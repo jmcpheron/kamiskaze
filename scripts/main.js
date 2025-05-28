@@ -1367,6 +1367,58 @@ document.addEventListener('DOMContentLoaded', () => {
         li.classList.add('playing');
       }
       
+      // Add thumbnail container
+      const thumbnailContainer = document.createElement('div');
+      thumbnailContainer.className = 'track-thumbnail';
+      
+      // Determine if this is a video file for fallback logic
+      const isVideoFile = track.audioUrl.toLowerCase().endsWith('.mp4') || 
+                          track.audioUrl.toLowerCase().endsWith('.webm') || 
+                          track.audioUrl.toLowerCase().endsWith('.mkv');
+      
+      // Add thumbnail image
+      const thumbnail = document.createElement('img');
+      thumbnail.className = 'track-thumbnail-image';
+      thumbnail.alt = `${track.title} thumbnail`;
+      
+      // Set thumbnail source with fallback logic
+      if (track.thumbnail) {
+        // Track has explicit thumbnail
+        thumbnail.src = track.thumbnail;
+        
+        // Add error handler for external thumbnails
+        if (track._isExternal) {
+          thumbnail.addEventListener('error', () => {
+            console.warn(`Failed to load thumbnail: ${track.thumbnail}`);
+            thumbnail.src = isVideoFile ? 'images/cassette-single.png' : 'images/cassette-single.png';
+            thumbnailContainer.classList.add('fallback-thumbnail');
+          }, { once: true });
+        }
+      } else if (track.albumArt && !track.albumArt.toLowerCase().endsWith('.svg')) {
+        // Use album art as thumbnail if available and not SVG
+        thumbnail.src = track.albumArt;
+        
+        // Add error handler for external album art
+        if (track._isExternal) {
+          thumbnail.addEventListener('error', () => {
+            console.warn(`Failed to load album art as thumbnail: ${track.albumArt}`);
+            thumbnail.src = 'images/cassette-single.png';
+            thumbnailContainer.classList.add('fallback-thumbnail');
+          }, { once: true });
+        }
+      } else {
+        // Use default thumbnail
+        thumbnail.src = 'images/cassette-single.png';
+        thumbnailContainer.classList.add('default-thumbnail');
+      }
+      
+      // Add video indicator for video files
+      if (isVideoFile) {
+        thumbnailContainer.classList.add('video-track');
+      }
+      
+      thumbnailContainer.appendChild(thumbnail);
+      
       const titleDiv = document.createElement('div');
       titleDiv.className = 'track-info';
       
@@ -1383,6 +1435,7 @@ document.addEventListener('DOMContentLoaded', () => {
       progress.className = 'track-progress';
       progress.textContent = 'Not played';
       
+      li.appendChild(thumbnailContainer);
       li.appendChild(titleDiv);
       li.appendChild(progress);
       
