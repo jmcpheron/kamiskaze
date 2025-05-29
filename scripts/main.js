@@ -1892,7 +1892,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (theme === 'light') {
       document.documentElement.setAttribute('data-theme', 'light');
     } else {
-      document.documentElement.removeAttribute('data-theme');
+      // Set dark theme explicitly instead of removing attribute
+      document.documentElement.setAttribute('data-theme', 'dark');
     }
   }
 

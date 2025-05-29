@@ -67,6 +67,27 @@
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.15);
 }
 
+/* Dark theme variables */
+[data-theme="dark"] {
+    --bg-primary: #0a0a0a;
+    --bg-secondary: #1a1a1a;
+    --bg-card: #1e1e1e;
+    --text-primary: #ffffff;
+    --text-secondary: #a0a0a0;
+    --text-muted: #6b7280;
+    --accent: #ff6b35;
+    --accent-hover: #e55a2b;
+    --border: #333333;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --error: #ef4444;
+    
+    /* Dark theme shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
 /* System preference detection */
 @media (prefers-color-scheme: light) {
     :root:not([data-theme]) {
@@ -87,6 +108,28 @@
         --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
         --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.15);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+        --bg-primary: #0a0a0a;
+        --bg-secondary: #1a1a1a;
+        --bg-card: #1e1e1e;
+        --text-primary: #ffffff;
+        --text-secondary: #a0a0a0;
+        --text-muted: #6b7280;
+        --accent: #ff6b35;
+        --accent-hover: #e55a2b;
+        --border: #333333;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
+        
+        /* Dark theme shadows */
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
     }
 }
 
@@ -212,6 +255,7 @@ body {
     transform: rotate(0deg) scale(1);
 }
 
+/* Show sun icon in light mode */
 [data-theme="light"] .theme-toggle .sun-icon {
     opacity: 1;
     transform: rotate(0deg) scale(1);
@@ -220,6 +264,17 @@ body {
 [data-theme="light"] .theme-toggle .moon-icon {
     opacity: 0;
     transform: rotate(-180deg) scale(0.8);
+}
+
+/* Show moon icon in dark mode */
+[data-theme="dark"] .theme-toggle .sun-icon {
+    opacity: 0;
+    transform: rotate(180deg) scale(0.8);
+}
+
+[data-theme="dark"] .theme-toggle .moon-icon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
 }
 
 @media (prefers-color-scheme: light) {
@@ -231,6 +286,18 @@ body {
     :root:not([data-theme]) .theme-toggle .moon-icon {
         opacity: 0;
         transform: rotate(-180deg) scale(0.8);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) .theme-toggle .sun-icon {
+        opacity: 0;
+        transform: rotate(180deg) scale(0.8);
+    }
+    
+    :root:not([data-theme]) .theme-toggle .moon-icon {
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
     }
 }
 
