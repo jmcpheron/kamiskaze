@@ -30,16 +30,34 @@
     --space-xl: 2rem;
     --space-2xl: 3rem;
     
+    /* Modern spacing for touch-friendly controls */
+    --touch-target-min: 44px;
+    --control-spacing: 1.25rem;
+    --control-padding: 0.875rem;
+    
     /* Border Radius */
     --radius-sm: 6px;
     --radius-md: 8px;
     --radius-lg: 12px;
     --radius-xl: 16px;
+    --radius-2xl: 20px;
+    --radius-full: 9999px;
+    
+    /* Modern control radius */
+    --control-radius: 16px;
+    --button-radius: 12px;
     
     /* Shadows */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    
+    /* Modern glassmorphism shadows */
+    --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.12);
+    --shadow-control: 0 4px 16px rgba(0, 0, 0, 0.15);
+    --shadow-control-hover: 0 8px 24px rgba(0, 0, 0, 0.2);
+    --shadow-accent: 0 4px 20px rgba(255, 107, 53, 0.25);
+    --shadow-accent-hover: 0 8px 32px rgba(255, 107, 53, 0.35);
     
     /* Layout */
     --max-width: 1200px;
@@ -514,66 +532,83 @@ body {
 .player-controls {
     display: flex;
     flex-direction: column;
-    gap: var(--space-lg);
+    gap: var(--space-xl);
+    padding: var(--space-lg);
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-glass);
 }
 
 .control-buttons {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: var(--space-lg);
+    gap: var(--control-spacing);
+    padding: var(--space-md) 0;
 }
 
 .control-button {
     border: none;
-    border-radius: 50%;
+    border-radius: var(--control-radius);
     color: var(--text-primary);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     position: relative;
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-control);
+    backdrop-filter: blur(10px);
+    min-width: var(--touch-target-min);
+    min-height: var(--touch-target-min);
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
 }
 
 .control-button:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.3), var(--shadow-md);
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.4), var(--shadow-control-hover);
+    transform: scale(1.02);
 }
 
 .control-button:active {
-    transform: scale(0.95);
+    transform: scale(0.96);
+    transition: transform 0.1s ease;
 }
 
 .prev-button,
 .next-button {
-    width: 52px;
-    height: 52px;
-    background: linear-gradient(135deg, var(--bg-secondary), var(--border));
-    border: 1px solid var(--border);
+    width: 56px;
+    height: 56px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
 }
 
 .play-button {
-    width: 72px;
-    height: 72px;
+    width: 80px;
+    height: 80px;
     background: linear-gradient(135deg, var(--accent), var(--accent-hover));
-    box-shadow: 0 4px 16px rgba(255, 107, 53, 0.3);
-    border: 2px solid rgba(255, 255, 255, 0.1);
+    box-shadow: var(--shadow-accent);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
 }
 
 .play-button:hover {
     background: linear-gradient(135deg, var(--accent-hover), #d4491f);
-    transform: scale(1.08);
-    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+    transform: scale(1.05) translateY(-1px);
+    box-shadow: var(--shadow-accent-hover);
 }
 
 .prev-button:hover,
 .next-button:hover {
-    background: linear-gradient(135deg, var(--border), #4a4a4a);
-    transform: scale(1.08);
-    color: white;
-    box-shadow: var(--shadow-lg);
+    background: rgba(255, 255, 255, 0.12);
+    transform: scale(1.05) translateY(-1px);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-control-hover);
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 .control-button svg {
@@ -595,17 +630,18 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 .pause-icon {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0) rotate(90deg);
+    transform: translate(-50%, -50%) scale(0.8) rotate(90deg);
 }
 
 .play-button.playing .play-icon {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0) rotate(-90deg);
+    transform: translate(-50%, -50%) scale(0.8) rotate(-90deg);
 }
 
 .play-button.playing .pause-icon {
@@ -615,44 +651,149 @@ body {
 
 /* Add a subtle pulse animation to the playing button */
 .play-button.playing {
-    animation: pulse 2s ease-in-out infinite;
+    animation: modernPulse 3s ease-in-out infinite;
 }
 
-@keyframes pulse {
+@keyframes modernPulse {
     0%, 100% {
-        box-shadow: 0 4px 16px rgba(255, 107, 53, 0.3);
+        box-shadow: var(--shadow-accent);
+        transform: scale(1);
     }
     50% {
-        box-shadow: 0 4px 20px rgba(255, 107, 53, 0.5);
+        box-shadow: var(--shadow-accent-hover);
+        transform: scale(1.02);
     }
+}
+
+/* === MODERN ANIMATIONS === */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+/* Loading state animation */
+.loading-state {
+    position: relative;
+    overflow: hidden;
+}
+
+.loading-state::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+    );
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+}
+
+/* Enhanced button press feedback */
+.control-button {
+    position: relative;
+    overflow: hidden;
+}
+
+.control-button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease, height 0.3s ease;
+    pointer-events: none;
+}
+
+.control-button:active::before {
+    width: 100%;
+    height: 100%;
+}
+
+/* Smooth entrance animations */
+.player-controls {
+    animation: slideInUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.progress-section {
+    animation: fadeInScale 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.1s both;
 }
 
 /* === PROGRESS SECTION === */
 .progress-section {
     display: flex;
     flex-direction: column;
-    gap: var(--space-sm);
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    border-radius: var(--control-radius);
+    border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .time-display {
     display: flex;
     justify-content: space-between;
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     color: var(--text-secondary);
     font-weight: 600;
-    font-family: 'SF Mono', 'Monaco', monospace;
+    font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
     margin-bottom: var(--space-sm);
-    background: var(--bg-secondary);
-    padding: var(--space-xs) var(--space-sm);
-    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.04);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--button-radius);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
+    font-variant-numeric: tabular-nums;
 }
 
 .seek-container {
     position: relative;
-    background: var(--bg-secondary);
-    border-radius: 6px;
-    height: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    height: 12px;
     overflow: hidden;
+    cursor: pointer;
+    transition: height 0.2s ease;
+}
+
+.seek-container:hover {
+    height: 16px;
 }
 
 .seek-progress-bar {
@@ -660,11 +801,12 @@ body {
     top: 0;
     left: 0;
     height: 100%;
-    background: linear-gradient(90deg, var(--accent), #ff8c5a);
-    border-radius: 6px;
+    background: linear-gradient(90deg, var(--accent), #ff8c5a, #ffb380);
+    border-radius: 8px;
     width: 0%;
     transition: width 0.1s ease;
     pointer-events: none;
+    box-shadow: 0 0 12px rgba(255, 107, 53, 0.3);
 }
 
 #seek-bar {
@@ -672,64 +814,73 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    height: 8px;
+    height: 12px;
     background: transparent;
-    border-radius: 6px;
+    border-radius: 8px;
     outline: none;
     cursor: pointer;
     -webkit-appearance: none;
     appearance: none;
     z-index: 2;
+    transition: height 0.2s ease;
+}
+
+.seek-container:hover #seek-bar {
+    height: 16px;
 }
 
 #seek-bar::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     background: white;
     border: 3px solid var(--accent);
     border-radius: 50%;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 0 0 rgba(255, 107, 53, 0.4);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 #seek-bar::-webkit-slider-thumb:hover {
-    transform: scale(1.15);
-    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+    transform: scale(1.2);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25), 0 0 0 8px rgba(255, 107, 53, 0.15);
 }
 
 #seek-bar::-webkit-slider-thumb:active {
-    transform: scale(1.1);
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 0 4px rgba(255, 107, 53, 0.3);
 }
 
 #seek-bar::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     background: white;
     border: 3px solid var(--accent);
     border-radius: 50%;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 #seek-bar::-moz-range-thumb:hover {
-    transform: scale(1.15);
-    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+    transform: scale(1.2);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
 }
 
 #seek-bar::-moz-range-thumb:active {
-    transform: scale(1.1);
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 #seek-bar:focus::-webkit-slider-thumb {
-    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.3), 0 2px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.4), 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: scale(1.15);
 }
 
 #seek-bar:focus::-moz-range-thumb {
-    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.3), 0 2px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.4), 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: scale(1.15);
 }
 
 /* Speed Controls */
@@ -1613,5 +1764,329 @@ body {
     .project-links,
     .credits {
         padding: var(--space-md);
+    }
+}
+
+/* === MODERN MOBILE ENHANCEMENTS === */
+
+@media (max-width: 768px) {
+    .player-controls {
+        padding: var(--space-md);
+        gap: var(--space-lg);
+    }
+    
+    .control-buttons {
+        gap: var(--space-xl);
+        padding: var(--space-lg) 0;
+    }
+    
+    .play-button {
+        width: 88px;
+        height: 88px;
+    }
+    
+    .prev-button,
+    .next-button {
+        width: 64px;
+        height: 64px;
+    }
+    
+    .progress-section {
+        padding: var(--space-lg);
+    }
+    
+    .seek-container {
+        height: 16px;
+    }
+    
+    .seek-container:hover {
+        height: 20px;
+    }
+    
+    #seek-bar {
+        height: 16px;
+    }
+    
+    .seek-container:hover #seek-bar {
+        height: 20px;
+    }
+    
+    #seek-bar::-webkit-slider-thumb {
+        width: 24px;
+        height: 24px;
+    }
+    
+    #seek-bar::-moz-range-thumb {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .player-controls {
+        padding: var(--space-sm);
+        border-radius: var(--radius-lg);
+    }
+    
+    .control-buttons {
+        gap: var(--space-lg);
+    }
+    
+    .play-button {
+        width: 96px;
+        height: 96px;
+    }
+    
+    .play-button svg {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .prev-button,
+    .next-button {
+        width: 68px;
+        height: 68px;
+    }
+    
+    .control-button svg {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .time-display {
+        font-size: 0.9375rem;
+        padding: var(--space-md);
+    }
+    
+    .seek-container {
+        height: 18px;
+    }
+    
+    .seek-container:hover {
+        height: 24px;
+    }
+    
+    #seek-bar {
+        height: 18px;
+    }
+    
+    .seek-container:hover #seek-bar {
+        height: 24px;
+    }
+    
+    #seek-bar::-webkit-slider-thumb {
+        width: 28px;
+        height: 28px;
+    }
+    
+    #seek-bar::-moz-range-thumb {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+/* === REDUCED MOTION PREFERENCES === */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .play-button.playing {
+        animation: none;
+    }
+    
+    .player-controls {
+        animation: none;
+    }
+    
+    .progress-section {
+        animation: none;
+    }
+    
+    .loading-state::after {
+        animation: none;
+    }
+}
+
+/* === HOVER IMPROVEMENTS FOR DESKTOP === */
+@media (hover: hover) and (pointer: fine) {
+    .control-button:hover {
+        transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    .seek-container:hover .seek-progress-bar {
+        box-shadow: 0 0 16px rgba(255, 107, 53, 0.4);
+    }
+}
+
+/* === TOUCH DEVICE OPTIMIZATIONS === */
+@media (hover: none) and (pointer: coarse) {
+    .control-button {
+        min-width: 48px;
+        min-height: 48px;
+    }
+    
+    .play-button {
+        min-width: 88px;
+        min-height: 88px;
+    }
+    
+    .seek-container {
+        height: 20px;
+        padding: 4px 0;
+    }
+    
+    #seek-bar {
+        height: 20px;
+    }
+    
+    #seek-bar::-webkit-slider-thumb {
+        width: 32px;
+        height: 32px;
+    }
+    
+    #seek-bar::-moz-range-thumb {
+        width: 32px;
+        height: 32px;
+    }
+    
+    /* Remove hover effects on touch devices */
+    .control-button:hover {
+        transform: none;
+        box-shadow: var(--shadow-control);
+    }
+    
+    .play-button:hover {
+        transform: none;
+        box-shadow: var(--shadow-accent);
+    }
+    
+    .prev-button:hover,
+    .next-button:hover {
+        transform: none;
+        background: rgba(255, 255, 255, 0.06);
+        box-shadow: var(--shadow-control);
+    }
+}
+
+/* === ACCESSIBILITY ENHANCEMENTS === */
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    :root {
+        --bg-primary: #000000;
+        --bg-secondary: #1a1a1a;
+        --bg-card: #0f0f0f;
+        --text-primary: #ffffff;
+        --text-secondary: #cccccc;
+        --border: #444444;
+        --accent: #ff8c5a;
+        --accent-hover: #ff6b35;
+    }
+    
+    .control-button {
+        border: 2px solid var(--border);
+    }
+    
+    .play-button {
+        border: 3px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .seek-container {
+        border: 1px solid var(--border);
+    }
+    
+    #seek-bar::-webkit-slider-thumb {
+        border: 4px solid var(--accent);
+    }
+    
+    #seek-bar::-moz-range-thumb {
+        border: 4px solid var(--accent);
+    }
+}
+
+/* Enhanced focus indicators */
+.control-button:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 1px var(--bg-primary), 0 0 0 4px var(--accent), var(--shadow-control-hover);
+}
+
+#seek-bar:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 4px;
+}
+
+/* Screen reader only content */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Skip link for keyboard navigation */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: var(--accent);
+    color: white;
+    padding: 8px;
+    text-decoration: none;
+    border-radius: 4px;
+    z-index: 1000;
+    transition: top 0.3s;
+}
+
+.skip-link:focus {
+    top: 6px;
+}
+
+/* Keyboard navigation improvements */
+.control-button:focus {
+    transform: scale(1.02);
+    z-index: 10;
+}
+
+.play-button:focus {
+    transform: scale(1.05);
+    z-index: 10;
+}
+
+/* Better text selection */
+.time-display {
+    user-select: text;
+    -webkit-user-select: text;
+}
+
+/* Prevent double-tap zoom on mobile controls */
+.control-button {
+    touch-action: manipulation;
+}
+
+.seek-container {
+    touch-action: manipulation;
+}
+
+/* Focus management for progressive enhancement */
+@supports not selector(:focus-visible) {
+    .control-button:focus {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+    }
+    
+    #seek-bar:focus {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
     }
 }
