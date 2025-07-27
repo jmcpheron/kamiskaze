@@ -758,11 +758,7 @@ document.addEventListener('DOMContentLoaded', () => {
           videoArtDisplay.currentTime = audioPlayer.currentTime;
         }
         
-        // Update video time display
-        const videoTimeDisplay = document.getElementById('video-time-display');
-        if (videoTimeDisplay) {
-          videoTimeDisplay.textContent = `${formatTime(audioPlayer.currentTime)} / ${formatTime(audioPlayer.duration)}`;
-        }
+        // Video time is now updated through the new video progress controls
       };
       
       // Clean up previous event listeners
@@ -853,20 +849,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateVideoPlayPauseButton(isPlaying) {
     const videoPlayPauseButton = document.getElementById('video-play-pause');
     if (videoPlayPauseButton) {
-      // Update the icon based on playing state
+      // Update the button class for CSS-based icon switching
       if (isPlaying) {
-        videoPlayPauseButton.innerHTML = `
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-          </svg>
-        `;
+        videoPlayPauseButton.classList.add('playing');
         videoPlayPauseButton.setAttribute('aria-label', 'Pause');
       } else {
-        videoPlayPauseButton.innerHTML = `
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M8 5v14l11-7z"/>
-          </svg>
-        `;
+        videoPlayPauseButton.classList.remove('playing');
         videoPlayPauseButton.setAttribute('aria-label', 'Play');
       }
     }
@@ -1851,6 +1839,111 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 3000);
     }
   }
+
+  // === VIDEO CONTROLS AUTO-HIDE FUNCTIONALITY ===
+  let videoControlsTimeout;
+  let isVideoControlsVisible = false;
+  const videoControlsOverlay = document.getElementById('video-controls-overlay');
+  const albumArtContainer = document.getElementById('album-art');
+  
+  function showVideoControls() {
+    if (!videoControlsOverlay || videoArtDisplay.style.display === 'none') return;
+    
+    isVideoControlsVisible = true;
+    videoControlsOverlay.classList.add('visible');
+    videoControlsOverlay.style.display = 'flex';
+    
+    // Clear existing timeout
+    if (videoControlsTimeout) {
+      clearTimeout(videoControlsTimeout);
+    }
+    
+    // Hide controls after 3 seconds of inactivity
+    videoControlsTimeout = setTimeout(() => {
+      hideVideoControls();
+    }, 3000);
+  }
+  
+  function hideVideoControls() {
+    if (!videoControlsOverlay) return;
+    
+    isVideoControlsVisible = false;
+    videoControlsOverlay.classList.remove('visible');
+  }
+  
+  // Initialize video progress controls
+  function initializeVideoProgressControls() {
+    const videoSeekBar = document.querySelector('.video-seek-bar');
+    const videoProgressFill = document.querySelector('.video-progress-fill');
+    const videoTimeCurrent = document.querySelector('.video-time-current');
+    const videoTimeDuration = document.querySelector('.video-time-duration');
+    
+    if (videoSeekBar && audioPlayer) {
+      // Update video seek bar on audio time update
+      audioPlayer.addEventListener('timeupdate', () => {
+        if (audioPlayer.duration) {
+          const percent = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+          videoSeekBar.value = percent;
+          if (videoProgressFill) {
+            videoProgressFill.style.width = percent + '%';
+          }
+          if (videoTimeCurrent) {
+            videoTimeCurrent.textContent = formatTime(audioPlayer.currentTime);
+          }
+          if (videoTimeDuration) {
+            videoTimeDuration.textContent = formatTime(audioPlayer.duration);
+          }
+        }
+      });
+      
+      // Handle video seek bar input
+      videoSeekBar.addEventListener('input', (e) => {
+        const percent = e.target.value;
+        const time = (percent / 100) * audioPlayer.duration;
+        audioPlayer.currentTime = time;
+        if (videoArtDisplay && !videoArtDisplay.paused) {
+          videoArtDisplay.currentTime = time;
+        }
+      });
+    }
+  }
+  
+  // Add mouse/touch event listeners for video controls visibility
+  if (albumArtContainer) {
+    // Show controls on mouse movement
+    albumArtContainer.addEventListener('mousemove', () => {
+      if (videoArtDisplay && videoArtDisplay.style.display !== 'none') {
+        showVideoControls();
+      }
+    });
+    
+    // Show controls on touch
+    albumArtContainer.addEventListener('touchstart', () => {
+      if (videoArtDisplay && videoArtDisplay.style.display !== 'none') {
+        showVideoControls();
+      }
+    });
+    
+    // Keep controls visible when hovering over them
+    if (videoControlsOverlay) {
+      videoControlsOverlay.addEventListener('mouseenter', () => {
+        if (videoControlsTimeout) {
+          clearTimeout(videoControlsTimeout);
+        }
+      });
+      
+      videoControlsOverlay.addEventListener('mouseleave', () => {
+        if (isVideoControlsVisible) {
+          videoControlsTimeout = setTimeout(() => {
+            hideVideoControls();
+          }, 3000);
+        }
+      });
+    }
+  }
+  
+  // Initialize video progress controls on load
+  initializeVideoProgressControls();
 
   // === THEME MANAGEMENT ===
   

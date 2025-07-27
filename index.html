@@ -65,16 +65,24 @@
                                 
                                 <!-- Video Controls Overlay -->
                                 <div id="video-controls-overlay" class="video-controls-overlay">
-                                    <div class="video-controls-top">
-                                        <span class="video-time-display" id="video-time-display">0:00 / 0:00</span>
-                                    </div>
-                                    <div class="video-controls-bottom">
-                                        <button id="video-play-pause" class="video-control-button" aria-label="Play/Pause">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <div class="video-control-bar">
+                                        <button id="video-play-pause" class="video-control-btn" aria-label="Play/Pause">
+                                            <svg class="video-play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                                                 <path d="M8 5v14l11-7z"/>
                                             </svg>
+                                            <svg class="video-pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                                            </svg>
                                         </button>
-                                        <button id="video-fullscreen" class="video-control-button" aria-label="Fullscreen">
+                                        <div class="video-progress-container">
+                                            <span class="video-time-current">0:00</span>
+                                            <div class="video-progress-bar">
+                                                <div class="video-progress-fill"></div>
+                                                <input type="range" class="video-seek-bar" value="0" min="0" max="100" aria-label="Video seek">
+                                            </div>
+                                            <span class="video-time-duration">0:00</span>
+                                        </div>
+                                        <button id="video-fullscreen" class="video-control-btn" aria-label="Fullscreen">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                                                 <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
                                             </svg>
