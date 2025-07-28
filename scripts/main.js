@@ -2022,40 +2022,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentMediaMode = 'audio';
   let videoControlsHideTimeout;
   
-  // Media Mode Switcher
-  modeBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const mode = btn.dataset.mode;
-      switchMediaMode(mode);
-    });
-  });
-  
-  function switchMediaMode(mode) {
-    currentMediaMode = mode;
-    
-    // Update button states
-    modeBtns.forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.mode === mode);
-    });
-    
-    // Show/hide displays
-    if (mode === 'audio') {
-      audioDisplay.classList.add('active');
-      videoDisplay.classList.remove('active');
-      // Stop video if playing
-      if (videoElement) {
-        videoElement.pause();
-        videoElement.currentTime = 0;
-      }
-    } else {
-      audioDisplay.classList.remove('active');
-      videoDisplay.classList.add('active');
-      // If there's a video source for current track, load it
-      if (currentTrack && currentTrack.videoSrc) {
-        loadVideoSource(currentTrack.videoSrc);
-      }
-    }
-  }
+  // Remove mode switcher functionality since we have separate sections now
+  // Just ensure video loads when track has video
   
   function loadVideoSource(src) {
     if (!videoElement || !src) return;
@@ -2226,14 +2194,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
-  // Update the existing loadTrack function to check for video mode
+  // Update the existing loadTrack function to always load video if available
   const originalLoadTrack = window.loadTrack;
   window.loadTrack = function(index) {
     originalLoadTrack(index);
     
-    // If in video mode and track has video, load it
-    if (currentMediaMode === 'video' && currentTrack && currentTrack.videoSrc) {
+    // Always load video if track has it
+    if (currentTrack && currentTrack.videoSrc) {
       loadVideoSource(currentTrack.videoSrc);
+      // Show video section if it has content
+      const videoSection = document.querySelector('.video-player-section');
+      if (videoSection) {
+        videoSection.style.display = 'block';
+      }
+    } else {
+      // Hide video section if no video
+      const videoSection = document.querySelector('.video-player-section');
+      if (videoSection) {
+        videoSection.style.display = 'none';
+      }
     }
   };
 });
