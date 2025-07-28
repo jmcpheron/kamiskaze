@@ -2007,17 +2007,34 @@ document.addEventListener('DOMContentLoaded', () => {
   const audioDisplayFallback = document.getElementById('audio-display-fallback');
   
   function loadVideoSource(src) {
-    if (!videoElement || !src) return;
+    if (!videoElement) return;
+    
+    console.log('Loading video source:', src);
+    
+    if (!src) {
+      // No video source - clear video and show fallback
+      videoElement.removeAttribute('src');
+      videoElement.load();
+      videoElement.style.display = 'none';
+      if (audioDisplayFallback) {
+        audioDisplayFallback.style.display = 'flex';
+      }
+      return;
+    }
     
     // Handle external sources
     if (currentPlaylist && currentPlaylist.cdnBaseUrl && !src.startsWith('http')) {
       src = currentPlaylist.cdnBaseUrl + src;
     }
     
+    console.log('Final video URL:', src);
+    
+    // Set video source
     videoElement.src = src;
+    videoElement.style.display = 'block';
     videoElement.load();
     
-    // Show video, hide fallback
+    // Hide fallback
     if (audioDisplayFallback) {
       audioDisplayFallback.style.display = 'none';
     }
@@ -2067,13 +2084,7 @@ document.addEventListener('DOMContentLoaded', () => {
       loadVideoSource(currentTrack.videoSrc);
     } else {
       // No video - show audio fallback
-      if (videoElement) {
-        videoElement.removeAttribute('src');
-        videoElement.load();
-      }
-      if (audioDisplayFallback) {
-        audioDisplayFallback.style.display = 'flex';
-      }
+      loadVideoSource(null);
     }
   };
 });
