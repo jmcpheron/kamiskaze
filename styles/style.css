@@ -3395,6 +3395,8 @@ body::before {
     gap: var(--space-sm);
     margin-bottom: var(--space-lg);
     justify-content: center;
+    position: relative;
+    z-index: 10;
 }
 
 .mode-btn {
@@ -3403,13 +3405,15 @@ body::before {
     gap: var(--space-xs);
     padding: var(--space-sm) var(--space-md);
     background: var(--bg-secondary);
-    border: 1px solid var(--border);
+    border: 2px solid var(--accent);
     border-radius: var(--radius-md);
     color: var(--text-secondary);
     font-size: 0.875rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
+    min-width: 100px;
+    justify-content: center;
 }
 
 .mode-btn:hover {
