@@ -55,38 +55,102 @@
                 <section class="player-section">
                     <div class="player-container">
                         <!-- Media Display -->
-                        <div class="media-container">
-                            <div id="album-art" class="album-art">
-                                <img id="custom-album-art" src="images/cassette-single.png" alt="Album artwork">
-                                <svg id="default-album-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-                                </svg>
-                                <video id="video-art-display" muted playsinline preload="metadata" webkit-playsinline="true" x-webkit-airplay="allow" disablePictureInPlace="true" controlsList="nodownload"></video>
-                                
-                                <!-- Video Controls Overlay -->
-                                <div id="video-controls-overlay" class="video-controls-overlay">
-                                    <div class="video-control-bar">
-                                        <button id="video-play-pause" class="video-control-btn" aria-label="Play/Pause">
-                                            <svg class="video-play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                                <path d="M8 5v14l11-7z"/>
-                                            </svg>
-                                            <svg class="video-pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-                                            </svg>
-                                        </button>
-                                        <div class="video-progress-container">
-                                            <span class="video-time-current">0:00</span>
-                                            <div class="video-progress-bar">
-                                                <div class="video-progress-fill"></div>
-                                                <input type="range" class="video-seek-bar" value="0" min="0" max="100" aria-label="Video seek">
+                        <div class="media-display">
+                            <!-- Mode Switcher -->
+                            <div class="media-mode-switcher">
+                                <button class="mode-btn active" data-mode="audio">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                                    </svg>
+                                    Audio
+                                </button>
+                                <button class="mode-btn" data-mode="video">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+                                    </svg>
+                                    Video
+                                </button>
+                            </div>
+
+                            <!-- Audio Display (Album Art) -->
+                            <div id="audio-display" class="media-content audio-display active">
+                                <div class="album-art">
+                                    <img id="custom-album-art" src="images/cassette-single.png" alt="Album artwork">
+                                    <svg id="default-album-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <!-- Video Display -->
+                            <div id="video-display" class="media-content video-display">
+                                <div class="video-player">
+                                    <video id="video-element" playsinline preload="metadata" webkit-playsinline="true" x-webkit-airplay="allow" disablePictureInPlace="true">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                    
+                                    <!-- Video Controls -->
+                                    <div class="video-controls">
+                                        <div class="video-controls-inner">
+                                            <!-- Progress Bar -->
+                                            <div class="video-progress">
+                                                <div class="video-progress-track">
+                                                    <div class="video-progress-buffer"></div>
+                                                    <div class="video-progress-fill"></div>
+                                                    <input type="range" class="video-seek" value="0" min="0" max="100" step="0.1">
+                                                </div>
                                             </div>
-                                            <span class="video-time-duration">0:00</span>
+                                            
+                                            <!-- Control Buttons -->
+                                            <div class="video-buttons">
+                                                <div class="video-buttons-left">
+                                                    <button class="video-btn video-play-pause" aria-label="Play/Pause">
+                                                        <svg class="icon-play" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                                            <path d="M8 5v14l11-7z"/>
+                                                        </svg>
+                                                        <svg class="icon-pause" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                                            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                                                        </svg>
+                                                    </button>
+                                                    
+                                                    <button class="video-btn video-volume" aria-label="Volume">
+                                                        <svg class="icon-volume-high" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                                            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                                                        </svg>
+                                                        <svg class="icon-volume-mute" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                                            <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+                                                        </svg>
+                                                    </button>
+                                                    
+                                                    <div class="volume-slider-container">
+                                                        <input type="range" class="volume-slider" min="0" max="100" value="100">
+                                                    </div>
+                                                    
+                                                    <span class="video-time">
+                                                        <span class="time-current">0:00</span>
+                                                        <span class="time-separator">/</span>
+                                                        <span class="time-duration">0:00</span>
+                                                    </span>
+                                                </div>
+                                                
+                                                <div class="video-buttons-right">
+                                                    <button class="video-btn video-pip" aria-label="Picture in Picture">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                                            <path d="M19 7h-8v6h8V7zm2-4H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14z"/>
+                                                        </svg>
+                                                    </button>
+                                                    
+                                                    <button class="video-btn video-fullscreen" aria-label="Fullscreen">
+                                                        <svg class="icon-fullscreen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                                            <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                                                        </svg>
+                                                        <svg class="icon-fullscreen-exit" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                                            <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <button id="video-fullscreen" class="video-control-btn" aria-label="Fullscreen">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                                <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
-                                            </svg>
-                                        </button>
                                     </div>
                                 </div>
                             </div>

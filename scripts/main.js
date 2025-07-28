@@ -2001,4 +2001,239 @@ document.addEventListener('DOMContentLoaded', () => {
     showNotification('Promise error: ' + e.reason, 'error');
     console.error('Unhandled promise rejection:', e);
   });
+
+  // === NEW VIDEO PLAYER IMPLEMENTATION ===
+  const videoElement = document.getElementById('video-element');
+  const audioDisplay = document.getElementById('audio-display');
+  const videoDisplay = document.getElementById('video-display');
+  const modeBtns = document.querySelectorAll('.mode-btn');
+  const videoPlayPause = document.querySelector('.video-play-pause');
+  const videoSeek = document.querySelector('.video-seek');
+  const videoProgressFill = document.querySelector('.video-progress-fill');
+  const videoProgressBuffer = document.querySelector('.video-progress-buffer');
+  const videoVolume = document.querySelector('.video-volume');
+  const volumeSlider = document.querySelector('.volume-slider');
+  const videoFullscreen = document.querySelector('.video-fullscreen');
+  const videoPip = document.querySelector('.video-pip');
+  const videoControls = document.querySelector('.video-controls');
+  const timeCurrent = document.querySelector('.time-current');
+  const timeDuration = document.querySelector('.time-duration');
+  
+  let currentMediaMode = 'audio';
+  let videoControlsHideTimeout;
+  
+  // Media Mode Switcher
+  modeBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mode = btn.dataset.mode;
+      switchMediaMode(mode);
+    });
+  });
+  
+  function switchMediaMode(mode) {
+    currentMediaMode = mode;
+    
+    // Update button states
+    modeBtns.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.mode === mode);
+    });
+    
+    // Show/hide displays
+    if (mode === 'audio') {
+      audioDisplay.classList.add('active');
+      videoDisplay.classList.remove('active');
+      // Stop video if playing
+      if (videoElement) {
+        videoElement.pause();
+        videoElement.currentTime = 0;
+      }
+    } else {
+      audioDisplay.classList.remove('active');
+      videoDisplay.classList.add('active');
+      // If there's a video source for current track, load it
+      if (currentTrack && currentTrack.videoSrc) {
+        loadVideoSource(currentTrack.videoSrc);
+      }
+    }
+  }
+  
+  function loadVideoSource(src) {
+    if (!videoElement || !src) return;
+    
+    // Handle external sources
+    if (currentPlaylist && currentPlaylist.cdnBaseUrl && !src.startsWith('http')) {
+      src = currentPlaylist.cdnBaseUrl + src;
+    }
+    
+    videoElement.src = src;
+    videoElement.load();
+    
+    // Sync with audio player if playing
+    if (audioPlayer && !audioPlayer.paused) {
+      videoElement.currentTime = audioPlayer.currentTime;
+      videoElement.play().catch(err => {
+        console.warn('Video play failed:', err);
+      });
+    }
+  }
+  
+  // Video Controls
+  if (videoPlayPause) {
+    videoPlayPause.addEventListener('click', () => {
+      if (videoElement.paused) {
+        videoElement.play();
+        if (audioPlayer) audioPlayer.play();
+      } else {
+        videoElement.pause();
+        if (audioPlayer) audioPlayer.pause();
+      }
+    });
+  }
+  
+  // Video Progress
+  if (videoSeek) {
+    videoSeek.addEventListener('input', (e) => {
+      const percent = e.target.value / 100;
+      const time = videoElement.duration * percent;
+      videoElement.currentTime = time;
+      if (audioPlayer) audioPlayer.currentTime = time;
+    });
+  }
+  
+  // Video time updates
+  if (videoElement) {
+    videoElement.addEventListener('loadedmetadata', () => {
+      if (timeDuration) {
+        timeDuration.textContent = formatTime(videoElement.duration);
+      }
+    });
+    
+    videoElement.addEventListener('timeupdate', () => {
+      if (!videoElement.duration) return;
+      
+      const percent = (videoElement.currentTime / videoElement.duration) * 100;
+      if (videoProgressFill) videoProgressFill.style.width = percent + '%';
+      if (videoSeek) videoSeek.value = percent;
+      if (timeCurrent) timeCurrent.textContent = formatTime(videoElement.currentTime);
+    });
+    
+    videoElement.addEventListener('progress', () => {
+      if (videoElement.buffered.length > 0) {
+        const buffered = (videoElement.buffered.end(0) / videoElement.duration) * 100;
+        if (videoProgressBuffer) videoProgressBuffer.style.width = buffered + '%';
+      }
+    });
+    
+    videoElement.addEventListener('play', () => {
+      if (videoPlayPause) videoPlayPause.classList.add('playing');
+    });
+    
+    videoElement.addEventListener('pause', () => {
+      if (videoPlayPause) videoPlayPause.classList.remove('playing');
+    });
+  }
+  
+  // Volume Control
+  if (volumeSlider) {
+    volumeSlider.addEventListener('input', (e) => {
+      const volume = e.target.value / 100;
+      if (videoElement) videoElement.volume = volume;
+      if (audioPlayer) audioPlayer.volume = volume;
+      
+      if (videoVolume) {
+        videoVolume.classList.toggle('muted', volume === 0);
+      }
+    });
+  }
+  
+  if (videoVolume) {
+    videoVolume.addEventListener('click', () => {
+      const isMuted = videoElement.muted;
+      videoElement.muted = !isMuted;
+      if (audioPlayer) audioPlayer.muted = !isMuted;
+      
+      videoVolume.classList.toggle('muted', !isMuted);
+      if (volumeSlider) {
+        volumeSlider.value = !isMuted ? 0 : (videoElement.volume * 100);
+      }
+    });
+  }
+  
+  // Fullscreen
+  if (videoFullscreen) {
+    videoFullscreen.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        const playerContainer = document.querySelector('.video-player');
+        if (playerContainer) {
+          playerContainer.requestFullscreen().then(() => {
+            videoFullscreen.classList.add('is-fullscreen');
+          });
+        }
+      } else {
+        document.exitFullscreen().then(() => {
+          videoFullscreen.classList.remove('is-fullscreen');
+        });
+      }
+    });
+  }
+  
+  // Picture-in-Picture
+  if (videoPip && 'pictureInPictureEnabled' in document) {
+    videoPip.addEventListener('click', async () => {
+      try {
+        if (document.pictureInPictureElement) {
+          await document.exitPictureInPicture();
+        } else {
+          await videoElement.requestPictureInPicture();
+        }
+      } catch (err) {
+        console.error('PiP error:', err);
+      }
+    });
+  } else if (videoPip) {
+    videoPip.style.display = 'none';
+  }
+  
+  // Auto-hide controls
+  function showVideoControlsTemporarily() {
+    if (videoControls) {
+      videoControls.classList.add('show');
+      clearTimeout(videoControlsHideTimeout);
+      
+      videoControlsHideTimeout = setTimeout(() => {
+        if (!videoElement.paused) {
+          videoControls.classList.remove('show');
+        }
+      }, 3000);
+    }
+  }
+  
+  // Show controls on interaction
+  const videoPlayer = document.querySelector('.video-player');
+  if (videoPlayer) {
+    videoPlayer.addEventListener('mousemove', showVideoControlsTemporarily);
+    videoPlayer.addEventListener('touchstart', showVideoControlsTemporarily);
+  }
+  
+  // Always show controls when paused
+  if (videoElement) {
+    videoElement.addEventListener('pause', () => {
+      if (videoControls) videoControls.classList.add('show');
+    });
+    
+    videoElement.addEventListener('play', () => {
+      showVideoControlsTemporarily();
+    });
+  }
+  
+  // Update the existing loadTrack function to check for video mode
+  const originalLoadTrack = window.loadTrack;
+  window.loadTrack = function(index) {
+    originalLoadTrack(index);
+    
+    // If in video mode and track has video, load it
+    if (currentMediaMode === 'video' && currentTrack && currentTrack.videoSrc) {
+      loadVideoSource(currentTrack.videoSrc);
+    }
+  };
 });
