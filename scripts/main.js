@@ -2002,28 +2002,9 @@ document.addEventListener('DOMContentLoaded', () => {
     console.error('Unhandled promise rejection:', e);
   });
 
-  // === NEW VIDEO PLAYER IMPLEMENTATION ===
+  // === YOUTUBE-STYLE VIDEO PLAYER ===
   const videoElement = document.getElementById('video-element');
-  const audioDisplay = document.getElementById('audio-display');
-  const videoDisplay = document.getElementById('video-display');
-  const modeBtns = document.querySelectorAll('.mode-btn');
-  const videoPlayPause = document.querySelector('.video-play-pause');
-  const videoSeek = document.querySelector('.video-seek');
-  const videoProgressFill = document.querySelector('.video-progress-fill');
-  const videoProgressBuffer = document.querySelector('.video-progress-buffer');
-  const videoVolume = document.querySelector('.video-volume');
-  const volumeSlider = document.querySelector('.volume-slider');
-  const videoFullscreen = document.querySelector('.video-fullscreen');
-  const videoPip = document.querySelector('.video-pip');
-  const videoControls = document.querySelector('.video-controls');
-  const timeCurrent = document.querySelector('.time-current');
-  const timeDuration = document.querySelector('.time-duration');
-  
-  let currentMediaMode = 'audio';
-  let videoControlsHideTimeout;
-  
-  // Remove mode switcher functionality since we have separate sections now
-  // Just ensure video loads when track has video
+  const audioDisplayFallback = document.getElementById('audio-display-fallback');
   
   function loadVideoSource(src) {
     if (!videoElement || !src) return;
@@ -2036,6 +2017,11 @@ document.addEventListener('DOMContentLoaded', () => {
     videoElement.src = src;
     videoElement.load();
     
+    // Show video, hide fallback
+    if (audioDisplayFallback) {
+      audioDisplayFallback.style.display = 'none';
+    }
+    
     // Sync with audio player if playing
     if (audioPlayer && !audioPlayer.paused) {
       videoElement.currentTime = audioPlayer.currentTime;
@@ -2045,173 +2031,48 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   
-  // Video Controls
-  if (videoPlayPause) {
-    videoPlayPause.addEventListener('click', () => {
-      if (videoElement.paused) {
-        videoElement.play();
-        if (audioPlayer) audioPlayer.play();
-      } else {
+  // Sync video with audio player
+  if (videoElement && audioPlayer) {
+    // When audio plays/pauses, sync video
+    audioPlayer.addEventListener('play', () => {
+      if (videoElement.src) {
+        videoElement.play().catch(err => console.warn('Video sync play failed:', err));
+      }
+    });
+    
+    audioPlayer.addEventListener('pause', () => {
+      if (videoElement.src && !videoElement.paused) {
         videoElement.pause();
-        if (audioPlayer) audioPlayer.pause();
-      }
-    });
-  }
-  
-  // Video Progress
-  if (videoSeek) {
-    videoSeek.addEventListener('input', (e) => {
-      const percent = e.target.value / 100;
-      const time = videoElement.duration * percent;
-      videoElement.currentTime = time;
-      if (audioPlayer) audioPlayer.currentTime = time;
-    });
-  }
-  
-  // Video time updates
-  if (videoElement) {
-    videoElement.addEventListener('loadedmetadata', () => {
-      if (timeDuration) {
-        timeDuration.textContent = formatTime(videoElement.duration);
       }
     });
     
-    videoElement.addEventListener('timeupdate', () => {
-      if (!videoElement.duration) return;
-      
-      const percent = (videoElement.currentTime / videoElement.duration) * 100;
-      if (videoProgressFill) videoProgressFill.style.width = percent + '%';
-      if (videoSeek) videoSeek.value = percent;
-      if (timeCurrent) timeCurrent.textContent = formatTime(videoElement.currentTime);
-    });
-    
-    videoElement.addEventListener('progress', () => {
-      if (videoElement.buffered.length > 0) {
-        const buffered = (videoElement.buffered.end(0) / videoElement.duration) * 100;
-        if (videoProgressBuffer) videoProgressBuffer.style.width = buffered + '%';
+    // Sync seeking
+    audioPlayer.addEventListener('seeked', () => {
+      if (videoElement.src) {
+        videoElement.currentTime = audioPlayer.currentTime;
       }
     });
     
-    videoElement.addEventListener('play', () => {
-      if (videoPlayPause) videoPlayPause.classList.add('playing');
-    });
-    
-    videoElement.addEventListener('pause', () => {
-      if (videoPlayPause) videoPlayPause.classList.remove('playing');
-    });
+    // Keep video muted to avoid double audio
+    videoElement.muted = true;
   }
   
-  // Volume Control
-  if (volumeSlider) {
-    volumeSlider.addEventListener('input', (e) => {
-      const volume = e.target.value / 100;
-      if (videoElement) videoElement.volume = volume;
-      if (audioPlayer) audioPlayer.volume = volume;
-      
-      if (videoVolume) {
-        videoVolume.classList.toggle('muted', volume === 0);
-      }
-    });
-  }
-  
-  if (videoVolume) {
-    videoVolume.addEventListener('click', () => {
-      const isMuted = videoElement.muted;
-      videoElement.muted = !isMuted;
-      if (audioPlayer) audioPlayer.muted = !isMuted;
-      
-      videoVolume.classList.toggle('muted', !isMuted);
-      if (volumeSlider) {
-        volumeSlider.value = !isMuted ? 0 : (videoElement.volume * 100);
-      }
-    });
-  }
-  
-  // Fullscreen
-  if (videoFullscreen) {
-    videoFullscreen.addEventListener('click', () => {
-      if (!document.fullscreenElement) {
-        const playerContainer = document.querySelector('.video-player');
-        if (playerContainer) {
-          playerContainer.requestFullscreen().then(() => {
-            videoFullscreen.classList.add('is-fullscreen');
-          });
-        }
-      } else {
-        document.exitFullscreen().then(() => {
-          videoFullscreen.classList.remove('is-fullscreen');
-        });
-      }
-    });
-  }
-  
-  // Picture-in-Picture
-  if (videoPip && 'pictureInPictureEnabled' in document) {
-    videoPip.addEventListener('click', async () => {
-      try {
-        if (document.pictureInPictureElement) {
-          await document.exitPictureInPicture();
-        } else {
-          await videoElement.requestPictureInPicture();
-        }
-      } catch (err) {
-        console.error('PiP error:', err);
-      }
-    });
-  } else if (videoPip) {
-    videoPip.style.display = 'none';
-  }
-  
-  // Auto-hide controls
-  function showVideoControlsTemporarily() {
-    if (videoControls) {
-      videoControls.classList.add('show');
-      clearTimeout(videoControlsHideTimeout);
-      
-      videoControlsHideTimeout = setTimeout(() => {
-        if (!videoElement.paused) {
-          videoControls.classList.remove('show');
-        }
-      }, 3000);
-    }
-  }
-  
-  // Show controls on interaction
-  const videoPlayer = document.querySelector('.video-player');
-  if (videoPlayer) {
-    videoPlayer.addEventListener('mousemove', showVideoControlsTemporarily);
-    videoPlayer.addEventListener('touchstart', showVideoControlsTemporarily);
-  }
-  
-  // Always show controls when paused
-  if (videoElement) {
-    videoElement.addEventListener('pause', () => {
-      if (videoControls) videoControls.classList.add('show');
-    });
-    
-    videoElement.addEventListener('play', () => {
-      showVideoControlsTemporarily();
-    });
-  }
-  
-  // Update the existing loadTrack function to always load video if available
+  // Update the existing loadTrack function to handle video
   const originalLoadTrack = window.loadTrack;
   window.loadTrack = function(index) {
     originalLoadTrack(index);
     
-    // Always load video if track has it
+    // Load video if available
     if (currentTrack && currentTrack.videoSrc) {
       loadVideoSource(currentTrack.videoSrc);
-      // Show video section if it has content
-      const videoSection = document.querySelector('.video-player-section');
-      if (videoSection) {
-        videoSection.style.display = 'block';
-      }
     } else {
-      // Hide video section if no video
-      const videoSection = document.querySelector('.video-player-section');
-      if (videoSection) {
-        videoSection.style.display = 'none';
+      // No video - show audio fallback
+      if (videoElement) {
+        videoElement.removeAttribute('src');
+        videoElement.load();
+      }
+      if (audioDisplayFallback) {
+        audioDisplayFallback.style.display = 'flex';
       }
     }
   };

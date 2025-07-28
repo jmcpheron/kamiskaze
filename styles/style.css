@@ -3823,3 +3823,187 @@ body::before {
         aspect-ratio: 1;
     }
 }
+
+/* === YOUTUBE-STYLE LAYOUT === */
+.youtube-layout {
+    display: flex;
+    gap: var(--space-xl);
+    align-items: flex-start;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+/* Main Player Area (Left Side) */
+.main-player-area {
+    flex: 1;
+    min-width: 0; /* Prevent flex item from overflowing */
+}
+
+.video-container {
+    background: #000;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: var(--space-lg);
+    position: relative;
+}
+
+.video-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+}
+
+#video-element {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+}
+
+/* Audio Display Fallback (when no video) */
+.audio-display-fallback {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-secondary);
+}
+
+.audio-display-fallback .album-art {
+    width: 50%;
+    max-width: 400px;
+    height: auto;
+    aspect-ratio: 1;
+}
+
+#video-element:not([src]) {
+    display: none;
+}
+
+#video-element[src] ~ .audio-display-fallback {
+    display: none;
+}
+
+/* Track Info Section */
+.track-info-section {
+    background: var(--bg-card);
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-lg);
+}
+
+/* Compact Audio Controls */
+.compact-audio-controls {
+    background: var(--bg-card);
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+}
+
+.compact-audio-controls .control-buttons {
+    display: flex;
+    gap: var(--space-sm);
+    flex-shrink: 0;
+}
+
+.compact-audio-controls .control-button {
+    width: 48px;
+    height: 48px;
+}
+
+.compact-audio-controls .progress-section {
+    flex: 1;
+}
+
+/* Sidebar Playlist (Right Side) */
+.sidebar-playlist {
+    width: 400px;
+    flex-shrink: 0;
+    position: sticky;
+    top: calc(var(--header-height) + var(--space-lg));
+    max-height: calc(100vh - var(--header-height) - var(--space-xl) * 2);
+    overflow-y: auto;
+}
+
+.sidebar-playlist .playlist-container {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-playlist .tracklist-container {
+    flex: 1;
+    overflow-y: auto;
+    margin-top: var(--space-md);
+}
+
+.sidebar-playlist .playlist-nav {
+    flex-shrink: 0;
+    margin-bottom: var(--space-md);
+}
+
+.sidebar-playlist .tracklist-header {
+    margin-bottom: var(--space-md);
+}
+
+.sidebar-playlist .track-list {
+    max-height: none;
+}
+
+/* Hide old sections */
+.player-section,
+.audio-player-section,
+.video-player-section,
+.playlist-section {
+    display: none !important;
+}
+
+/* Ensure new layout is visible */
+.youtube-layout {
+    display: flex !important;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .sidebar-playlist {
+        width: 350px;
+    }
+}
+
+@media (max-width: 992px) {
+    .youtube-layout {
+        flex-direction: column;
+    }
+    
+    .sidebar-playlist {
+        width: 100%;
+        position: static;
+        max-height: 400px;
+    }
+}
+
+@media (max-width: 768px) {
+    .compact-audio-controls {
+        flex-direction: column;
+        gap: var(--space-md);
+    }
+    
+    .compact-audio-controls .control-buttons {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .compact-audio-controls .progress-section {
+        width: 100%;
+    }
+}
