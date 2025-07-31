@@ -71,6 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let videoMode = false;
   let notification = null; // Will be created when needed
   let cdnCache = new Map(); // Simple CDN response cache
+  let videoControls = null; // Will be initialized when needed
 
   // Initialize
   initializeApp();
@@ -411,22 +412,7 @@ document.addEventListener('DOMContentLoaded', () => {
       videoPlayPauseButton.addEventListener('click', togglePlayPause);
     }
     
-    // Video element events
-    if (videoArtDisplay) {
-      videoArtDisplay.addEventListener('error', (e) => {
-        console.error('Video error:', e);
-        
-        // Only show notification for video files, not for audio files
-        const currentTrack = currentFeed?.tracks?.[currentTrackIndex];
-        const isAudioFile = currentTrack?.audioUrl?.toLowerCase().endsWith('.mp3') ||
-                          currentTrack?.audioUrl?.toLowerCase().endsWith('.wav') ||
-                          currentTrack?.audioUrl?.toLowerCase().endsWith('.ogg');
-        
-        if (!isAudioFile) {
-          showNotification('Error loading video: ' + (e.message || 'Unknown error'), 'error');
-        }
-      });
-    }
+    // Note: Video element events are now handled by the VideoControls class
     
     // Speed controls
     if (speedButtons) {
@@ -668,8 +654,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Handle video playback
   function setupVideoPlayback(videoSource) {
-    // Make sure we have the video element
-    if (!videoArtDisplay) {
+    // Get the actual video element (new element, not videoArtDisplay)
+    const videoElement = document.getElementById('video-element');
+    if (!videoElement) {
       console.error('Video element not found');
       return false;
     }
@@ -685,16 +672,21 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       console.log('Setting up video playback for source:', videoSource);
       
+      // Initialize custom video controls if not already done
+      if (!videoControls && window.VideoControls) {
+        videoControls = new VideoControls();
+      }
+      
       // Reset previous video state
-      videoArtDisplay.pause();
+      videoElement.pause();
       
       // Clear any previous error handlers
-      videoArtDisplay.onerror = null;
+      videoElement.onerror = null;
       
       // Add error handler before setting source
-      videoArtDisplay.onerror = function(e) {
-        const errorMessage = getVideoErrorMessage(videoArtDisplay.error);
-        console.error(`Video error: ${errorMessage}`, videoArtDisplay.error);
+      videoElement.onerror = function(e) {
+        const errorMessage = getVideoErrorMessage(videoElement.error);
+        console.error(`Video error: ${errorMessage}`, videoElement.error);
         showNotification(`Video error: ${errorMessage}`, 'error');
         
         // Fall back to audio-only mode
@@ -703,7 +695,7 @@ document.addEventListener('DOMContentLoaded', () => {
           albumArtContainer.classList.remove('video-active');
         }
         
-        videoArtDisplay.style.display = 'none';
+        videoElement.style.display = 'none';
         
         // Show cassette-single.png as default image
         if (albumArt) {
@@ -727,44 +719,37 @@ document.addEventListener('DOMContentLoaded', () => {
       };
       
       // Set new source
-      videoArtDisplay.src = videoSource;
+      videoElement.src = videoSource;
       
       // Show video element and controls
-      videoArtDisplay.style.display = 'block';
-      videoArtDisplay.classList.remove('hidden');
+      videoElement.style.display = 'block';
+      videoElement.classList.remove('hidden');
       
       // Show video controls overlay
       const videoControlsOverlay = document.getElementById('video-controls-overlay');
       if (videoControlsOverlay) {
-        videoControlsOverlay.style.display = 'flex';
-        
-        // Make sure the initial play/pause state is correct
-        updateVideoPlayPauseButton(isPlaying);
+        videoControlsOverlay.style.display = 'block';
       }
       
-      // Hide album art elements
-      if (albumArt) {
-        albumArt.classList.add('hidden');
-        albumArt.style.display = 'none';
-      }
-      if (defaultArt) {
-        defaultArt.classList.add('hidden');
-        defaultArt.style.display = 'none';
+      // Hide audio display fallback
+      const audioDisplayFallback = document.getElementById('audio-display-fallback');
+      if (audioDisplayFallback) {
+        audioDisplayFallback.style.display = 'none';
       }
       
       // Add event listeners for synchronization
       const syncVideo = () => {
-        if (Math.abs(videoArtDisplay.currentTime - audioPlayer.currentTime) > 0.3) {
-          videoArtDisplay.currentTime = audioPlayer.currentTime;
+        if (Math.abs(videoElement.currentTime - audioPlayer.currentTime) > 0.3) {
+          videoElement.currentTime = audioPlayer.currentTime;
         }
         
         // Video time is now updated through the new video progress controls
       };
       
       // Clean up previous event listeners
-      const oldSync = videoArtDisplay._syncFunction;
-      const oldPlayHandler = videoArtDisplay._playHandler;
-      const oldPauseHandler = videoArtDisplay._pauseHandler;
+      const oldSync = videoElement._syncFunction;
+      const oldPlayHandler = videoElement._playHandler;
+      const oldPauseHandler = videoElement._pauseHandler;
       
       if (oldSync) {
         audioPlayer.removeEventListener('timeupdate', oldSync);
@@ -777,30 +762,28 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       
       const playHandler = () => {
-        if (videoArtDisplay.paused) {
-          videoArtDisplay.play().catch(e => {
+        if (videoElement.paused) {
+          videoElement.play().catch(e => {
             console.error('Video play error:', e);
             // Don't show notification here as it's likely already handled by onerror
           });
         }
         
-        // Update play/pause button icon if it exists
-        updateVideoPlayPauseButton(true);
+        // Video controls will handle button updates
       };
       
       const pauseHandler = () => {
-        if (!videoArtDisplay.paused) {
-          videoArtDisplay.pause();
+        if (!videoElement.paused) {
+          videoElement.pause();
         }
         
-        // Update play/pause button icon if it exists
-        updateVideoPlayPauseButton(false);
+        // Video controls will handle button updates
       };
       
       // Store the handlers for future cleanup
-      videoArtDisplay._syncFunction = syncVideo;
-      videoArtDisplay._playHandler = playHandler;
-      videoArtDisplay._pauseHandler = pauseHandler;
+      videoElement._syncFunction = syncVideo;
+      videoElement._playHandler = playHandler;
+      videoElement._pauseHandler = pauseHandler;
       
       // Add our new event listeners
       audioPlayer.addEventListener('timeupdate', syncVideo);
@@ -808,7 +791,7 @@ document.addEventListener('DOMContentLoaded', () => {
       audioPlayer.addEventListener('pause', pauseHandler);
       
       // Initial sync when metadata is loaded
-      videoArtDisplay.addEventListener('loadedmetadata', () => {
+      videoElement.addEventListener('loadedmetadata', () => {
         syncVideo();
         
         if (isPlaying) {
@@ -1031,17 +1014,24 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       
       // Fully disable video element to prevent errors
-      if (videoArtDisplay) {
-        videoArtDisplay.pause();
-        videoArtDisplay.removeAttribute('src'); // Use removeAttribute instead of setting to empty string
-        videoArtDisplay.load(); // Important: call load() after changing src to reset the element
-        videoArtDisplay.style.display = 'none';
+      const videoElement = document.getElementById('video-element');
+      if (videoElement) {
+        videoElement.pause();
+        videoElement.removeAttribute('src'); // Use removeAttribute instead of setting to empty string
+        videoElement.load(); // Important: call load() after changing src to reset the element
+        videoElement.style.display = 'none';
       }
       
       // Hide video controls overlay
       const videoControlsOverlay = document.getElementById('video-controls-overlay');
       if (videoControlsOverlay) {
         videoControlsOverlay.style.display = 'none';
+      }
+      
+      // Show audio display fallback
+      const audioDisplayFallback = document.getElementById('audio-display-fallback');
+      if (audioDisplayFallback) {
+        audioDisplayFallback.style.display = 'flex';
       }
       
       // Show appropriate album art with external source support
@@ -1223,57 +1213,67 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function enableVideoMode(videoUrl) {
     videoMode = true;
-    videoArtDisplay.src = videoUrl;
-    videoArtDisplay.classList.remove('hidden');
-    albumArt.classList.add('hidden');
-    defaultArt.classList.add('hidden');
+    const videoElement = document.getElementById('video-element');
+    if (videoElement) {
+      videoElement.src = videoUrl;
+      videoElement.style.display = 'block';
+      
+      // Initialize video controls if needed
+      if (!videoControls && window.VideoControls) {
+        videoControls = new VideoControls();
+      }
+    }
+    
+    // Hide audio display fallback
+    const audioDisplayFallback = document.getElementById('audio-display-fallback');
+    if (audioDisplayFallback) {
+      audioDisplayFallback.style.display = 'none';
+    }
     
     // Connect to audio timeline
-    videoArtDisplay.currentTime = audioPlayer.currentTime;
-    
-    // Sync play/pause state
-    if (isPlaying) {
-      videoArtDisplay.play().catch(e => console.error('Error playing video:', e));
-    } else {
-      videoArtDisplay.pause();
+    if (videoElement) {
+      videoElement.currentTime = audioPlayer.currentTime;
+      
+      // Sync play/pause state
+      if (isPlaying) {
+        videoElement.play().catch(e => console.error('Error playing video:', e));
+      } else {
+        videoElement.pause();
+      }
     }
   }
 
   function disableVideoMode() {
     videoMode = false;
-    videoArtDisplay.classList.add('hidden');
-    
-    // Show album art
-    if (currentFeed && currentFeed.tracks[currentTrackIndex].imageUrl) {
-      albumArt.classList.remove('hidden');
-      defaultArt.classList.add('hidden');
-    } else {
-      albumArt.classList.add('hidden');
-      defaultArt.classList.remove('hidden');
+    const videoElement = document.getElementById('video-element');
+    if (videoElement) {
+      videoElement.pause();
+      videoElement.removeAttribute('src');
+      videoElement.load();
+      videoElement.style.display = 'none';
     }
     
-    // Stop video to save resources
-    videoArtDisplay.pause();
-    videoArtDisplay.src = '';
+    // Hide video controls overlay
+    const videoControlsOverlay = document.getElementById('video-controls-overlay');
+    if (videoControlsOverlay) {
+      videoControlsOverlay.style.display = 'none';
+    }
+    
+    // Show audio display fallback
+    const audioDisplayFallback = document.getElementById('audio-display-fallback');
+    if (audioDisplayFallback) {
+      audioDisplayFallback.style.display = 'flex';
+    }
   }
 
   function toggleFullscreen() {
-    if (!videoArtDisplay) return;
+    const videoWrapper = document.querySelector('.video-wrapper');
     
     try {
       if (!document.fullscreenElement) {
-        // Set the album art container to be the fullscreen element for better styling
-        const albumArtContainer = document.getElementById('album-art');
-        
-        if (albumArtContainer) {
-          albumArtContainer.requestFullscreen().catch(err => {
-            // Fallback to just the video element if container fails
-            videoArtDisplay.requestFullscreen().catch(innerErr => {
-              showNotification(`Error attempting to enable fullscreen: ${innerErr.message}`, 'error');
-            });
-          });
-        } else {
-          videoArtDisplay.requestFullscreen().catch(err => {
+        // Request fullscreen on the wrapper to include controls
+        if (videoWrapper) {
+          videoWrapper.requestFullscreen().catch(err => {
             showNotification(`Error attempting to enable fullscreen: ${err.message}`, 'error');
           });
         }
