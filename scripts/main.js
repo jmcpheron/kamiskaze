@@ -610,19 +610,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updatePlayPauseButton() {
     if (!playIcon || !pauseIcon || !playPauseButton) return;
-    
+
+    // Update video wrapper playing state for VHS REC indicator
+    const videoWrapper = document.querySelector('.video-wrapper');
+
     if (isPlaying) {
       playIcon.style.opacity = '0';
       playIcon.style.transform = 'translate(-43%, -50%) scale(0)';
       pauseIcon.style.opacity = '1';
       pauseIcon.style.transform = 'translate(-50%, -50%) scale(1)';
       playPauseButton.classList.add('playing');
+      if (videoWrapper) videoWrapper.classList.add('playing');
     } else {
       playIcon.style.opacity = '1';
       playIcon.style.transform = 'translate(-43%, -50%) scale(1)';
       pauseIcon.style.opacity = '0';
       pauseIcon.style.transform = 'translate(-50%, -50%) scale(0)';
       playPauseButton.classList.remove('playing');
+      if (videoWrapper) videoWrapper.classList.remove('playing');
     }
   }
 
@@ -794,8 +799,8 @@ document.addEventListener('DOMContentLoaded', () => {
       videoElement.addEventListener('loadedmetadata', () => {
         syncVideo();
         
-        if (isPlaying) {
-          videoArtDisplay.play().catch(e => {
+        if (isPlaying && videoElement) {
+          videoElement.play().catch(e => {
             console.error('Initial video play error:', e);
             // Don't show notification here as it's likely already handled by onerror
           });
@@ -1426,13 +1431,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const trackListContainerDesc = document.querySelector('.tracklist-description');
     
     if (trackListContainerTitle) {
-      trackListContainerTitle.textContent = currentFeed.title || 'Playlist';
-      
-      // Update track count if span exists
-      const trackCountSpan = trackListContainerTitle.querySelector('#track-count');
-      if (trackCountSpan) {
-        trackCountSpan.textContent = `(${currentFeed.tracks.length} tracks)`;
-      }
+      // Get track count span before modifying
+      const trackCountSpan = document.getElementById('track-count');
+
+      // Set title - preserve the span by recreating it
+      trackListContainerTitle.innerHTML = `${currentFeed.title || 'Playlist'} <span id="track-count" class="track-count">(${currentFeed.tracks.length} tracks)</span>`;
     }
     
     if (trackListContainerDesc) {
@@ -1443,7 +1446,8 @@ document.addEventListener('DOMContentLoaded', () => {
     currentFeed.tracks.forEach((track, index) => {
       const li = document.createElement('li');
       li.dataset.index = index;
-      
+      li.dataset.trackNum = index + 1; // For CSS track numbering
+
       if (index === currentTrackIndex) {
         li.classList.add('playing');
       }
