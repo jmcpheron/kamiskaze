@@ -1,24 +1,13 @@
+// Kamiskaze Media Player - Simplified
 document.addEventListener('DOMContentLoaded', () => {
-  // CSS Variable Setup
-  document.documentElement.style.setProperty('--space-xs', '4px');
-  document.documentElement.style.setProperty('--space-sm', '8px');
-  document.documentElement.style.setProperty('--space-md', '16px');
-  document.documentElement.style.setProperty('--space-lg', '24px');
-  document.documentElement.style.setProperty('--space-xl', '32px');
-  document.documentElement.style.setProperty('--transition-fast', '150ms ease');
-  document.documentElement.style.setProperty('--transition-normal', '250ms ease');
-  document.documentElement.style.setProperty('--transition-slow', '350ms ease');
-  document.documentElement.style.setProperty('--shadow-sm', '0 1px 2px rgba(0, 0, 0, .1)');
-  document.documentElement.style.setProperty('--shadow-md', '0 4px 8px rgba(0, 0, 0, .12)');
-  document.documentElement.style.setProperty('--shadow-lg', '0 8px 16px rgba(0, 0, 0, .14)');
-  document.documentElement.style.setProperty('--header-height', '60px');
-  document.documentElement.style.setProperty('--footer-height', '40px');
-  document.documentElement.style.setProperty('--player-width-max', '500px');
-  document.documentElement.style.setProperty('--border-radius-xl', '24px');
 
-  // DOM Elements
+  // ============================================
+  // DOM ELEMENTS
+  // ============================================
   const audioPlayer = document.getElementById('audio-player');
-  const videoArtDisplay = document.getElementById('video-art-display');
+  const videoElement = document.getElementById('video-element');
+  const audioDisplayFallback = document.getElementById('audio-display-fallback');
+  const videoControlsOverlay = document.getElementById('video-controls-overlay');
   const albumArt = document.getElementById('custom-album-art');
   const defaultArt = document.getElementById('default-album-art');
   const trackInfoElement = document.getElementById('track-info-text');
@@ -30,158 +19,57 @@ document.addEventListener('DOMContentLoaded', () => {
   const pauseIcon = document.querySelector('#play-pause-button .pause-icon');
   const prevButton = document.getElementById('prev-button');
   const nextButton = document.getElementById('next-button');
-  const videoFullscreenButton = document.getElementById('video-fullscreen');
-  const speedButtons = document.querySelectorAll('.speed-button');
   const trackList = document.getElementById('track-list');
   const notificationArea = document.getElementById('notification-area');
   const playlistButtons = document.getElementById('playlist-buttons');
-  
-  // Tab Navigation Elements
   const navLinks = document.querySelectorAll('.nav-link[data-tab]');
   const tabContents = document.querySelectorAll('.tab-content');
-  
-  // Theme toggle
   const themeToggle = document.getElementById('theme-toggle');
-  
-  // Optional elements that may not exist in the current simplified UI
-  const feedsToggle = document.getElementById('toggle-playlists-button');
-  const playlistSelector = document.getElementById('playlist-buttons-container');
-  const settingsButton = document.getElementById('toggle-settings-button');
-  const settingsPanel = document.getElementById('settings-section');
-  const addFeedForm = document.getElementById('add-feed-form');
-  const feedUrlInput = document.getElementById('feed-url');
-  const customFeedsList = document.getElementById('custom-feeds-list');
-  const clearDataButton = document.getElementById('clear-cache-button');
-  const helpButton = document.getElementById('help-button');
-  const helpDialog = document.getElementById('help-dialog');
-  const closeHelpButton = document.getElementById('close-help-dialog');
-  
-  // New modal elements
-  const addFeedButton = document.getElementById('add-feed-button');
-  const addFeedModal = document.getElementById('add-feed-modal');
-  const closeAddFeedModal = document.getElementById('close-add-feed-modal');
-  const cancelAddFeed = document.getElementById('cancel-add-feed');
+  const videoWrapper = document.querySelector('.video-wrapper');
 
-  // State
+  // ============================================
+  // STATE
+  // ============================================
   let currentFeed = null;
   let currentTrackIndex = 0;
   let isPlaying = false;
   let feeds = [];
-  let customFeeds = [];
-  let videoMode = false;
-  let notification = null; // Will be created when needed
-  let cdnCache = new Map(); // Simple CDN response cache
-  let videoControls = null; // Will be initialized when needed
+  let videoControls = null;
+  let videoSyncCleanup = null;
 
-  // Initialize
-  initializeApp();
-
-  // Tab Navigation Functions
-  function switchTab(targetTab) {
-    // Remove active class from all nav links
-    navLinks.forEach(link => {
-      link.classList.remove('active');
-    });
-
-    // Hide all tab contents
-    tabContents.forEach(content => {
-      content.classList.remove('active');
-    });
-
-    // Activate the target tab
-    const targetNavLink = document.querySelector(`[data-tab="${targetTab}"]`);
-    const targetContent = document.getElementById(`${targetTab}-tab`);
-
-    if (targetNavLink && targetContent) {
-      targetNavLink.classList.add('active');
-      targetContent.classList.add('active');
-      
-      // Update URL hash without triggering page scroll
-      history.pushState(null, null, `#${targetTab}`);
-      
-      // Special handling for About tab - update stats when it becomes visible
-      if (targetTab === 'about') {
-        updateArchiveStats();
-      }
-    }
-  }
-
-  function updateArchiveStats() {
-    // Calculate total tracks across all feeds
-    const totalTracks = feeds.reduce((sum, feed) => sum + (feed.tracks ? feed.tracks.length : 0), 0);
-    const totalCollections = feeds.length;
-
-    // Update statistics in the About section
-    const totalTracksElement = document.getElementById('total-tracks');
-    const totalCollectionsElement = document.getElementById('total-collections');
-
-    if (totalTracksElement) {
-      totalTracksElement.textContent = totalTracks;
-    }
-    if (totalCollectionsElement) {
-      totalCollectionsElement.textContent = totalCollections;
-    }
-  }
-
-  // Handle initial page load with hash
-  function handleInitialHash() {
-    const hash = window.location.hash.substring(1); // Remove the #
-    if (hash && (hash === 'player' || hash === 'about')) {
-      switchTab(hash);
-    }
-  }
-
-  // Core Functions
+  // ============================================
+  // INITIALIZATION
+  // ============================================
   async function initializeApp() {
     try {
-      // Load feeds
-      await loadDefaultFeeds();
-      loadCustomFeeds();
-      
-      // Set up event listeners
+      await loadFeeds();
       setupEventListeners();
-      
-      // Initialize theme
       initializeTheme();
-      
-      // Initialize with first feed
+
       if (feeds.length > 0) {
         setCurrentFeed(feeds[0]);
         renderPlaylistButtons();
-        renderTrackList();
       }
-      
-      // Check for saved state
+
       restorePlayerState();
-      
-      // Update UI
       updatePlayPauseButton();
-      
-      // Update archive statistics
       updateArchiveStats();
 
-      // Initialize Feather icons again (for dynamic content)
-      if (window.feather) {
-        feather.replace();
-      }
-
-      // Set up browser navigation for tabs
       window.addEventListener('popstate', handleInitialHash);
-      
-      // Handle initial hash on page load
-      setTimeout(handleInitialHash, 100); // Small delay to ensure DOM is ready
+      setTimeout(handleInitialHash, 100);
     } catch (error) {
       showNotification('Error initializing app: ' + error.message, 'error');
       console.error('Initialization error:', error);
     }
   }
 
-  async function loadDefaultFeeds() {
+  // ============================================
+  // FEED MANAGEMENT
+  // ============================================
+  async function loadFeeds() {
     try {
       const response = await fetch('feed.json');
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
+      if (!response.ok) throw new Error('Failed to load feeds');
       const data = await response.json();
       feeds = data.feeds || [];
     } catch (error) {
@@ -190,393 +78,125 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // CDN Feed Loading Functions
-  function isAbsoluteUrl(url) {
-    return /^https?:\/\//.test(url);
+  function setCurrentFeed(feed) {
+    currentFeed = feed;
+    currentTrackIndex = 0;
+    renderTrackList();
+    updateActivePlaylistButton();
+    loadTrack(0);
   }
 
-  function resolveMediaUrl(baseUrl, mediaUrl, corsProxy = null) {
-    // If mediaUrl is already absolute, use it as-is
-    if (isAbsoluteUrl(mediaUrl)) {
-      return corsProxy ? `${corsProxy}${encodeURIComponent(mediaUrl)}` : mediaUrl;
-    }
-    
-    // Otherwise, resolve relative to baseUrl
-    const fullUrl = new URL(mediaUrl, baseUrl).href;
-    return corsProxy ? `${corsProxy}${encodeURIComponent(fullUrl)}` : fullUrl;
+  // ============================================
+  // PLAYBACK CONTROLS
+  // ============================================
+  function isVideoFile(url) {
+    return /\.(mp4|webm|mkv)$/i.test(url);
   }
 
-  async function fetchWithCors(url, options = {}, corsProxy = null, useCache = true) {
-    const cacheKey = `${url}:${JSON.stringify(options)}`;
-    
-    // Check cache first (for feed metadata, not media content)
-    if (useCache && cdnCache.has(cacheKey)) {
-      const cachedData = cdnCache.get(cacheKey);
-      if (Date.now() - cachedData.timestamp < 300000) { // 5 minute cache
-        console.log('Using cached response for:', url);
-        return {
-          ok: true,
-          json: () => Promise.resolve(cachedData.data)
-        };
-      } else {
-        cdnCache.delete(cacheKey); // Remove expired cache
-      }
+  function loadTrack(index) {
+    if (!currentFeed?.tracks?.[index]) return;
+
+    const track = currentFeed.tracks[index];
+    currentTrackIndex = index;
+
+    // Clean up previous video sync
+    if (videoSyncCleanup) {
+      videoSyncCleanup();
+      videoSyncCleanup = null;
     }
-    
-    const fetchUrl = corsProxy ? `${corsProxy}${encodeURIComponent(url)}` : url;
-    
-    const fetchOptions = {
-      method: 'GET',
-      mode: 'cors', // Explicitly request CORS
-      cache: 'default',
-      ...options,
-      headers: {
-        'Accept': 'application/json,audio/*,video/*,image/*',
-        // GitHub Pages friendly headers
-        'Cache-Control': 'no-cache',
-        ...options.headers
+
+    // Set audio source
+    audioPlayer.src = track.audioUrl;
+    audioPlayer.load();
+
+    // Update track info
+    if (trackInfoElement) {
+      trackInfoElement.innerHTML = `
+        <h2>${track.title || 'Unknown Track'}</h2>
+        <p>${track.description || ''}</p>
+      `;
+    }
+
+    // Handle video vs audio display
+    if (isVideoFile(track.audioUrl)) {
+      setupVideoPlayback(track.audioUrl);
+    } else {
+      showAudioFallback(track);
+    }
+
+    highlightCurrentTrack();
+    savePlayerState();
+  }
+
+  function setupVideoPlayback(src) {
+    if (!videoElement) return;
+
+    // Initialize VideoControls if needed
+    if (!videoControls && window.VideoControls) {
+      videoControls = new VideoControls();
+    }
+
+    // Reset and set new source
+    videoElement.pause();
+    videoElement.src = src;
+    videoElement.style.display = 'block';
+
+    // Show video controls, hide audio fallback
+    if (videoControlsOverlay) videoControlsOverlay.style.display = 'block';
+    if (audioDisplayFallback) audioDisplayFallback.style.display = 'none';
+
+    // Sync video with audio
+    const syncTime = () => {
+      if (Math.abs(videoElement.currentTime - audioPlayer.currentTime) > 0.3) {
+        videoElement.currentTime = audioPlayer.currentTime;
       }
     };
 
-    try {
-      const response = await fetch(fetchUrl, fetchOptions);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      
-      // Cache JSON responses
-      if (useCache && response.headers.get('content-type')?.includes('application/json')) {
-        const clonedResponse = response.clone();
-        const data = await clonedResponse.json();
-        cdnCache.set(cacheKey, {
-          data: data,
-          timestamp: Date.now()
-        });
-      }
-      
-      return response;
-    } catch (error) {
-      // If CORS fails, try common workarounds for GitHub Pages
-      if (error.name === 'TypeError' && !corsProxy) {
-        console.warn('CORS error detected, trying GitHub Pages compatible approaches...');
-        
-        // Try with jsdelivr CDN proxy for GitHub repos
-        if (url.includes('github.com') || url.includes('githubusercontent.com')) {
-          try {
-            const githubCdnUrl = convertToJsdelivrCdn(url);
-            if (githubCdnUrl !== url) {
-              console.log(`Retrying with jsDelivr CDN: ${githubCdnUrl}`);
-              return await fetch(githubCdnUrl, fetchOptions);
-            }
-          } catch (jsdelivrError) {
-            console.warn('jsDelivr fallback also failed:', jsdelivrError);
-          }
-        }
-        
-        // Suggest CORS proxy as final fallback
-        throw new Error('CORS error detected. For GitHub Pages: ensure your feed is in a public repo, or try using a CORS proxy like https://cors-anywhere.herokuapp.com/ prefix to your URL.');
-      }
-      throw error;
-    }
-  }
-
-  function convertToJsdelivrCdn(githubUrl) {
-    // Convert GitHub URLs to jsDelivr CDN format
-    // https://github.com/user/repo/blob/main/file.json -> https://cdn.jsdelivr.net/gh/user/repo/file.json
-    // https://raw.githubusercontent.com/user/repo/main/file.json -> https://cdn.jsdelivr.net/gh/user/repo/file.json
-    
-    const githubRegex = /https:\/\/(?:github\.com|raw\.githubusercontent\.com)\/([\w-]+)\/([\w-]+)\/(?:blob\/|raw\/)?(?:main|master)\/(.*)/;
-    const match = githubUrl.match(githubRegex);
-    
-    if (match) {
-      const [, user, repo, path] = match;
-      return `https://cdn.jsdelivr.net/gh/${user}/${repo}/${path}`;
-    }
-    
-    return githubUrl; // Return original if no match
-  }
-
-  function isGitHubPages(url) {
-    return url.includes('github.io') || 
-           url.includes('githubusercontent.com') || 
-           url.includes('github.com');
-  }
-
-  function processCdnFeed(feedData) {
-    if (!feedData.source || !feedData.source.baseUrl) {
-      // Not a CDN feed, return as-is
-      return feedData;
-    }
-
-    const { baseUrl, corsProxy, headers } = feedData.source;
-    
-    // Check if this is a GitHub-hosted source and optimize accordingly
-    const isGitHubSource = isGitHubPages(baseUrl);
-    let optimizedBaseUrl = baseUrl;
-    
-    if (isGitHubSource && !corsProxy) {
-      // Try to convert GitHub URLs to jsDelivr CDN for better CORS support
-      optimizedBaseUrl = convertToJsdelivrCdn(baseUrl);
-      console.log(`GitHub source detected, optimizing baseUrl: ${baseUrl} -> ${optimizedBaseUrl}`);
-    }
-    
-    // Process each track to resolve URLs
-    const processedTracks = feedData.tracks.map(track => ({
-      ...track,
-      audioUrl: resolveMediaUrl(optimizedBaseUrl, track.audioUrl, corsProxy),
-      videoUrl: track.videoUrl ? resolveMediaUrl(optimizedBaseUrl, track.videoUrl, corsProxy) : undefined,
-      albumArt: track.albumArt ? resolveMediaUrl(optimizedBaseUrl, track.albumArt, corsProxy) : undefined,
-      thumbnail: track.thumbnail ? resolveMediaUrl(optimizedBaseUrl, track.thumbnail, corsProxy) : undefined,
-      // Mark as external for special handling
-      _isExternal: true,
-      _corsProxy: corsProxy,
-      _headers: headers,
-      _isGitHubSource: isGitHubSource,
-      _optimizedBaseUrl: optimizedBaseUrl
-    }));
-
-    return {
-      ...feedData,
-      tracks: processedTracks,
-      _isExternal: true,
-      _isGitHubSource: isGitHubSource,
-      _optimizedBaseUrl: optimizedBaseUrl
+    const syncPlay = () => {
+      videoElement.play().catch(() => {});
     };
-  }
 
-  async function validateCdnFeed(feedData) {
-    // Basic structure validation
-    if (!feedData.id || !feedData.title || !Array.isArray(feedData.tracks)) {
-      throw new Error('Invalid feed structure: missing required fields');
-    }
-
-    // Validate tracks
-    for (const track of feedData.tracks) {
-      if (!track.id || !track.title || !track.audioUrl) {
-        throw new Error(`Invalid track structure: ${track.title || 'unnamed track'}`);
-      }
-    }
-
-    // If it's a CDN feed, validate the source configuration
-    if (feedData.source) {
-      if (!feedData.source.baseUrl) {
-        throw new Error('CDN feed missing baseUrl');
-      }
-      
-      try {
-        new URL(feedData.source.baseUrl);
-      } catch (error) {
-        throw new Error('Invalid baseUrl in CDN feed source');
-      }
-    }
-
-    return true;
-  }
-
-  function loadCustomFeeds() {
-    const savedFeeds = localStorage.getItem('customFeeds');
-    if (savedFeeds) {
-      try {
-        customFeeds = JSON.parse(savedFeeds);
-        customFeeds.forEach(feed => feeds.push(feed));
-        renderCustomFeedsList();
-      } catch (error) {
-        console.error('Error parsing custom feeds:', error);
-      }
-    }
-  }
-
-  function setupEventListeners() {
-    // Player controls
-    if (playPauseButton) playPauseButton.addEventListener('click', togglePlayPause);
-    if (prevButton) prevButton.addEventListener('click', playPreviousTrack);
-    if (nextButton) nextButton.addEventListener('click', playNextTrack);
-    if (seekBar) seekBar.addEventListener('input', seekTrack);
-    
-    // Audio player events
-    if (audioPlayer) {
-      audioPlayer.addEventListener('timeupdate', updateProgress);
-      audioPlayer.addEventListener('loadedmetadata', updateDuration);
-      audioPlayer.addEventListener('ended', handleTrackEnd);
-    }
-    
-    // Video controls
-    if (videoFullscreenButton) {
-      videoFullscreenButton.addEventListener('click', toggleFullscreen);
-    }
-    
-    // Add event listener for video play/pause button
-    const videoPlayPauseButton = document.getElementById('video-play-pause');
-    if (videoPlayPauseButton) {
-      videoPlayPauseButton.addEventListener('click', togglePlayPause);
-    }
-    
-    // Note: Video element events are now handled by the VideoControls class
-    
-    // Speed controls
-    if (speedButtons) {
-      speedButtons.forEach(button => {
-        button.addEventListener('click', () => {
-          const speed = parseFloat(button.dataset.speed);
-          setPlaybackSpeed(speed);
-          
-          // Update active button
-          speedButtons.forEach(btn => btn.classList.remove('active'));
-          button.classList.add('active');
-        });
-      });
-    }
-    
-    // Playlist and feeds
-    if (feedsToggle) feedsToggle.addEventListener('click', togglePlaylistSelector);
-    
-    // Settings
-    if (settingsButton) {
-      settingsButton.addEventListener('click', () => {
-        if (settingsPanel) {
-          const isExpanded = settingsButton.getAttribute('aria-expanded') === 'true';
-          
-          if (isExpanded) {
-            settingsButton.setAttribute('aria-expanded', 'false');
-            settingsPanel.classList.add('hidden');
-          } else {
-            settingsButton.setAttribute('aria-expanded', 'true');
-            settingsPanel.classList.remove('hidden');
-          }
-          
-          if (window.feather) feather.replace();
-        }
-      });
-    }
-    if (closeHelpButton && settingsPanel) {
-      closeHelpButton.addEventListener('click', () => settingsPanel.classList.add('hidden'));
-    }
-    
-    // Add feed form
-    if (addFeedForm) {
-      addFeedForm.addEventListener('submit', handleAddFeed);
-    }
-    
-    // Add feed modal
-    if (addFeedButton) {
-      addFeedButton.addEventListener('click', showAddFeedModal);
-    }
-    if (closeAddFeedModal) {
-      closeAddFeedModal.addEventListener('click', hideAddFeedModal);
-    }
-    if (cancelAddFeed) {
-      cancelAddFeed.addEventListener('click', hideAddFeedModal);
-    }
-    if (addFeedModal) {
-      addFeedModal.addEventListener('click', (e) => {
-        if (e.target === addFeedModal) {
-          hideAddFeedModal();
-        }
-      });
-    }
-    
-    // Theme toggle
-    if (themeToggle) {
-      themeToggle.addEventListener('click', toggleTheme);
-    }
-    
-    // Clear data button
-    if (clearDataButton) {
-      clearDataButton.addEventListener('click', confirmClearData);
-    }
-    
-    // Help dialog
-    if (helpButton && helpDialog) {
-      helpButton.addEventListener('click', () => {
-        helpDialog.classList.remove('hidden');
-        if (window.feather) feather.replace();
-      });
-    }
-    if (closeHelpButton && helpDialog) {
-      closeHelpButton.addEventListener('click', () => helpDialog.classList.add('hidden'));
-    }
-    
-    // Close modals when clicking outside
-    document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('modal')) {
-        e.target.classList.add('hidden');
-      }
-    });
-    
-    // Key controls
-    document.addEventListener('keydown', handleKeyboardControls);
-    
-    // Tab navigation
-    if (navLinks && navLinks.length > 0) {
-      navLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-          e.preventDefault();
-          
-          const targetTab = link.getAttribute('data-tab');
-          if (targetTab) {
-            switchTab(targetTab);
-          }
-        });
-      });
-    }
-
-    // Add sample feed handler
-    const feedSuggestion = document.getElementById('feed-suggestion');
-    if (feedSuggestion) {
-      feedSuggestion.addEventListener('click', (e) => {
-        if (e.target.tagName === 'A' || e.target.closest('a')) {
-          e.preventDefault();
-          if (feedUrlInput) feedUrlInput.value = 'palm-springs-feed.json';
-        }
-      });
-    }
-  }
-
-  function restorePlayerState() {
-    const savedState = localStorage.getItem('playerState');
-    if (savedState) {
-      try {
-        const state = JSON.parse(savedState);
-        if (state.feedId) {
-          const feed = feeds.find(f => f.id === state.feedId);
-          if (feed) {
-            setCurrentFeed(feed);
-            currentTrackIndex = state.trackIndex || 0;
-            renderTrackList();
-            loadTrack(currentTrackIndex);
-            
-            // Restore playback position
-            if (state.currentTime && audioPlayer) {
-              audioPlayer.currentTime = state.currentTime;
-            }
-            
-            // Restore speed
-            if (state.playbackSpeed) {
-              setPlaybackSpeed(state.playbackSpeed);
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Error restoring player state:', error);
-      }
-    }
-  }
-
-  function savePlayerState() {
-    if (!currentFeed || !audioPlayer) return;
-    
-    const state = {
-      feedId: currentFeed.id,
-      trackIndex: currentTrackIndex,
-      currentTime: audioPlayer.currentTime,
-      playbackSpeed: audioPlayer.playbackRate
+    const syncPause = () => {
+      videoElement.pause();
     };
-    
-    localStorage.setItem('playerState', JSON.stringify(state));
+
+    audioPlayer.addEventListener('timeupdate', syncTime);
+    audioPlayer.addEventListener('play', syncPlay);
+    audioPlayer.addEventListener('pause', syncPause);
+
+    // Store cleanup function
+    videoSyncCleanup = () => {
+      audioPlayer.removeEventListener('timeupdate', syncTime);
+      audioPlayer.removeEventListener('play', syncPlay);
+      audioPlayer.removeEventListener('pause', syncPause);
+    };
+
+    // Keep video muted (audio comes from audioPlayer)
+    videoElement.muted = true;
   }
 
-  // Playback Controls
+  function showAudioFallback(track) {
+    // Hide video
+    if (videoElement) {
+      videoElement.pause();
+      videoElement.removeAttribute('src');
+      videoElement.load();
+      videoElement.style.display = 'none';
+    }
+    if (videoControlsOverlay) videoControlsOverlay.style.display = 'none';
+
+    // Show audio fallback
+    if (audioDisplayFallback) audioDisplayFallback.style.display = 'flex';
+
+    // Set album art
+    if (albumArt) {
+      albumArt.src = track.albumArt || 'images/cassette-single.png';
+      albumArt.onerror = () => { albumArt.src = 'images/cassette-single.png'; };
+      albumArt.style.display = 'block';
+    }
+    if (defaultArt) defaultArt.style.display = 'none';
+  }
+
   function togglePlayPause() {
     if (isPlaying) {
       pauseAudio();
@@ -586,33 +206,91 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function playAudio() {
-    if (!audioPlayer) return;
-    // Play the audio
     audioPlayer.play().then(() => {
       isPlaying = true;
       updatePlayPauseButton();
-      
-      // Video is now handled via event listeners in loadTrack
     }).catch(error => {
       showNotification('Error playing audio: ' + error.message, 'error');
-      console.error('Error playing audio:', error);
     });
   }
 
   function pauseAudio() {
-    if (!audioPlayer) return;
     audioPlayer.pause();
     isPlaying = false;
     updatePlayPauseButton();
-    
-    // Video is now handled via event listeners in loadTrack
   }
 
+  function playPreviousTrack() {
+    if (!currentFeed?.tracks) return;
+
+    if (audioPlayer.currentTime > 3) {
+      audioPlayer.currentTime = 0;
+    } else {
+      currentTrackIndex = (currentTrackIndex - 1 + currentFeed.tracks.length) % currentFeed.tracks.length;
+      loadTrack(currentTrackIndex);
+      playAudio();
+    }
+  }
+
+  function playNextTrack() {
+    if (!currentFeed?.tracks) return;
+    currentTrackIndex = (currentTrackIndex + 1) % currentFeed.tracks.length;
+    loadTrack(currentTrackIndex);
+    playAudio();
+  }
+
+  // ============================================
+  // PROGRESS & TIME
+  // ============================================
+  function seekTrack() {
+    if (!audioPlayer.duration || isNaN(audioPlayer.duration)) return;
+    audioPlayer.currentTime = seekBar.value;
+  }
+
+  function updateProgress() {
+    if (!audioPlayer.duration || isNaN(audioPlayer.duration)) {
+      if (seekBar) seekBar.value = 0;
+      if (currentTimeDisplay) currentTimeDisplay.textContent = formatTime(0);
+      return;
+    }
+
+    const currentTime = audioPlayer.currentTime;
+    const duration = audioPlayer.duration;
+    const progressPercent = (currentTime / duration) * 100;
+
+    if (seekBar) seekBar.value = currentTime;
+
+    document.documentElement.style.setProperty('--seek-progress', `${progressPercent}%`);
+
+    const seekProgressBar = document.querySelector('.seek-progress-bar');
+    if (seekProgressBar) seekProgressBar.style.width = `${progressPercent}%`;
+
+    if (currentTimeDisplay) currentTimeDisplay.textContent = formatTime(currentTime);
+
+    // Save state periodically
+    if (Math.floor(currentTime) % 5 === 0) savePlayerState();
+
+    updateTrackProgress();
+  }
+
+  function updateDuration() {
+    const duration = audioPlayer.duration;
+    if (durationDisplay) durationDisplay.textContent = formatTime(duration);
+    if (seekBar && !isNaN(duration)) seekBar.max = duration;
+  }
+
+  function formatTime(seconds) {
+    if (!seconds || isNaN(seconds)) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  }
+
+  // ============================================
+  // UI UPDATES
+  // ============================================
   function updatePlayPauseButton() {
     if (!playIcon || !pauseIcon || !playPauseButton) return;
-
-    // Update video wrapper playing state for VHS REC indicator
-    const videoWrapper = document.querySelector('.video-wrapper');
 
     if (isPlaying) {
       playIcon.style.opacity = '0';
@@ -631,1464 +309,298 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function playPreviousTrack() {
-    if (!currentFeed || !currentFeed.tracks || !audioPlayer) return;
-    
-    if (audioPlayer.currentTime > 3) {
-      // If current track has played for more than 3 seconds, restart it
-      audioPlayer.currentTime = 0;
-    } else {
-      // Play the previous track
-      currentTrackIndex = (currentTrackIndex - 1 + currentFeed.tracks.length) % currentFeed.tracks.length;
-      loadTrack(currentTrackIndex);
-      playAudio();
-    }
-  }
-
-  function playNextTrack() {
-    if (!currentFeed || !currentFeed.tracks) return;
-    
-    currentTrackIndex = (currentTrackIndex + 1) % currentFeed.tracks.length;
-    loadTrack(currentTrackIndex);
-    playAudio();
-  }
-
-  function handleTrackEnd() {
-    playNextTrack();
-  }
-
-  // Handle video playback
-  function setupVideoPlayback(videoSource) {
-    // Get the actual video element (new element, not videoArtDisplay)
-    const videoElement = document.getElementById('video-element');
-    if (!videoElement) {
-      console.error('Video element not found');
-      return false;
-    }
-    
-    // Exit early if this is an audio file format
-    if (videoSource.toLowerCase().endsWith('.mp3') || 
-        videoSource.toLowerCase().endsWith('.wav') || 
-        videoSource.toLowerCase().endsWith('.ogg')) {
-      console.log('Audio-only file detected, skipping video setup');
-      return false;
-    }
-    
-    try {
-      console.log('Setting up video playback for source:', videoSource);
-      
-      // Initialize custom video controls if not already done
-      if (!videoControls && window.VideoControls) {
-        videoControls = new VideoControls();
-      }
-      
-      // Reset previous video state
-      videoElement.pause();
-      
-      // Clear any previous error handlers
-      videoElement.onerror = null;
-      
-      // Add error handler before setting source
-      videoElement.onerror = function(e) {
-        const errorMessage = getVideoErrorMessage(videoElement.error);
-        console.error(`Video error: ${errorMessage}`, videoElement.error);
-        showNotification(`Video error: ${errorMessage}`, 'error');
-        
-        // Fall back to audio-only mode
-        const albumArtContainer = document.getElementById('album-art');
-        if (albumArtContainer) {
-          albumArtContainer.classList.remove('video-active');
-        }
-        
-        videoElement.style.display = 'none';
-        
-        // Show cassette-single.png as default image
-        if (albumArt) {
-          // Always use cassette-single.png as the default album art
-          albumArt.src = 'images/cassette-single.png';
-          albumArt.classList.remove('hidden');
-          albumArt.style.display = 'block';
-        }
-        if (defaultArt) {
-          defaultArt.classList.add('hidden');
-          defaultArt.style.display = 'none';
-        }
-        
-        // Hide video controls
-        const videoControlsOverlay = document.getElementById('video-controls-overlay');
-        if (videoControlsOverlay) {
-          videoControlsOverlay.style.display = 'none';
-        }
-        
-        return false;
-      };
-      
-      // Set new source
-      videoElement.src = videoSource;
-      
-      // Show video element and controls
-      videoElement.style.display = 'block';
-      videoElement.classList.remove('hidden');
-      
-      // Show video controls overlay
-      const videoControlsOverlay = document.getElementById('video-controls-overlay');
-      if (videoControlsOverlay) {
-        videoControlsOverlay.style.display = 'block';
-      }
-      
-      // Hide audio display fallback
-      const audioDisplayFallback = document.getElementById('audio-display-fallback');
-      if (audioDisplayFallback) {
-        audioDisplayFallback.style.display = 'none';
-      }
-      
-      // Add event listeners for synchronization
-      const syncVideo = () => {
-        if (Math.abs(videoElement.currentTime - audioPlayer.currentTime) > 0.3) {
-          videoElement.currentTime = audioPlayer.currentTime;
-        }
-        
-        // Video time is now updated through the new video progress controls
-      };
-      
-      // Clean up previous event listeners
-      const oldSync = videoElement._syncFunction;
-      const oldPlayHandler = videoElement._playHandler;
-      const oldPauseHandler = videoElement._pauseHandler;
-      
-      if (oldSync) {
-        audioPlayer.removeEventListener('timeupdate', oldSync);
-      }
-      if (oldPlayHandler) {
-        audioPlayer.removeEventListener('play', oldPlayHandler);
-      }
-      if (oldPauseHandler) {
-        audioPlayer.removeEventListener('pause', oldPauseHandler);
-      }
-      
-      const playHandler = () => {
-        if (videoElement.paused) {
-          videoElement.play().catch(e => {
-            console.error('Video play error:', e);
-            // Don't show notification here as it's likely already handled by onerror
-          });
-        }
-        
-        // Video controls will handle button updates
-      };
-      
-      const pauseHandler = () => {
-        if (!videoElement.paused) {
-          videoElement.pause();
-        }
-        
-        // Video controls will handle button updates
-      };
-      
-      // Store the handlers for future cleanup
-      videoElement._syncFunction = syncVideo;
-      videoElement._playHandler = playHandler;
-      videoElement._pauseHandler = pauseHandler;
-      
-      // Add our new event listeners
-      audioPlayer.addEventListener('timeupdate', syncVideo);
-      audioPlayer.addEventListener('play', playHandler);
-      audioPlayer.addEventListener('pause', pauseHandler);
-      
-      // Initial sync when metadata is loaded
-      videoElement.addEventListener('loadedmetadata', () => {
-        syncVideo();
-        
-        if (isPlaying && videoElement) {
-          videoElement.play().catch(e => {
-            console.error('Initial video play error:', e);
-            // Don't show notification here as it's likely already handled by onerror
-          });
-        }
-      });
-      
-      return true;
-    } catch (error) {
-      console.error('Error setting up video:', error);
-      showNotification('Error setting up video: ' + error.message, 'error');
-      return false;
-    }
-  }
-  
-  // Helper function to get meaningful error messages from video error codes
-  function getVideoErrorMessage(error) {
-    if (!error) return 'Unknown error';
-    
-    switch (error.code) {
-      case MediaError.MEDIA_ERR_ABORTED:
-        return 'Playback aborted by the user';
-      case MediaError.MEDIA_ERR_NETWORK:
-        return 'Network error occurred while loading the video';
-      case MediaError.MEDIA_ERR_DECODE:
-        return 'Video decoding error or corrupted data';
-      case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
-        return 'Video format not supported by your browser';
-      default:
-        return `Error code: ${error.code}`;
-    }
-  }
-  
-  // Update video play/pause button based on play state
-  function updateVideoPlayPauseButton(isPlaying) {
-    const videoPlayPauseButton = document.getElementById('video-play-pause');
-    if (videoPlayPauseButton) {
-      // Update the button class for CSS-based icon switching
-      if (isPlaying) {
-        videoPlayPauseButton.classList.add('playing');
-        videoPlayPauseButton.setAttribute('aria-label', 'Pause');
-      } else {
-        videoPlayPauseButton.classList.remove('playing');
-        videoPlayPauseButton.setAttribute('aria-label', 'Play');
-      }
-    }
-  }
-
-  // Load a track by index
-  function loadTrack(index) {
-    if (!currentFeed || !currentFeed.tracks || !currentFeed.tracks[index]) return;
-    
-    const track = currentFeed.tracks[index];
-    currentTrackIndex = index;
-    
-    // Clean up previous event listeners to prevent memory leaks
-    if (videoArtDisplay) {
-      // Clean up video event listeners
-      if (videoArtDisplay._syncFunction) {
-        audioPlayer.removeEventListener('timeupdate', videoArtDisplay._syncFunction);
-        videoArtDisplay._syncFunction = null;
-      }
-      if (videoArtDisplay._playHandler) {
-        audioPlayer.removeEventListener('play', videoArtDisplay._playHandler);
-        videoArtDisplay._playHandler = null;
-      }
-      if (videoArtDisplay._pauseHandler) {
-        audioPlayer.removeEventListener('pause', videoArtDisplay._pauseHandler);
-        videoArtDisplay._pauseHandler = null;
-      }
-      
-      // Reset video element state first to prevent errors
-      videoArtDisplay.pause();
-      videoArtDisplay.removeAttribute('src');
-      videoArtDisplay.load();
-      videoArtDisplay.style.display = 'none';
-      
-      // Hide video controls overlay
-      const videoControlsOverlay = document.getElementById('video-controls-overlay');
-      if (videoControlsOverlay) {
-        videoControlsOverlay.style.display = 'none';
-      }
-    }
-    
-    // Clean up album art event listeners
-    if (albumArt) {
-      if (albumArt._errorHandler) {
-        albumArt.removeEventListener('error', albumArt._errorHandler);
-        albumArt._errorHandler = null;
-      }
-      if (albumArt._loadHandler) {
-        albumArt.removeEventListener('load', albumArt._loadHandler);
-        albumArt._loadHandler = null;
-      }
-    }
-    
-    // Temporarily disable play button during load
-    if (playPauseButton) {
-      playPauseButton.disabled = true;
-      playPauseButton.style.opacity = '0.7';
-    }
-    
-    // Update audio source with enhanced error handling for external sources
-    try {
-      // For external CDN sources, add additional error handling
-      if (track._isExternal) {
-        audioPlayer.addEventListener('error', handleExternalMediaError, { once: true });
-        
-        // Set custom headers if specified
-        if (track._headers) {
-          console.log('External track detected with custom headers:', track._headers);
-        }
-        
-        // Log the resolved URL for debugging
-        console.log(`Loading external track: ${track.audioUrl}`);
-        
-        if (track._isGitHubSource) {
-          console.log('GitHub source detected, using optimized URL handling');
-        }
-      }
-      
-      audioPlayer.src = track.audioUrl;
-      audioPlayer.load();
-      
-      // Re-enable play button after a short delay
-      setTimeout(() => {
-        if (playPauseButton) {
-          playPauseButton.disabled = false;
-          playPauseButton.style.opacity = '1';
-        }
-      }, 500);
-    } catch (error) {
-      console.error('Error loading track:', error);
-      showNotification(`Error loading ${track._isExternal ? 'external' : ''} track: ${error.message}`, 'error');
-    }
-    
-    function handleExternalMediaError(event) {
-      const error = audioPlayer.error;
-      let errorMessage = 'Unknown error loading external media';
-      
-      if (error) {
-        switch (error.code) {
-          case MediaError.MEDIA_ERR_ABORTED:
-            errorMessage = 'Media loading was aborted';
-            break;
-          case MediaError.MEDIA_ERR_NETWORK:
-            errorMessage = 'Network error loading external media. Check CORS configuration.';
-            break;
-          case MediaError.MEDIA_ERR_DECODE:
-            errorMessage = 'Media decoding error or unsupported format';
-            break;
-          case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
-            errorMessage = 'Media format not supported or source not accessible';
-            break;
-        }
-      }
-      
-      console.error('External media error:', errorMessage, error);
-      showNotification(`External media error: ${errorMessage}`, 'error');
-      
-      // For GitHub sources, suggest alternatives
-      if (track._isGitHubSource) {
-        console.warn('GitHub source failed. Consider using GitHub Releases for large media files or enabling GitHub Pages.');
-      }
-    }
-    
-    // Update track info
-    if (trackInfoElement) {
-      const trackTitle = document.createElement('h2');
-      trackTitle.textContent = track.title || 'Unknown Track';
-      
-      const trackDesc = document.createElement('p');
-      trackDesc.textContent = track.description || '';
-      
-      // Clear existing content
-      trackInfoElement.innerHTML = '';
-      trackInfoElement.appendChild(trackTitle);
-      trackInfoElement.appendChild(trackDesc);
-    }
-    
-    // Get album art container
-    const albumArtContainer = document.getElementById('album-art');
-    
-    // Check if this is a video file by extension
-    const isVideoFile = track.audioUrl.toLowerCase().endsWith('.mp4') || 
-                        track.audioUrl.toLowerCase().endsWith('.webm') || 
-                        track.audioUrl.toLowerCase().endsWith('.mkv');
-                        
-    // MP3 files should always be treated as audio-only
-    const isAudioFile = track.audioUrl.toLowerCase().endsWith('.mp3') ||
-                        track.audioUrl.toLowerCase().endsWith('.wav') ||
-                        track.audioUrl.toLowerCase().endsWith('.ogg');
-    
-    console.log(`Track ${index} is ${isVideoFile ? 'a video file' : isAudioFile ? 'an audio file' : 'unknown format'}: ${track.audioUrl}`);
-    
-    // Handle media display - only try video if it's explicitly a video file
-    if (isVideoFile && !isAudioFile) {
-      console.log('Setting up video playback...');
-      
-      // Set up video playback
-      const videoSetupSuccess = setupVideoPlayback(track.audioUrl);
-      console.log(`Video setup ${videoSetupSuccess ? 'successful' : 'failed'}`);
-      
-      // Add video-active class to album art container
-      if (albumArtContainer) {
-        albumArtContainer.classList.add('video-active');
-      }
-      
-    } else {
-      // Audio-only mode for MP3 files and other audio formats
-      console.log('Setting up audio-only playback...');
-      
-      // Not a video file - show album art instead
-      // Remove video-active class from album art container
-      if (albumArtContainer) {
-        albumArtContainer.classList.remove('video-active');
-      }
-      
-      // Fully disable video element to prevent errors
-      const videoElement = document.getElementById('video-element');
-      if (videoElement) {
-        videoElement.pause();
-        videoElement.removeAttribute('src'); // Use removeAttribute instead of setting to empty string
-        videoElement.load(); // Important: call load() after changing src to reset the element
-        videoElement.style.display = 'none';
-      }
-      
-      // Hide video controls overlay
-      const videoControlsOverlay = document.getElementById('video-controls-overlay');
-      if (videoControlsOverlay) {
-        videoControlsOverlay.style.display = 'none';
-      }
-      
-      // Show audio display fallback
-      const audioDisplayFallback = document.getElementById('audio-display-fallback');
-      if (audioDisplayFallback) {
-        audioDisplayFallback.style.display = 'flex';
-      }
-      
-      // Show appropriate album art with external source support
-      // Check if track has album art that is not an SVG file
-      if (track.albumArt && !track.albumArt.toLowerCase().endsWith('.svg')) {
-        // Track has custom album art (local or external)
-        if (albumArt) {
-          // Clean up any existing handlers to prevent memory leaks
-          if (albumArt._errorHandler) {
-            albumArt.removeEventListener('error', albumArt._errorHandler);
-            albumArt._errorHandler = null;
-          }
-          if (albumArt._loadHandler) {
-            albumArt.removeEventListener('load', albumArt._loadHandler);
-            albumArt._loadHandler = null;
-          }
-          
-          // Handle external album art with error fallback
-          if (track._isExternal) {
-            const handleAlbumArtError = function() {
-              console.warn(`Failed to load external album art: ${track.albumArt}`);
-              // Fallback to default
-              albumArt.src = 'images/cassette-single.png';
-              // Clean up reference
-              albumArt._errorHandler = null;
-            };
-            
-            const handleAlbumArtLoad = function() {
-              console.log(`Successfully loaded external album art: ${track.albumArt}`);
-              // Clean up reference
-              albumArt._loadHandler = null;
-            };
-            
-            // Store handlers for cleanup
-            albumArt._errorHandler = handleAlbumArtError;
-            albumArt._loadHandler = handleAlbumArtLoad;
-            
-            albumArt.addEventListener('error', handleAlbumArtError, { once: true });
-            albumArt.addEventListener('load', handleAlbumArtLoad, { once: true });
-          }
-          
-          albumArt.src = track.albumArt;
-          albumArt.classList.remove('hidden');
-          albumArt.style.display = 'block';
-        }
-        if (defaultArt) {
-          defaultArt.classList.add('hidden');
-          defaultArt.style.display = 'none';
-        }
-      } else {
-        // No album art - use cassette-single.png as default
-        if (albumArt) {
-          // Always use cassette-single.png as the default album art
-          albumArt.src = 'images/cassette-single.png';
-          albumArt.classList.remove('hidden');
-          albumArt.style.display = 'block';
-        }
-        if (defaultArt) {
-          defaultArt.classList.add('hidden');
-          defaultArt.style.display = 'none';
-        }
-        // Hide the default SVG art
-        const defaultSvgArt = document.getElementById('default-album-art');
-        if (defaultSvgArt) {
-          defaultSvgArt.style.display = 'none';
-        }
-      }
-    }
-    
-    // Update track list highlighting
-    highlightCurrentTrack();
-    
-    // Save state
-    savePlayerState();
-  }
-
-  function seekTrack() {
-    // Ensure duration is available and is a number greater than 0
-    if (!audioPlayer.duration || isNaN(audioPlayer.duration) || audioPlayer.duration <= 0) return;
-    if (!seekBar) return;
-    // Directly set the audio's current time to the seek bar's value
-    // The seek bar's max value should be set to the audio duration
-    audioPlayer.currentTime = seekBar.value;
-  }
-
-  function updateProgress() {
-    // Prevent NaN when duration is not available or zero
-    if (!audioPlayer.duration || isNaN(audioPlayer.duration) || audioPlayer.duration <= 0) {
-        // Reset progress if duration is invalid
-        if (seekBar) seekBar.value = 0;
-        if (currentTimeDisplay) currentTimeDisplay.textContent = formatTime(0);
-        document.documentElement.style.setProperty('--seek-progress', '0%');
-        return;
-    }
-
-    const currentTime = audioPlayer.currentTime;
-    const duration = audioPlayer.duration;
-    const progressPercent = (currentTime / duration) * 100 || 0;
-
-    // Update the seek bar value directly to the current time
-    if (seekBar) {
-        seekBar.value = currentTime;
-    }
-
-    // Update the seek bar's custom progress styling using CSS variables
-    document.documentElement.style.setProperty('--seek-progress', `${progressPercent}%`);
-    
-    // Update the seek-progress-bar element if it exists
-    const seekProgressBar = document.querySelector('.seek-progress-bar');
-    if (seekProgressBar) {
-        seekProgressBar.style.width = `${progressPercent}%`;
-    }
-    
-    // Update time display
-    if (currentTimeDisplay) {
-        currentTimeDisplay.textContent = formatTime(currentTime);
-    }
-
-    // Save state periodically (every 5 seconds)
-    if (Math.floor(currentTime) % 5 === 0) {
-      savePlayerState();
-    }
-
-    // Update track progress in list
-    updateTrackProgress();
-  }
-
-  function updateDuration() {
-    const duration = audioPlayer.duration;
-    // Ensure durationDisplay and seekBar exist
-    if (durationDisplay) {
-        durationDisplay.textContent = formatTime(duration);
-    }
-    // Set the max attribute of the seek bar to the audio duration
-    if (seekBar && !isNaN(duration)) {
-        seekBar.max = duration;
-    }
-  }
-
-  function formatTime(seconds) {
-    if (!seconds || isNaN(seconds)) return "0:00";
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  }
-
-  function setPlaybackSpeed(speed) {
-    if (!audioPlayer) return;
-    audioPlayer.playbackRate = speed;
-    
-    // Update UI
-    if (speedButtons) {
-      speedButtons.forEach(button => {
-        if (parseFloat(button.dataset.speed) === speed) {
-          button.classList.add('active');
-        } else {
-          button.classList.remove('active');
-        }
-      });
-    }
-    
-    // Save state
-    savePlayerState();
-  }
-
-  // Video Controls
-  function toggleVideoMode() {
-    if (!currentFeed || !currentFeed.tracks || !currentFeed.tracks[currentTrackIndex]) return;
-    
-    const track = currentFeed.tracks[currentTrackIndex];
-    if (!track.videoUrl) return;
-    
-    if (videoMode) {
-      disableVideoMode();
-    } else {
-      enableVideoMode(track.videoUrl);
-    }
-  }
-
-  function enableVideoMode(videoUrl) {
-    videoMode = true;
-    const videoElement = document.getElementById('video-element');
-    if (videoElement) {
-      videoElement.src = videoUrl;
-      videoElement.style.display = 'block';
-      
-      // Initialize video controls if needed
-      if (!videoControls && window.VideoControls) {
-        videoControls = new VideoControls();
-      }
-    }
-    
-    // Hide audio display fallback
-    const audioDisplayFallback = document.getElementById('audio-display-fallback');
-    if (audioDisplayFallback) {
-      audioDisplayFallback.style.display = 'none';
-    }
-    
-    // Connect to audio timeline
-    if (videoElement) {
-      videoElement.currentTime = audioPlayer.currentTime;
-      
-      // Sync play/pause state
-      if (isPlaying) {
-        videoElement.play().catch(e => console.error('Error playing video:', e));
-      } else {
-        videoElement.pause();
-      }
-    }
-  }
-
-  function disableVideoMode() {
-    videoMode = false;
-    const videoElement = document.getElementById('video-element');
-    if (videoElement) {
-      videoElement.pause();
-      videoElement.removeAttribute('src');
-      videoElement.load();
-      videoElement.style.display = 'none';
-    }
-    
-    // Hide video controls overlay
-    const videoControlsOverlay = document.getElementById('video-controls-overlay');
-    if (videoControlsOverlay) {
-      videoControlsOverlay.style.display = 'none';
-    }
-    
-    // Show audio display fallback
-    const audioDisplayFallback = document.getElementById('audio-display-fallback');
-    if (audioDisplayFallback) {
-      audioDisplayFallback.style.display = 'flex';
-    }
-  }
-
-  function toggleFullscreen() {
-    const videoWrapper = document.querySelector('.video-wrapper');
-    
-    try {
-      if (!document.fullscreenElement) {
-        // Request fullscreen on the wrapper to include controls
-        if (videoWrapper) {
-          videoWrapper.requestFullscreen().catch(err => {
-            showNotification(`Error attempting to enable fullscreen: ${err.message}`, 'error');
-          });
-        }
-      } else {
-        document.exitFullscreen();
-      }
-    } catch (error) {
-      showNotification(`Fullscreen error: ${error.message}`, 'error');
-    }
-  }
-
-  // Playlist and Feed Management
-  function setCurrentFeed(feed) {
-    currentFeed = feed;
-    currentTrackIndex = 0;
-    
-    // Update UI
-    renderTrackList();
-    updateActivePlaylistButton();
-    
-    // Load first track
-    loadTrack(0);
-  }
-
   function renderPlaylistButtons() {
-    // Check for new playlist buttons element first
-    if (playlistButtons) {
-      playlistButtons.innerHTML = '';
-      
-      feeds.forEach(feed => {
-        const button = document.createElement('button');
-        button.className = 'playlist-button';
-        button.dataset.feedId = feed.id;
-        
-        if (currentFeed && feed.id === currentFeed.id) {
-          button.classList.add('active');
-        }
-        
-        button.textContent = feed.title;
-        
-        button.addEventListener('click', () => {
-          setCurrentFeed(feed);
-        });
-        
-        playlistButtons.appendChild(button);
-      });
-      
-      return;
-    }
-    
-    // Fall back to old playlist selector if it exists
-    if (playlistSelector) {
-      console.log('Using legacy playlist selector');
-      playlistSelector.innerHTML = '';
-      
-      feeds.forEach(feed => {
-        const button = document.createElement('button');
-        button.className = 'playlist-button';
-        button.dataset.feedId = feed.id;
-        
-        if (currentFeed && feed.id === currentFeed.id) {
-          button.classList.add('active');
-        }
-        
-        const titleSpan = document.createElement('span');
-        titleSpan.className = 'playlist-name';
-        titleSpan.textContent = feed.title;
-        
-        const tracksSpan = document.createElement('span');
-        tracksSpan.className = 'playlist-tracks';
-        tracksSpan.textContent = `${feed.tracks.length} tracks`;
-        
-        button.appendChild(titleSpan);
-        button.appendChild(tracksSpan);
-        
-        button.addEventListener('click', () => {
-          setCurrentFeed(feed);
-          if (typeof togglePlaylistSelector === 'function') {
-            togglePlaylistSelector();
-          }
-        });
-        
-        playlistSelector.appendChild(button);
-      });
-    } else {
-      console.log('No playlist selector found, skipping renderPlaylistButtons');
-    }
-    
-    // Refresh Feather icons
-    if (window.feather) {
-      feather.replace();
-    }
-  }
+    if (!playlistButtons) return;
+    playlistButtons.innerHTML = '';
 
-  function togglePlaylistSelector() {
-    // Skip if required elements don't exist
-    if (!feedsToggle || !playlistSelector) {
-      console.log('Required elements for togglePlaylistSelector not found');
-      return;
-    }
-    
-    const isExpanded = feedsToggle.getAttribute('aria-expanded') === 'true';
-    
-    if (isExpanded) {
-      feedsToggle.setAttribute('aria-expanded', 'false');
-      playlistSelector.classList.add('collapsed');
-    } else {
-      feedsToggle.setAttribute('aria-expanded', 'true');
-      playlistSelector.classList.remove('collapsed');
-    }
+    feeds.forEach(feed => {
+      const button = document.createElement('button');
+      button.className = 'playlist-button';
+      button.dataset.feedId = feed.id;
+      if (currentFeed?.id === feed.id) button.classList.add('active');
+      button.textContent = feed.title;
+      button.addEventListener('click', () => setCurrentFeed(feed));
+      playlistButtons.appendChild(button);
+    });
   }
 
   function updateActivePlaylistButton() {
-    // Check for new playlist buttons element first
-    if (playlistButtons) {
-      const buttons = playlistButtons.querySelectorAll('.playlist-button');
-      buttons.forEach(button => {
-        if (button.dataset.feedId === currentFeed.id) {
-          button.classList.add('active');
-        } else {
-          button.classList.remove('active');
-        }
-      });
-      return;
-    }
-    
-    // Fall back to old playlist selector if it exists
-    if (playlistSelector) {
-      const buttons = playlistSelector.querySelectorAll('.playlist-button');
-      buttons.forEach(button => {
-        if (button.dataset.feedId === currentFeed.id) {
-          button.classList.add('active');
-        } else {
-          button.classList.remove('active');
-        }
-      });
-    } else {
-      console.log('No playlist selector found, skipping updateActivePlaylistButton');
-    }
+    if (!playlistButtons) return;
+    playlistButtons.querySelectorAll('.playlist-button').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.feedId === currentFeed?.id);
+    });
   }
 
   function renderTrackList() {
-    if (!trackList) return;
+    if (!trackList || !currentFeed?.tracks) return;
     trackList.innerHTML = '';
-    
-    if (!currentFeed || !currentFeed.tracks) return;
-    
-    // Update track list container title and description
-    const trackListContainerTitle = document.querySelector('.tracklist-title');
-    const trackListContainerDesc = document.querySelector('.tracklist-description');
-    
-    if (trackListContainerTitle) {
-      // Get track count span before modifying
-      const trackCountSpan = document.getElementById('track-count');
 
-      // Set title - preserve the span by recreating it
-      trackListContainerTitle.innerHTML = `${currentFeed.title || 'Playlist'} <span id="track-count" class="track-count">(${currentFeed.tracks.length} tracks)</span>`;
-    }
-    
-    if (trackListContainerDesc) {
-      trackListContainerDesc.textContent = currentFeed.description || '';
-    }
-    
+    // Update header
+    const titleEl = document.querySelector('.tracklist-title');
+    const descEl = document.querySelector('.tracklist-description');
+    if (titleEl) titleEl.innerHTML = `${currentFeed.title} <span class="track-count">(${currentFeed.tracks.length} tracks)</span>`;
+    if (descEl) descEl.textContent = currentFeed.description || '';
+
     // Render tracks
     currentFeed.tracks.forEach((track, index) => {
       const li = document.createElement('li');
       li.dataset.index = index;
-      li.dataset.trackNum = index + 1; // For CSS track numbering
+      li.dataset.trackNum = index + 1;
+      if (index === currentTrackIndex) li.classList.add('playing');
 
-      if (index === currentTrackIndex) {
-        li.classList.add('playing');
-      }
-      
-      // Add thumbnail container
-      const thumbnailContainer = document.createElement('div');
-      thumbnailContainer.className = 'track-thumbnail';
-      
-      // Determine if this is a video file for fallback logic
-      const isVideoFile = track.audioUrl.toLowerCase().endsWith('.mp4') || 
-                          track.audioUrl.toLowerCase().endsWith('.webm') || 
-                          track.audioUrl.toLowerCase().endsWith('.mkv');
-      
-      // Add thumbnail image
-      const thumbnail = document.createElement('img');
-      thumbnail.className = 'track-thumbnail-image';
-      thumbnail.alt = `${track.title} thumbnail`;
-      
-      // Set thumbnail source with fallback logic
-      if (track.thumbnail) {
-        // Track has explicit thumbnail
-        thumbnail.src = track.thumbnail;
-        
-        // Add error handler for external thumbnails
-        if (track._isExternal) {
-          thumbnail.addEventListener('error', () => {
-            console.warn(`Failed to load thumbnail: ${track.thumbnail}`);
-            thumbnail.src = isVideoFile ? 'images/cassette-single.png' : 'images/cassette-single.png';
-            thumbnailContainer.classList.add('fallback-thumbnail');
-          }, { once: true });
-        }
-      } else if (track.albumArt && !track.albumArt.toLowerCase().endsWith('.svg')) {
-        // Use album art as thumbnail if available and not SVG
-        thumbnail.src = track.albumArt;
-        
-        // Add error handler for external album art
-        if (track._isExternal) {
-          thumbnail.addEventListener('error', () => {
-            console.warn(`Failed to load album art as thumbnail: ${track.albumArt}`);
-            thumbnail.src = 'images/cassette-single.png';
-            thumbnailContainer.classList.add('fallback-thumbnail');
-          }, { once: true });
-        }
-      } else {
-        // Use default thumbnail
-        thumbnail.src = 'images/cassette-single.png';
-        thumbnailContainer.classList.add('default-thumbnail');
-      }
-      
-      // Add video indicator for video files
-      if (isVideoFile) {
-        thumbnailContainer.classList.add('video-track');
-      }
-      
-      thumbnailContainer.appendChild(thumbnail);
-      
-      const titleDiv = document.createElement('div');
-      titleDiv.className = 'track-info';
-      
-      const title = document.createElement('h4');
-      title.textContent = track.title || 'Unknown Track';
-      
-      const artist = document.createElement('p');
-      artist.textContent = track.artist || '';
-      
-      titleDiv.appendChild(title);
-      if (track.artist) titleDiv.appendChild(artist);
-      
+      // Thumbnail
+      const thumbContainer = document.createElement('div');
+      thumbContainer.className = 'track-thumbnail';
+      if (isVideoFile(track.audioUrl)) thumbContainer.classList.add('video-track');
+
+      const thumb = document.createElement('img');
+      thumb.className = 'track-thumbnail-image';
+      thumb.src = track.thumbnail || track.albumArt || 'images/cassette-single.png';
+      thumb.onerror = () => { thumb.src = 'images/cassette-single.png'; };
+      thumbContainer.appendChild(thumb);
+
+      // Info
+      const info = document.createElement('div');
+      info.className = 'track-info';
+      info.innerHTML = `<h4>${track.title || 'Unknown Track'}</h4>${track.artist ? `<p>${track.artist}</p>` : ''}`;
+
+      // Progress
       const progress = document.createElement('div');
       progress.className = 'track-progress';
       progress.textContent = 'Not played';
-      
-      li.appendChild(thumbnailContainer);
-      li.appendChild(titleDiv);
-      li.appendChild(progress);
-      
+
+      li.append(thumbContainer, info, progress);
       li.addEventListener('click', () => {
         currentTrackIndex = index;
         loadTrack(index);
         playAudio();
       });
-      
+
       trackList.appendChild(li);
     });
-    
-    // Refresh Feather icons
-    if (window.feather) {
-      feather.replace();
-    }
   }
 
   function highlightCurrentTrack() {
-    const items = trackList.querySelectorAll('li');
-    items.forEach((item, index) => {
-      if (index === currentTrackIndex) {
-        item.classList.add('playing');
-      } else {
-        item.classList.remove('playing');
-      }
+    if (!trackList) return;
+    trackList.querySelectorAll('li').forEach((item, index) => {
+      item.classList.toggle('playing', index === currentTrackIndex);
     });
   }
 
   function updateTrackProgress() {
-    if (!audioPlayer.duration) return;
-    
-    const items = trackList.querySelectorAll('li');
-    const currentItem = items[currentTrackIndex];
-    
-    if (currentItem) {
-      const progress = currentItem.querySelector('.track-progress');
-      if (progress) {
-        const percent = Math.floor((audioPlayer.currentTime / audioPlayer.duration) * 100) || 0;
-        progress.textContent = `${formatTime(audioPlayer.currentTime)} / ${formatTime(audioPlayer.duration)} (${percent}%)`;
-      }
+    if (!audioPlayer.duration || !trackList) return;
+
+    const currentItem = trackList.querySelectorAll('li')[currentTrackIndex];
+    const progress = currentItem?.querySelector('.track-progress');
+    if (progress) {
+      const percent = Math.floor((audioPlayer.currentTime / audioPlayer.duration) * 100);
+      progress.textContent = `${formatTime(audioPlayer.currentTime)} / ${formatTime(audioPlayer.duration)} (${percent}%)`;
     }
   }
 
-  // Modal Functions
-  function showAddFeedModal() {
-    if (addFeedModal) {
-      addFeedModal.classList.remove('hidden');
-      // Focus the input field
-      if (feedUrlInput) {
-        setTimeout(() => feedUrlInput.focus(), 100);
-      }
-    }
+  // ============================================
+  // PERSISTENCE
+  // ============================================
+  function savePlayerState() {
+    if (!currentFeed) return;
+    localStorage.setItem('playerState', JSON.stringify({
+      feedId: currentFeed.id,
+      trackIndex: currentTrackIndex,
+      currentTime: audioPlayer.currentTime,
+      playbackSpeed: audioPlayer.playbackRate
+    }));
   }
 
-  function hideAddFeedModal() {
-    if (addFeedModal) {
-      addFeedModal.classList.add('hidden');
-      // Reset form
-      if (feedUrlInput) {
-        feedUrlInput.value = '';
-      }
-    }
-  }
+  function restorePlayerState() {
+    const saved = localStorage.getItem('playerState');
+    if (!saved) return;
 
-  // Feed Management
-  async function handleAddFeed(e) {
-    e.preventDefault();
-    const url = feedUrlInput.value.trim();
-    
-    if (!url) {
-      showNotification('Please enter a feed URL', 'warning');
-      return;
-    }
-    
     try {
-      showNotification('Loading feed...', 'info');
-      
-      // Try to fetch the feed with enhanced error handling
-      const response = await fetchWithCors(url);
-      const feedData = await response.json();
-      
-      // Validate the feed structure
-      await validateCdnFeed(feedData);
-      
-      // Check for duplicate
-      if (customFeeds.some(feed => feed.url === url)) {
-        showNotification('This feed is already in your library', 'warning');
-        return;
+      const state = JSON.parse(saved);
+      const feed = feeds.find(f => f.id === state.feedId);
+      if (feed) {
+        setCurrentFeed(feed);
+        currentTrackIndex = state.trackIndex || 0;
+        renderTrackList();
+        loadTrack(currentTrackIndex);
+        if (state.currentTime) audioPlayer.currentTime = state.currentTime;
+        if (state.playbackSpeed) audioPlayer.playbackRate = state.playbackSpeed;
       }
-      
-      // Process CDN feed if needed (resolve URLs, etc.)
-      const processedFeedData = processCdnFeed(feedData);
-      
-      // Create new feed object
-      const newFeed = {
-        id: processedFeedData.id || 'custom_' + Date.now(),
-        title: processedFeedData.title,
-        description: processedFeedData.description || '',
-        tracks: processedFeedData.tracks,
-        url: url,
-        source: processedFeedData.source || null,
-        metadata: processedFeedData.metadata || null,
-        _isExternal: processedFeedData._isExternal || false
-      };
-      
-      // Add to feeds
-      customFeeds.push(newFeed);
-      feeds.push(newFeed);
-      
-      // Save to local storage
-      localStorage.setItem('customFeeds', JSON.stringify(customFeeds));
-      
-      // Update UI
-      renderCustomFeedsList();
-      renderPlaylistButtons();
-      
-      // Switch to new feed
-      setCurrentFeed(newFeed);
-      
-      // Update archive statistics
-      updateArchiveStats();
-      
-      // Reset form and close modal
-      feedUrlInput.value = '';
-      hideAddFeedModal();
-      
-      showNotification(`Added ${newFeed._isExternal ? 'external CDN' : 'new'} feed: ${newFeed.title}`, 'success');
     } catch (error) {
-      showNotification('Error adding feed: ' + error.message, 'error');
-      console.error('Error adding feed:', error);
+      console.error('Error restoring player state:', error);
     }
   }
 
-  function renderCustomFeedsList() {
-    // Skip if custom feeds list doesn't exist
-    if (!customFeedsList) {
-      console.log('Custom feeds list not found, skipping renderCustomFeedsList');
-      return;
+  // ============================================
+  // THEME
+  // ============================================
+  function initializeTheme() {
+    const saved = localStorage.getItem('theme');
+    if (saved) {
+      applyTheme(saved);
+    } else {
+      applyTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     }
-    
-    customFeedsList.innerHTML = '';
-    
-    if (customFeeds.length === 0) {
-      const emptyMessage = document.createElement('p');
-      emptyMessage.textContent = 'No custom feeds added yet.';
-      emptyMessage.className = 'help-text';
-      customFeedsList.appendChild(emptyMessage);
-      return;
-    }
-    
-    customFeeds.forEach(feed => {
-      const li = document.createElement('li');
-      
-      const infoDiv = document.createElement('div');
-      infoDiv.className = 'feed-info';
-      
-      const title = document.createElement('div');
-      title.className = 'feed-title';
-      title.textContent = feed.title;
-      
-      const url = document.createElement('div');
-      url.className = 'feed-url';
-      url.textContent = feed.url;
-      
-      infoDiv.appendChild(title);
-      infoDiv.appendChild(url);
-      
-      const deleteButton = document.createElement('button');
-      deleteButton.className = 'delete-feed';
-      deleteButton.innerHTML = '<i data-feather="trash-2"></i>';
-      deleteButton.title = 'Delete feed';
-      deleteButton.addEventListener('click', () => deleteFeed(feed.id));
-      
-      li.appendChild(infoDiv);
-      li.appendChild(deleteButton);
-      
-      customFeedsList.appendChild(li);
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      if (!localStorage.getItem('theme')) applyTheme(e.matches ? 'dark' : 'light');
     });
-    
-    // Refresh Feather icons
-    if (window.feather) {
-      feather.replace();
+  }
+
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme');
+    const newTheme = current === 'light' ? 'dark' : 'light';
+    applyTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    showNotification(`Switched to ${newTheme} mode`, 'success');
+  }
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+  }
+
+  // ============================================
+  // NAVIGATION & STATS
+  // ============================================
+  function switchTab(targetTab) {
+    navLinks.forEach(link => link.classList.remove('active'));
+    tabContents.forEach(content => content.classList.remove('active'));
+
+    const targetLink = document.querySelector(`[data-tab="${targetTab}"]`);
+    const targetContent = document.getElementById(`${targetTab}-tab`);
+
+    if (targetLink && targetContent) {
+      targetLink.classList.add('active');
+      targetContent.classList.add('active');
+      history.pushState(null, null, `#${targetTab}`);
+      if (targetTab === 'about') updateArchiveStats();
     }
   }
 
-  function deleteFeed(feedId) {
-    const index = customFeeds.findIndex(feed => feed.id === feedId);
-    if (index === -1) return;
-    
-    const feedTitle = customFeeds[index].title;
-    
-    // Remove from arrays
-    customFeeds.splice(index, 1);
-    feeds = feeds.filter(feed => feed.id !== feedId);
-    
-    // Save to local storage
-    localStorage.setItem('customFeeds', JSON.stringify(customFeeds));
-    
-    // Update UI
-    renderCustomFeedsList();
-    renderPlaylistButtons();
-    
-    // If current feed was deleted, switch to first available feed
-    if (currentFeed && currentFeed.id === feedId) {
-      if (feeds.length > 0) {
-        setCurrentFeed(feeds[0]);
-      } else {
-        currentFeed = null;
-        trackList.innerHTML = '<li>No feeds available</li>';
-      }
-    }
-    
-    // Update archive statistics
-    updateArchiveStats();
-    
-    showNotification(`Deleted feed: ${feedTitle}`, 'success');
+  function handleInitialHash() {
+    const hash = window.location.hash.substring(1);
+    if (hash === 'player' || hash === 'about') switchTab(hash);
   }
 
-  function confirmClearData() {
-    if (confirm('This will delete all your custom feeds and player settings. This action cannot be undone. Continue?')) {
-      clearAllData();
+  function updateArchiveStats() {
+    const totalTracks = feeds.reduce((sum, feed) => sum + (feed.tracks?.length || 0), 0);
+    const tracksEl = document.getElementById('total-tracks');
+    const collectionsEl = document.getElementById('total-collections');
+    if (tracksEl) tracksEl.textContent = totalTracks;
+    if (collectionsEl) collectionsEl.textContent = feeds.length;
+  }
+
+  // ============================================
+  // NOTIFICATIONS
+  // ============================================
+  let notification = null;
+
+  function showNotification(message, type = 'info') {
+    console.log(`[${type}] ${message}`);
+    if (!notificationArea) return;
+
+    if (!notification) {
+      notification = document.createElement('div');
+      notification.className = 'notification';
+      notificationArea.appendChild(notification);
+    }
+
+    notification.textContent = message;
+    notification.className = `notification ${type}`;
+    notification.style.display = 'block';
+
+    if (type !== 'error') {
+      setTimeout(() => { notification.style.display = 'none'; }, 3000);
     }
   }
 
-  function clearAllData() {
-    // Clear local storage
-    localStorage.clear();
-    
-    // Reset state
-    customFeeds = [];
-    feeds = feeds.filter(feed => !feed.id.startsWith('custom_'));
-    
-    // Update UI
-    renderCustomFeedsList();
-    renderPlaylistButtons();
-    
-    // Set to first default feed if available
-    if (feeds.length > 0) {
-      setCurrentFeed(feeds[0]);
-    }
-    
-    showNotification('All custom data has been cleared', 'success');
-  }
-
-  // Keyboard Controls
+  // ============================================
+  // KEYBOARD CONTROLS
+  // ============================================
   function handleKeyboardControls(e) {
-    // Don't trigger if user is typing in an input
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-    
+
     switch (e.key) {
-      case ' ': // Space
+      case ' ':
         e.preventDefault();
         togglePlayPause();
         break;
       case 'ArrowLeft':
         if (e.ctrlKey || e.metaKey) {
           playPreviousTrack();
-        } else if (audioPlayer) {
-          audioPlayer.currentTime -= 10; // Rewind 10 seconds
+        } else {
+          audioPlayer.currentTime -= 10;
         }
         break;
       case 'ArrowRight':
         if (e.ctrlKey || e.metaKey) {
           playNextTrack();
-        } else if (audioPlayer) {
-          audioPlayer.currentTime += 10; // Forward 10 seconds
+        } else {
+          audioPlayer.currentTime += 10;
         }
         break;
       case 'f':
-        if (videoMode) toggleFullscreen();
+        if (videoWrapper && document.fullscreenElement !== videoWrapper) {
+          videoWrapper.requestFullscreen?.();
+        } else {
+          document.exitFullscreen?.();
+        }
         break;
-      case 'v':
-        toggleVideoMode();
-        break;
-      case '1':
-      case '2':
-      case '3':
-      case '4':
-      case '5':
-        // Speed shortcuts
+      case '1': case '2': case '3': case '4': case '5':
         const speeds = [0.5, 0.75, 1, 1.5, 2];
-        const index = parseInt(e.key) - 1;
-        if (index >= 0 && index < speeds.length) {
-          setPlaybackSpeed(speeds[index]);
-        }
+        audioPlayer.playbackRate = speeds[parseInt(e.key) - 1];
         break;
     }
   }
 
-  // Notification System
-  function showNotification(message, type = 'info') {
-    // Log message to console regardless
-    console.log(`[${type}] ${message}`);
-    
-    // Skip DOM operations if notification area doesn't exist
-    if (!notificationArea) {
-      console.warn('Notification area not found in DOM');
-      return;
-    }
-    
-    // Create notification element if it doesn't exist
-    if (!notification) {
-      notification = document.createElement('div');
-      notification.className = 'notification';
-      notificationArea.appendChild(notification);
-    }
-    
-    // Set message and type
-    notification.textContent = message;
-    notification.className = `notification ${type}`;
-    
-    // Show notification
-    notification.style.display = 'block';
-    
-    // Auto-hide after 3 seconds for non-error messages
-    if (type !== 'error') {
-      setTimeout(() => {
-        notification.style.display = 'none';
-      }, 3000);
-    }
+  // ============================================
+  // EVENT LISTENERS
+  // ============================================
+  function setupEventListeners() {
+    // Player controls
+    if (playPauseButton) playPauseButton.addEventListener('click', togglePlayPause);
+    if (prevButton) prevButton.addEventListener('click', playPreviousTrack);
+    if (nextButton) nextButton.addEventListener('click', playNextTrack);
+    if (seekBar) seekBar.addEventListener('input', seekTrack);
+
+    // Audio events
+    audioPlayer.addEventListener('timeupdate', updateProgress);
+    audioPlayer.addEventListener('loadedmetadata', updateDuration);
+    audioPlayer.addEventListener('ended', playNextTrack);
+    audioPlayer.addEventListener('play', () => { isPlaying = true; updatePlayPauseButton(); });
+    audioPlayer.addEventListener('pause', () => { isPlaying = false; updatePlayPauseButton(); });
+
+    // Theme toggle
+    if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
+
+    // Tab navigation
+    navLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const tab = link.getAttribute('data-tab');
+        if (tab) switchTab(tab);
+      });
+    });
+
+    // Keyboard controls
+    document.addEventListener('keydown', handleKeyboardControls);
   }
 
-  // === VIDEO CONTROLS AUTO-HIDE FUNCTIONALITY ===
-  let videoControlsTimeout;
-  let isVideoControlsVisible = false;
-  const videoControlsOverlay = document.getElementById('video-controls-overlay');
-  const albumArtContainer = document.getElementById('album-art');
-  
-  function showVideoControls() {
-    if (!videoControlsOverlay || videoArtDisplay.style.display === 'none') return;
-    
-    isVideoControlsVisible = true;
-    videoControlsOverlay.classList.add('visible');
-    videoControlsOverlay.style.display = 'flex';
-    
-    // Clear existing timeout
-    if (videoControlsTimeout) {
-      clearTimeout(videoControlsTimeout);
-    }
-    
-    // Hide controls after 3 seconds of inactivity
-    videoControlsTimeout = setTimeout(() => {
-      hideVideoControls();
-    }, 3000);
-  }
-  
-  function hideVideoControls() {
-    if (!videoControlsOverlay) return;
-    
-    isVideoControlsVisible = false;
-    videoControlsOverlay.classList.remove('visible');
-  }
-  
-  // Initialize video progress controls
-  function initializeVideoProgressControls() {
-    const videoSeekBar = document.querySelector('.video-seek-bar');
-    const videoProgressFill = document.querySelector('.video-progress-fill');
-    const videoTimeCurrent = document.querySelector('.video-time-current');
-    const videoTimeDuration = document.querySelector('.video-time-duration');
-    
-    if (videoSeekBar && audioPlayer) {
-      // Update video seek bar on audio time update
-      audioPlayer.addEventListener('timeupdate', () => {
-        if (audioPlayer.duration) {
-          const percent = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-          videoSeekBar.value = percent;
-          if (videoProgressFill) {
-            videoProgressFill.style.width = percent + '%';
-          }
-          if (videoTimeCurrent) {
-            videoTimeCurrent.textContent = formatTime(audioPlayer.currentTime);
-          }
-          if (videoTimeDuration) {
-            videoTimeDuration.textContent = formatTime(audioPlayer.duration);
-          }
-        }
-      });
-      
-      // Handle video seek bar input
-      videoSeekBar.addEventListener('input', (e) => {
-        const percent = e.target.value;
-        const time = (percent / 100) * audioPlayer.duration;
-        audioPlayer.currentTime = time;
-        if (videoArtDisplay && !videoArtDisplay.paused) {
-          videoArtDisplay.currentTime = time;
-        }
-      });
-    }
-  }
-  
-  // Add mouse/touch event listeners for video controls visibility
-  if (albumArtContainer) {
-    // Show controls on mouse movement
-    albumArtContainer.addEventListener('mousemove', () => {
-      if (videoArtDisplay && videoArtDisplay.style.display !== 'none') {
-        showVideoControls();
-      }
-    });
-    
-    // Show controls on touch
-    albumArtContainer.addEventListener('touchstart', () => {
-      if (videoArtDisplay && videoArtDisplay.style.display !== 'none') {
-        showVideoControls();
-      }
-    });
-    
-    // Keep controls visible when hovering over them
-    if (videoControlsOverlay) {
-      videoControlsOverlay.addEventListener('mouseenter', () => {
-        if (videoControlsTimeout) {
-          clearTimeout(videoControlsTimeout);
-        }
-      });
-      
-      videoControlsOverlay.addEventListener('mouseleave', () => {
-        if (isVideoControlsVisible) {
-          videoControlsTimeout = setTimeout(() => {
-            hideVideoControls();
-          }, 3000);
-        }
-      });
-    }
-  }
-  
-  // Initialize video progress controls on load
-  initializeVideoProgressControls();
-
-  // === THEME MANAGEMENT ===
-  
-  function initializeTheme() {
-    // Check for saved theme preference
-    const savedTheme = localStorage.getItem('theme');
-    
-    if (savedTheme) {
-      // Use saved theme
-      applyTheme(savedTheme);
-    } else {
-      // Use system preference if no saved theme
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      applyTheme(prefersDark ? 'dark' : 'light');
-    }
-    
-    // Listen for system theme changes
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    mediaQuery.addEventListener('change', (e) => {
-      // Only auto-switch if user hasn't manually set a preference
-      if (!localStorage.getItem('theme')) {
-        applyTheme(e.matches ? 'dark' : 'light');
-      }
-    });
-  }
-  
-  function toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-    
-    applyTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    
-    // Show notification
-    showNotification(`Switched to ${newTheme} mode`, 'success');
-  }
-  
-  function applyTheme(theme) {
-    if (theme === 'light') {
-      document.documentElement.setAttribute('data-theme', 'light');
-    } else {
-      // Set dark theme explicitly instead of removing attribute
-      document.documentElement.setAttribute('data-theme', 'dark');
-    }
-  }
-
-  // Error handling
+  // ============================================
+  // ERROR HANDLING
+  // ============================================
   window.addEventListener('error', (e) => {
     showNotification('Error: ' + e.message, 'error');
     console.error('Global error:', e);
   });
 
-  // Unhandled promise rejection
   window.addEventListener('unhandledrejection', (e) => {
-    showNotification('Promise error: ' + e.reason, 'error');
-    console.error('Unhandled promise rejection:', e);
+    showNotification('Error: ' + e.reason, 'error');
+    console.error('Unhandled rejection:', e);
   });
 
-  // === YOUTUBE-STYLE VIDEO PLAYER ===
-  const videoElement = document.getElementById('video-element');
-  const audioDisplayFallback = document.getElementById('audio-display-fallback');
-  
-  function loadVideoSource(src) {
-    if (!videoElement) return;
-    
-    console.log('Loading video source:', src);
-    
-    if (!src) {
-      // No video source - clear video and show fallback
-      videoElement.removeAttribute('src');
-      videoElement.load();
-      videoElement.style.display = 'none';
-      if (audioDisplayFallback) {
-        audioDisplayFallback.style.display = 'flex';
-      }
-      return;
-    }
-    
-    // Handle external sources
-    if (currentPlaylist && currentPlaylist.cdnBaseUrl && !src.startsWith('http')) {
-      src = currentPlaylist.cdnBaseUrl + src;
-    }
-    
-    console.log('Final video URL:', src);
-    
-    // Set video source
-    videoElement.src = src;
-    videoElement.style.display = 'block';
-    videoElement.load();
-    
-    // Hide fallback
-    if (audioDisplayFallback) {
-      audioDisplayFallback.style.display = 'none';
-    }
-    
-    // Sync with audio player if playing
-    if (audioPlayer && !audioPlayer.paused) {
-      videoElement.currentTime = audioPlayer.currentTime;
-      videoElement.play().catch(err => {
-        console.warn('Video play failed:', err);
-      });
-    }
-  }
-  
-  // Sync video with audio player
-  if (videoElement && audioPlayer) {
-    // When audio plays/pauses, sync video
-    audioPlayer.addEventListener('play', () => {
-      if (videoElement.src) {
-        videoElement.play().catch(err => console.warn('Video sync play failed:', err));
-      }
-    });
-    
-    audioPlayer.addEventListener('pause', () => {
-      if (videoElement.src && !videoElement.paused) {
-        videoElement.pause();
-      }
-    });
-    
-    // Sync seeking
-    audioPlayer.addEventListener('seeked', () => {
-      if (videoElement.src) {
-        videoElement.currentTime = audioPlayer.currentTime;
-      }
-    });
-    
-    // Keep video muted to avoid double audio
-    videoElement.muted = true;
-  }
-  
-  // Update the existing loadTrack function to handle video
-  const originalLoadTrack = window.loadTrack;
-  window.loadTrack = function(index) {
-    originalLoadTrack(index);
-    
-    // Load video if available
-    if (currentTrack && currentTrack.videoSrc) {
-      loadVideoSource(currentTrack.videoSrc);
-    } else {
-      // No video - show audio fallback
-      loadVideoSource(null);
-    }
-  };
+  // ============================================
+  // START
+  // ============================================
+  initializeApp();
 });

@@ -231,11 +231,6 @@
                             <!-- Playlist Navigation -->
                             <div class="playlist-nav">
                                 <div id="playlist-buttons" class="playlist-buttons"></div>
-                                <button id="add-feed-button" class="add-feed-button" aria-label="Add External Feed">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
-                                    </svg>
-                                </button>
                             </div>
 
                             <!-- Track List -->
@@ -351,52 +346,6 @@
                 <p class="player-credit">Powered by <a href="https://github.com/jmcpheron/did-you-hear-that">did-you-hear-that</a></p>
             </div>
         </footer>
-    </div>
-
-    <!-- Add Feed Modal -->
-    <div id="add-feed-modal" class="modal hidden">
-        <div class="modal-backdrop"></div>
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Add External Feed</h3>
-                <button id="close-add-feed-modal" class="close-button" aria-label="Close">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                    </svg>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p>Add playlists from external CDN sources like GitHub Pages, S3, or any CORS-enabled server.</p>
-                <form id="add-feed-form">
-                    <div class="form-group">
-                        <label for="feed-url">Feed URL:</label>
-                        <input type="url" id="feed-url" placeholder="https://example.com/feed.json" required>
-                        <small class="help-text">Enter the URL to your JSON feed file</small>
-                    </div>
-                    <div class="form-group">
-                        <details class="help-details">
-                            <summary>Examples & Help</summary>
-                            <div class="examples">
-                                <h4>Test with Local Feed:</h4>
-                                <code onclick="document.getElementById('feed-url').value=this.textContent">http://localhost:8001/github-cdn-test.json</code>
-                                
-                                <h4>GitHub Pages Example:</h4>
-                                <code>https://username.github.io/repo/feed.json</code>
-                                
-                                <h4>S3/CDN Example:</h4>
-                                <code>https://mybucket.s3.amazonaws.com/feed.json</code>
-                                
-                                <p><strong>Note:</strong> The external source must have CORS enabled. GitHub Pages works automatically!</p>
-                            </div>
-                        </details>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" id="cancel-add-feed" class="button-secondary">Cancel</button>
-                        <button type="submit" class="button-primary">Add Feed</button>
-                    </div>
-                </form>
-            </div>
-        </div>
     </div>
 
     <!-- Hidden Audio Element -->
