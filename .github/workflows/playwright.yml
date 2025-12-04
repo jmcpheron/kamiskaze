@@ -1,0 +1,48 @@
+name: Playwright Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Install Playwright browsers
+        run: uv run playwright install chromium --with-deps
+
+      - name: Start local server
+        run: |
+          python3 -m http.server 8001 &
+          sleep 2
+
+      - name: Run Playwright tests
+        run: uv run pytest tests/ -v --tb=short
+
+      - name: Upload test artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            test-results/
+            pytest-output.txt
+          retention-days: 7
