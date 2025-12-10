@@ -1,5 +1,9 @@
 # Kamiskaze Archives
 
+[![Playwright Tests](https://github.com/jmcpheron/kamiskaze/actions/workflows/playwright.yml/badge.svg)](https://github.com/jmcpheron/kamiskaze/actions/workflows/playwright.yml)
+[![GitHub Pages](https://img.shields.io/badge/Live%20Site-kamiskaze.rocks-yellow)](https://kamiskaze.rocks)
+[![License](https://img.shields.io/badge/License-All%20Rights%20Reserved-red)](LICENSE)
+
 Digital archives of the SoCal ska band Kamiskaze. This repository preserves performances, recordings, and media from the band's history.
 
 ## About the Band
