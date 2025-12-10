@@ -437,8 +437,27 @@ document.addEventListener('DOMContentLoaded', () => {
         currentTrackIndex = state.trackIndex || 0;
         renderTrackList();
         loadTrack(currentTrackIndex);
-        if (state.currentTime) audioPlayer.currentTime = state.currentTime;
-        if (state.playbackSpeed) audioPlayer.playbackRate = state.playbackSpeed;
+
+        // Wait for metadata to load before setting currentTime
+        // This fixes the race condition where currentTime was ignored
+        if (state.currentTime || state.playbackSpeed) {
+          const restorePosition = () => {
+            if (state.currentTime && !isNaN(audioPlayer.duration)) {
+              audioPlayer.currentTime = Math.min(state.currentTime, audioPlayer.duration);
+            }
+            if (state.playbackSpeed) {
+              audioPlayer.playbackRate = state.playbackSpeed;
+            }
+            audioPlayer.removeEventListener('loadedmetadata', restorePosition);
+          };
+
+          // If metadata is already loaded, restore immediately
+          if (audioPlayer.readyState >= 1) {
+            restorePosition();
+          } else {
+            audioPlayer.addEventListener('loadedmetadata', restorePosition);
+          }
+        }
       }
     } catch (error) {
       console.error('Error restoring player state:', error);
@@ -529,6 +548,48 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ============================================
+  // LOADING & ERROR HANDLING
+  // ============================================
+  function showLoadingIndicator(show) {
+    const loadingSpinner = document.querySelector('.video-loading-spinner');
+    if (loadingSpinner) {
+      loadingSpinner.classList.toggle('visible', show);
+    }
+    // Also toggle on video wrapper for CSS styling
+    if (videoWrapper) {
+      videoWrapper.classList.toggle('loading', show);
+    }
+  }
+
+  function handleMediaError(e) {
+    const mediaElement = e.target;
+    const error = mediaElement.error;
+
+    let errorMessage = 'An error occurred during playback.';
+
+    if (error) {
+      switch (error.code) {
+        case MediaError.MEDIA_ERR_ABORTED:
+          errorMessage = 'Playback was aborted.';
+          break;
+        case MediaError.MEDIA_ERR_NETWORK:
+          errorMessage = 'A network error occurred. Please check your connection.';
+          break;
+        case MediaError.MEDIA_ERR_DECODE:
+          errorMessage = 'The media file could not be decoded.';
+          break;
+        case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+          errorMessage = 'The media format is not supported.';
+          break;
+      }
+    }
+
+    console.error('Media error:', error);
+    showNotification(errorMessage, 'error');
+    showLoadingIndicator(false);
+  }
+
+  // ============================================
   // KEYBOARD CONTROLS
   // ============================================
   function handleKeyboardControls(e) {
@@ -583,6 +644,18 @@ document.addEventListener('DOMContentLoaded', () => {
     audioPlayer.addEventListener('ended', playNextTrack);
     audioPlayer.addEventListener('play', () => { isPlaying = true; updatePlayPauseButton(); });
     audioPlayer.addEventListener('pause', () => { isPlaying = false; updatePlayPauseButton(); });
+
+    // Buffering and loading indicators
+    audioPlayer.addEventListener('waiting', () => showLoadingIndicator(true));
+    audioPlayer.addEventListener('canplay', () => showLoadingIndicator(false));
+    audioPlayer.addEventListener('playing', () => showLoadingIndicator(false));
+    audioPlayer.addEventListener('stalled', () => showLoadingIndicator(true));
+
+    // Error handling for media
+    audioPlayer.addEventListener('error', handleMediaError);
+    if (videoElement) {
+      videoElement.addEventListener('error', handleMediaError);
+    }
 
     // Theme toggle
     if (themeToggle) themeToggle.addEventListener('click', toggleTheme);

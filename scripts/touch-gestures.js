@@ -52,13 +52,15 @@ class TouchGestures {
     this.touchStartY = touch.clientY;
     this.touchStartTime = Date.now();
     this.isSwiping = false;
-    
+
     // Store initial values for gestures
+    // Use the active media element (audioPlayer if available, otherwise video)
+    const activeMedia = this.controls.getActiveMedia();
     this.volumeStartY = touch.clientY;
-    this.volumeStart = this.video.volume;
+    this.volumeStart = activeMedia.volume;
     this.seekStartX = touch.clientX;
-    this.seekStartTime = this.video.currentTime;
-    
+    this.seekStartTime = activeMedia.currentTime;
+
     // Show controls on touch
     this.controls.showControls();
   }
@@ -136,15 +138,16 @@ class TouchGestures {
   
   handleSeekGesture(deltaX) {
     // Calculate seek amount based on swipe distance
+    const activeMedia = this.controls.getActiveMedia();
     const seekSensitivity = 0.5; // seconds per pixel
     const seekAmount = deltaX * seekSensitivity;
-    const newTime = Math.max(0, Math.min(this.seekStartTime + seekAmount, this.video.duration));
-    
+    const newTime = Math.max(0, Math.min(this.seekStartTime + seekAmount, activeMedia.duration));
+
     // Update preview
     this.showSeekPreview(newTime, seekAmount);
-    
-    // Apply seek
-    this.video.currentTime = newTime;
+
+    // Apply seek to active media
+    activeMedia.currentTime = newTime;
   }
   
   handleVolumeGesture(deltaY) {
@@ -152,9 +155,10 @@ class TouchGestures {
     const volumeSensitivity = 0.005; // volume per pixel
     const volumeChange = -deltaY * volumeSensitivity;
     const newVolume = Math.max(0, Math.min(1, this.volumeStart + volumeChange));
-    
-    // Update volume
-    this.video.volume = newVolume;
+
+    // Update volume on the active media element (audioPlayer or video)
+    const activeMedia = this.controls.getActiveMedia();
+    activeMedia.volume = newVolume;
     this.showVolumeIndicator(newVolume);
   }
   
