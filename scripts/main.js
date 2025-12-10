@@ -145,6 +145,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (videoControlsOverlay) videoControlsOverlay.style.display = 'block';
     if (audioDisplayFallback) audioDisplayFallback.style.display = 'none';
 
+    // Clear audio mode class
+    if (videoWrapper) videoWrapper.classList.remove('audio-mode');
+
     // Sync video with audio
     const syncTime = () => {
       if (Math.abs(videoElement.currentTime - audioPlayer.currentTime) > 0.3) {
@@ -176,16 +179,26 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function showAudioFallback(track) {
-    // Hide video
+    // Hide video element but keep controls overlay visible
     if (videoElement) {
       videoElement.pause();
       videoElement.removeAttribute('src');
       videoElement.load();
       videoElement.style.display = 'none';
     }
-    if (videoControlsOverlay) videoControlsOverlay.style.display = 'none';
 
-    // Show audio fallback
+    // Show controls overlay (works with audio via getActiveMedia())
+    if (videoControlsOverlay) videoControlsOverlay.style.display = 'block';
+
+    // Initialize VideoControls if needed
+    if (!videoControls && window.VideoControls) {
+      videoControls = new VideoControls();
+    }
+
+    // Mark as audio mode for potential CSS styling
+    if (videoWrapper) videoWrapper.classList.add('audio-mode');
+
+    // Show audio fallback with album art
     if (audioDisplayFallback) audioDisplayFallback.style.display = 'flex';
 
     // Set album art

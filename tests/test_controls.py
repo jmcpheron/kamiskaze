@@ -63,7 +63,9 @@ class TestKeyboardShortcuts:
             "document.getElementById('audio-player').paused"
         )
 
-        # Press space
+        # Click on video container to ensure focus, then press space
+        app_page.locator(".video-container").click()
+        app_page.wait_for_timeout(100)
         app_page.keyboard.press("Space")
         app_page.wait_for_timeout(200)
 
@@ -118,9 +120,9 @@ class TestMuteControl:
 
         app_page.locator(".video-container").hover()
 
-        # Get initial muted state (check video element since that's what controls use)
+        # Get initial muted state (check audio player since that's the active media)
         initial_muted = app_page.evaluate(
-            "document.getElementById('video-element').muted"
+            "document.getElementById('audio-player').muted"
         )
 
         # Click mute button
@@ -129,7 +131,7 @@ class TestMuteControl:
 
         # Check muted state changed
         new_muted = app_page.evaluate(
-            "document.getElementById('video-element').muted"
+            "document.getElementById('audio-player').muted"
         )
         assert initial_muted != new_muted, "Mute did not toggle"
 

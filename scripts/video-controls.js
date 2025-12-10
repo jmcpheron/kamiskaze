@@ -2,9 +2,12 @@
 class VideoControls {
   constructor() {
     this.video = document.getElementById('video-element');
+    this.audioPlayer = document.getElementById('audio-player'); // Main audio player
     this.overlay = document.getElementById('video-controls-overlay');
     this.centerPlayBtn = document.getElementById('center-play-button');
     this.playPauseBtn = document.getElementById('video-play-pause');
+    this.prevTrackBtn = document.getElementById('video-prev-track');
+    this.nextTrackBtn = document.getElementById('video-next-track');
     this.rewindBtn = document.getElementById('video-rewind');
     this.forwardBtn = document.getElementById('video-forward');
     this.seekInput = document.getElementById('video-seek-input');
@@ -21,14 +24,19 @@ class VideoControls {
     this.timeTooltip = document.getElementById('video-time-tooltip');
     this.loadingSpinner = document.getElementById('video-loading-spinner');
     this.videoWrapper = document.querySelector('.video-wrapper');
-    
+
     this.hideControlsTimer = null;
     this.isSeeking = false;
     this.playbackSpeeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
     this.currentSpeedIndex = 2; // Default to 1x
     this.touchGestures = null;
-    
+
     this.init();
+  }
+
+  // Get the active media element (audio player if available, otherwise video)
+  getActiveMedia() {
+    return this.audioPlayer && this.audioPlayer.src ? this.audioPlayer : this.video;
   }
   
   init() {
@@ -57,15 +65,23 @@ class VideoControls {
     this.video.addEventListener('pause', () => this.handlePlayPause());
     this.video.addEventListener('loadstart', () => this.showLoading());
     this.video.addEventListener('canplay', () => this.hideLoading());
-    this.video.addEventListener('timeupdate', () => this.updateProgress());
     this.video.addEventListener('progress', () => this.updateBuffered());
-    this.video.addEventListener('loadedmetadata', () => this.updateDuration());
-    this.video.addEventListener('volumechange', () => this.updateVolume());
     this.video.addEventListener('click', () => this.togglePlayPause());
-    
+
+    // Audio player events (primary source of truth for playback)
+    if (this.audioPlayer) {
+      this.audioPlayer.addEventListener('timeupdate', () => this.updateProgress());
+      this.audioPlayer.addEventListener('loadedmetadata', () => this.updateDuration());
+      this.audioPlayer.addEventListener('volumechange', () => this.updateVolume());
+      this.audioPlayer.addEventListener('play', () => this.handlePlayPause());
+      this.audioPlayer.addEventListener('pause', () => this.handlePlayPause());
+    }
+
     // Control buttons
     this.centerPlayBtn.addEventListener('click', () => this.togglePlayPause());
     this.playPauseBtn.addEventListener('click', () => this.togglePlayPause());
+    if (this.prevTrackBtn) this.prevTrackBtn.addEventListener('click', () => this.prevTrack());
+    if (this.nextTrackBtn) this.nextTrackBtn.addEventListener('click', () => this.nextTrack());
     this.rewindBtn.addEventListener('click', () => this.skip(-10));
     this.forwardBtn.addEventListener('click', () => this.skip(10));
     
@@ -107,47 +123,53 @@ class VideoControls {
   }
   
   togglePlayPause() {
-    if (this.video.paused) {
-      this.video.play();
+    const media = this.getActiveMedia();
+    if (media.paused) {
+      media.play();
     } else {
-      this.video.pause();
+      media.pause();
     }
   }
   
   handlePlayPause() {
-    const isPlaying = !this.video.paused;
-    
+    const media = this.getActiveMedia();
+    const isPlaying = !media.paused;
+
     // Update UI
     this.videoWrapper.classList.toggle('playing', isPlaying);
-    this.centerPlayBtn.classList.toggle('show', this.video.paused);
-    
-    // Update main audio player sync
-    const audioPlayer = document.getElementById('audio-player');
-    if (audioPlayer) {
-      if (isPlaying && audioPlayer.paused) {
-        audioPlayer.play();
-      } else if (!isPlaying && !audioPlayer.paused) {
-        audioPlayer.pause();
-      }
-    }
+    this.centerPlayBtn.classList.toggle('show', media.paused);
   }
   
   skip(seconds) {
-    this.video.currentTime = Math.max(0, Math.min(this.video.currentTime + seconds, this.video.duration));
+    const media = this.getActiveMedia();
+    media.currentTime = Math.max(0, Math.min(media.currentTime + seconds, media.duration));
+  }
+
+  prevTrack() {
+    // Trigger the hidden prev button from main.js
+    const prevBtn = document.getElementById('prev-button');
+    if (prevBtn) prevBtn.click();
+  }
+
+  nextTrack() {
+    // Trigger the hidden next button from main.js
+    const nextBtn = document.getElementById('next-button');
+    if (nextBtn) nextBtn.click();
   }
   
   updateProgress() {
-    if (!this.isSeeking && this.video.duration) {
-      const progress = (this.video.currentTime / this.video.duration) * 100;
-      
+    const media = this.getActiveMedia();
+    if (!this.isSeeking && media.duration) {
+      const progress = (media.currentTime / media.duration) * 100;
+
       // Smooth progress bar animation
       requestAnimationFrame(() => {
         this.progressBar.style.width = `${progress}%`;
         this.progressHandle.style.left = `${progress}%`;
       });
-      
+
       this.seekInput.value = progress;
-      this.currentTimeDisplay.textContent = this.formatTime(this.video.currentTime);
+      this.currentTimeDisplay.textContent = this.formatTime(media.currentTime);
     }
   }
   
@@ -160,40 +182,47 @@ class VideoControls {
   }
   
   updateDuration() {
-    this.durationDisplay.textContent = this.formatTime(this.video.duration);
+    const media = this.getActiveMedia();
+    this.durationDisplay.textContent = this.formatTime(media.duration);
     this.seekInput.max = 100;
   }
   
   handleSeek(e) {
+    const media = this.getActiveMedia();
     const progress = e.target.value;
-    const time = (progress / 100) * this.video.duration;
-    
+    const time = (progress / 100) * media.duration;
+
     // Add seeking class for visual feedback
     this.videoWrapper.classList.add('seeking');
-    
+
     // Smooth animation for seek
     requestAnimationFrame(() => {
       this.progressBar.style.width = `${progress}%`;
       this.progressHandle.style.left = `${progress}%`;
     });
-    
+
     this.currentTimeDisplay.textContent = this.formatTime(time);
-    
-    // Debounce actual video seek for smoother scrubbing
+
+    // Debounce actual seek for smoother scrubbing
     if (this.seekDebounce) clearTimeout(this.seekDebounce);
     this.seekDebounce = setTimeout(() => {
-      this.video.currentTime = time;
+      media.currentTime = time;
+      // Also sync video if we're controlling audio
+      if (media === this.audioPlayer && this.video) {
+        this.video.currentTime = time;
+      }
       this.videoWrapper.classList.remove('seeking');
     }, 50);
   }
   
   updateTimeTooltip(e) {
+    const media = this.getActiveMedia();
     const rect = this.seekInput.getBoundingClientRect();
     const percent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    const time = percent * this.video.duration;
-    
+    const time = percent * media.duration;
+
     this.timeTooltip.textContent = this.formatTime(time);
-    
+
     // Smooth tooltip position with bounds checking
     const tooltipX = percent * 100;
     requestAnimationFrame(() => {
@@ -202,19 +231,22 @@ class VideoControls {
   }
   
   toggleMute() {
-    this.video.muted = !this.video.muted;
+    const media = this.getActiveMedia();
+    media.muted = !media.muted;
     this.updateVolume();
   }
-  
+
   setVolume(value) {
-    this.video.volume = value / 100;
+    const media = this.getActiveMedia();
+    media.volume = value / 100;
     localStorage.setItem('videoVolume', value);
   }
-  
+
   updateVolume() {
-    const volume = this.video.volume * 100;
-    const isMuted = this.video.muted || volume === 0;
-    
+    const media = this.getActiveMedia();
+    const volume = media.volume * 100;
+    const isMuted = media.muted || volume === 0;
+
     this.volumeBtn.classList.toggle('muted', isMuted);
     this.volumeSlider.value = isMuted ? 0 : volume;
   }
@@ -222,14 +254,12 @@ class VideoControls {
   cycleSpeed() {
     this.currentSpeedIndex = (this.currentSpeedIndex + 1) % this.playbackSpeeds.length;
     const speed = this.playbackSpeeds[this.currentSpeedIndex];
-    this.video.playbackRate = speed;
+
+    // Set speed on both audio and video
+    if (this.audioPlayer) this.audioPlayer.playbackRate = speed;
+    if (this.video) this.video.playbackRate = speed;
+
     this.speedBtn.querySelector('.speed-text').textContent = `${speed}x`;
-    
-    // Sync with audio player
-    const audioPlayer = document.getElementById('audio-player');
-    if (audioPlayer) {
-      audioPlayer.playbackRate = speed;
-    }
   }
   
   async togglePiP() {
@@ -260,17 +290,19 @@ class VideoControls {
     clearTimeout(this.hideControlsTimer);
     this.overlay.classList.add('show-controls');
     this.videoWrapper.style.cursor = 'default';
-    
+
     // Hide after 3 seconds if playing
-    if (!this.video.paused) {
+    const media = this.getActiveMedia();
+    if (!media.paused) {
       this.scheduleHideControls();
     }
   }
-  
+
   scheduleHideControls() {
     clearTimeout(this.hideControlsTimer);
     this.hideControlsTimer = setTimeout(() => {
-      if (!this.video.paused) {
+      const media = this.getActiveMedia();
+      if (!media.paused) {
         this.hideControls();
       }
     }, 3000);
@@ -291,7 +323,8 @@ class VideoControls {
   
   handleKeyboard(e) {
     if (!this.video || e.target.tagName === 'INPUT') return;
-    
+    const media = this.getActiveMedia();
+
     switch(e.key) {
       case ' ':
       case 'k':
@@ -316,11 +349,11 @@ class VideoControls {
         break;
       case 'ArrowUp':
         e.preventDefault();
-        this.setVolume(Math.min(100, this.video.volume * 100 + 10));
+        this.setVolume(Math.min(100, media.volume * 100 + 10));
         break;
       case 'ArrowDown':
         e.preventDefault();
-        this.setVolume(Math.max(0, this.video.volume * 100 - 10));
+        this.setVolume(Math.max(0, media.volume * 100 - 10));
         break;
       case 'm':
         e.preventDefault();
@@ -348,7 +381,7 @@ class VideoControls {
         if (e.key >= '0' && e.key <= '9') {
           e.preventDefault();
           const percent = parseInt(e.key) * 10;
-          this.video.currentTime = (percent / 100) * this.video.duration;
+          media.currentTime = (percent / 100) * media.duration;
         }
     }
   }

@@ -38,7 +38,7 @@ If you have any Kamiskaze recordings, photos, flyers, or other memorabilia, I'd 
 
 This archive uses:
 - GitHub Pages for hosting
-- [did-you-hear-that](https://github.com/jmcpheron/did-you-hear-that) as the underlying media player
+- Custom media player built with vanilla JavaScript
 - Simple JSON feed structure to organize media files
 
 ## Say Hi!

@@ -97,8 +97,9 @@ class TestTrackNavigation:
             }"""
         )
 
-        # Click next
-        app_page.click("#next-button")
+        # Hover to show controls, then click next (video controls button)
+        app_page.locator(".video-container").hover()
+        app_page.click("#video-next-track")
         app_page.wait_for_timeout(300)
 
         # Check track advanced
@@ -123,8 +124,9 @@ class TestTrackNavigation:
         tracks.nth(1).click()
         app_page.wait_for_timeout(300)
 
-        # Click previous
-        app_page.click("#prev-button")
+        # Hover to show controls, then click previous (video controls button)
+        app_page.locator(".video-container").hover()
+        app_page.click("#video-prev-track")
         app_page.wait_for_timeout(300)
 
         # Should be back at first track (uses 'playing' class, not 'active')

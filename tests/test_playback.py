@@ -48,8 +48,9 @@ class TestAudioPlayback:
             "document.getElementById('audio-player').paused"
         )
 
-        # Click play button
-        play_btn = app_page.locator("#play-pause-button")
+        # Hover to show controls, then click play button (video controls)
+        app_page.locator(".video-container").hover()
+        play_btn = app_page.locator("#video-play-pause")
         play_btn.click()
         app_page.wait_for_timeout(200)
 
@@ -103,6 +104,67 @@ class TestVideoPlayback:
         expect(controls).to_be_visible()
 
 
+class TestAudioOnlyPlayback:
+    """Test suite for audio-only track playback (MP3s)."""
+
+    def test_audio_controls_visible_on_hover(self, app_page):
+        """Controls are visible when hovering over album art for audio tracks."""
+        # Switch to 8track Audio Collection (audio-only)
+        app_page.wait_for_selector(".playlist-button", timeout=5000)
+        playlist_btn = app_page.locator(".playlist-button", has_text="8track")
+        playlist_btn.click()
+        app_page.wait_for_timeout(500)
+
+        # Click first audio track
+        app_page.wait_for_selector("#track-list li", timeout=5000)
+        app_page.locator("#track-list li").first.click()
+        app_page.wait_for_timeout(500)
+
+        # Hover over video container (which now shows album art)
+        video_container = app_page.locator(".video-container")
+        video_container.hover()
+
+        # Controls overlay should be visible
+        controls = app_page.locator(".video-controls-overlay")
+        expect(controls).to_be_visible()
+
+    def test_audio_fallback_shows_album_art(self, app_page):
+        """Audio fallback display shows album art for audio-only tracks."""
+        # Switch to 8track Audio Collection
+        app_page.wait_for_selector(".playlist-button", timeout=5000)
+        playlist_btn = app_page.locator(".playlist-button", has_text="8track")
+        playlist_btn.click()
+        app_page.wait_for_timeout(500)
+
+        # Click first audio track
+        app_page.wait_for_selector("#track-list li", timeout=5000)
+        app_page.locator("#track-list li").first.click()
+        app_page.wait_for_timeout(500)
+
+        # Audio fallback should be visible
+        audio_fallback = app_page.locator("#audio-display-fallback")
+        expect(audio_fallback).to_be_visible()
+
+    def test_audio_mode_class_applied(self, app_page):
+        """Video wrapper has audio-mode class for audio-only tracks."""
+        # Switch to 8track Audio Collection
+        app_page.wait_for_selector(".playlist-button", timeout=5000)
+        playlist_btn = app_page.locator(".playlist-button", has_text="8track")
+        playlist_btn.click()
+        app_page.wait_for_timeout(500)
+
+        # Click first audio track
+        app_page.wait_for_selector("#track-list li", timeout=5000)
+        app_page.locator("#track-list li").first.click()
+        app_page.wait_for_timeout(500)
+
+        # Check audio-mode class is applied
+        has_class = app_page.evaluate(
+            "document.querySelector('.video-wrapper').classList.contains('audio-mode')"
+        )
+        assert has_class, "audio-mode class not applied to video wrapper"
+
+
 class TestPlaybackControls:
     """Test suite for playback control elements."""
 
@@ -142,9 +204,12 @@ class TestPlaybackControls:
         assert initial_text != new_text, "Speed did not cycle"
 
     def test_prev_next_buttons_exist(self, app_page):
-        """Previous and next track buttons are present."""
-        prev_btn = app_page.locator("#prev-button")
-        next_btn = app_page.locator("#next-button")
+        """Previous and next track buttons are present in video controls."""
+        # Hover over video container to show controls
+        app_page.locator(".video-container").hover()
+
+        prev_btn = app_page.locator("#video-prev-track")
+        next_btn = app_page.locator("#video-next-track")
 
         expect(prev_btn).to_be_visible()
         expect(next_btn).to_be_visible()

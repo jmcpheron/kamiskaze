@@ -168,19 +168,6 @@
           "albumArt": "sample_audio/clwb.svg"
         }
       ]
-    },
-    {
-      "id": "sample-feed",
-      "title": "Sample Feed",
-      "tracks": [
-        {
-          "id": "sample-track-1",
-          "title": "Sample Track 1",
-          "audioUrl": "sample_audio/sample1.mp3",
-          "description": "A sample audio track",
-          "albumArt": "sample_audio/clwb.svg"
-        }
-      ]
     }
   ]
 } 
