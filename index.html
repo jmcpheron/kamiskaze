@@ -32,6 +32,7 @@
                 <nav class="main-nav">
                     <a href="#player" class="nav-link active" data-tab="player">Player</a>
                     <a href="#about" class="nav-link" data-tab="about">About</a>
+                    <a href="#changelog" class="nav-link" data-tab="changelog">Changelog</a>
                     <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark/light mode">
                         <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>
@@ -339,6 +340,30 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Changelog Tab Content -->
+            <div id="changelog-tab" class="tab-content">
+                <section class="changelog-section">
+                    <div class="changelog-container">
+                        <div class="changelog-header">
+                            <h2>Visual Changelog</h2>
+                            <p class="changelog-subtitle">See how the player has evolved</p>
+                        </div>
+
+                        <div id="changelog-loading" class="changelog-loading">
+                            <div class="loading-spinner"></div>
+                            <p>Loading release history...</p>
+                        </div>
+
+                        <div id="changelog-error" class="changelog-error" style="display: none;">
+                            <p>Unable to load changelog.</p>
+                            <a href="https://github.com/jmcpheron/kamiskaze/releases" target="_blank" rel="noopener">View releases on GitHub</a>
+                        </div>
+
+                        <div id="changelog-entries" class="changelog-entries"></div>
                     </div>
                 </section>
             </div>

@@ -57,6 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       window.addEventListener('popstate', handleInitialHash);
       setTimeout(handleInitialHash, 100);
+      initializeChangelog();
     } catch (error) {
       showNotification('Error initializing app: ' + error.message, 'error');
       console.error('Initialization error:', error);
@@ -492,7 +493,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function handleInitialHash() {
     const hash = window.location.hash.substring(1);
-    if (hash === 'player' || hash === 'about') switchTab(hash);
+    if (hash === 'player' || hash === 'about' || hash === 'changelog') switchTab(hash);
   }
 
   function updateArchiveStats() {
@@ -597,6 +598,157 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Keyboard controls
     document.addEventListener('keydown', handleKeyboardControls);
+  }
+
+  // ============================================
+  // CHANGELOG FUNCTIONALITY
+  // ============================================
+  const GITHUB_REPO = 'jmcpheron/kamiskaze';
+  const RELEASES_API = `https://api.github.com/repos/${GITHUB_REPO}/releases`;
+  let changelogLoaded = false;
+
+  async function loadChangelog() {
+    const loadingEl = document.getElementById('changelog-loading');
+    const errorEl = document.getElementById('changelog-error');
+    const entriesEl = document.getElementById('changelog-entries');
+
+    if (!entriesEl) return;
+
+    try {
+      const response = await fetch(RELEASES_API, {
+        headers: {
+          'Accept': 'application/vnd.github.v3+json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`GitHub API error: ${response.status}`);
+      }
+
+      const releases = await response.json();
+
+      // Filter to only snapshot releases
+      const snapshots = releases.filter(r => r.tag_name.includes('snapshot'));
+
+      if (loadingEl) loadingEl.style.display = 'none';
+
+      if (snapshots.length === 0) {
+        entriesEl.innerHTML = '<p class="no-changelog">No visual changelog entries yet. Screenshots will appear here after the first push to main.</p>';
+        return;
+      }
+
+      // Render entries
+      entriesEl.innerHTML = snapshots.map(release => renderChangelogEntry(release)).join('');
+
+    } catch (error) {
+      console.error('Failed to load changelog:', error);
+      if (loadingEl) loadingEl.style.display = 'none';
+      if (errorEl) errorEl.style.display = 'block';
+    }
+  }
+
+  function renderChangelogEntry(release) {
+    const date = new Date(release.published_at);
+    const formattedDate = date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+    // Extract commit hash from body (if available)
+    const commitMatch = release.body ? release.body.match(/\*\*Commit:\*\* ([a-f0-9]+)/) : null;
+    const commitHash = commitMatch ? commitMatch[1].substring(0, 7) : null;
+
+    // Get screenshot assets
+    const screenshots = release.assets.filter(a => a.name.endsWith('.png'));
+
+    // Extract commit message from release name
+    const message = release.name.replace('Visual Snapshot - ', '');
+
+    const githubIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>`;
+
+    return `
+      <article class="changelog-entry">
+        <div class="changelog-entry-header">
+          <span class="changelog-entry-date">${formattedDate}</span>
+          ${commitHash ? `
+            <span class="changelog-entry-commit">
+              <a href="https://github.com/${GITHUB_REPO}/commit/${commitHash}" target="_blank" rel="noopener">
+                ${commitHash}
+              </a>
+            </span>
+          ` : ''}
+        </div>
+
+        <h3 class="changelog-entry-message">${escapeHtml(message)}</h3>
+
+        ${screenshots.length > 0 ? `
+          <div class="changelog-screenshots">
+            ${screenshots.map(asset => `
+              <div class="changelog-screenshot" onclick="window.open('${asset.browser_download_url}', '_blank')">
+                <img src="${asset.browser_download_url}" alt="${asset.name}" loading="lazy">
+                <span class="changelog-screenshot-label">${formatScreenshotLabel(asset.name)}</span>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+
+        <a href="${release.html_url}" target="_blank" rel="noopener" class="changelog-github-link">
+          ${githubIcon}
+          View Release on GitHub
+        </a>
+      </article>
+    `;
+  }
+
+  function formatScreenshotLabel(filename) {
+    // Convert "player-video-dark.png" to "Player Video Dark"
+    const name = filename.replace('.png', '');
+    const parts = name.split('-');
+
+    const labels = {
+      'player': 'Player',
+      'video': 'Video',
+      'audio': 'Audio',
+      'dark': 'Dark',
+      'light': 'Light',
+      'about': 'About',
+      'page': 'Page'
+    };
+
+    return parts.map(p => labels[p] || p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  function initializeChangelog() {
+    // Check if changelog tab exists
+    const changelogTab = document.getElementById('changelog-tab');
+    if (!changelogTab) return;
+
+    // Use MutationObserver to load changelog when tab becomes visible
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.target.classList.contains('active') && !changelogLoaded) {
+          loadChangelog();
+          changelogLoaded = true;
+        }
+      });
+    });
+
+    observer.observe(changelogTab, { attributes: true, attributeFilter: ['class'] });
+
+    // Also load if directly navigating to #changelog
+    if (window.location.hash === '#changelog') {
+      loadChangelog();
+      changelogLoaded = true;
+    }
   }
 
   // ============================================
