@@ -545,7 +545,8 @@ body {
 }
 
 .video-wrapper:hover .video-controls-overlay,
-.video-controls-overlay.visible {
+.video-controls-overlay.visible,
+.video-controls-overlay.show-controls {
   opacity: 1;
 }
 
@@ -1942,6 +1943,23 @@ body {
     width: 28px;
     height: 28px;
   }
+
+  /* Simplified video controls for small screens */
+  /* Hide 10-second skip buttons */
+  #video-rewind,
+  #video-forward {
+    display: none;
+  }
+
+  /* Hide PiP on small screens */
+  #video-pip-button {
+    display: none;
+  }
+
+  /* Hide volume slider (use device controls) */
+  .volume-control-group {
+    display: none;
+  }
 }
 
 /* === ACCESSIBILITY === */
@@ -2021,7 +2039,12 @@ input:focus-visible {
 
 /* === TOUCH DEVICE OPTIMIZATIONS === */
 @media (hover: none) and (pointer: coarse) {
-  .video-controls-overlay {
+  /* Don't force overlay visible on hover - let JS handle tap-to-show */
+  .video-wrapper:hover .video-controls-overlay {
+    opacity: 0;
+  }
+
+  .video-controls-overlay.show-controls {
     opacity: 1;
   }
 
@@ -2040,8 +2063,20 @@ input:focus-visible {
     height: 72px;
   }
 
-  .volume-control-group:hover .volume-slider-container {
-    width: 0;
+  /* Hide volume on touch devices - use device volume controls */
+  .volume-control-group {
+    display: none;
+  }
+
+  /* Hide 10-second skip buttons on mobile - too cluttered */
+  #video-rewind,
+  #video-forward {
+    display: none;
+  }
+
+  /* Hide PiP on mobile - not commonly used/supported */
+  #video-pip-button {
+    display: none;
   }
 }
 
