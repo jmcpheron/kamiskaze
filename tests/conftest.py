@@ -79,22 +79,11 @@ def test_page(page, server):
 
 
 # Helper functions available to all tests
-def wait_for_audio_ready(page, timeout=10000):
-    """Wait for the audio element to be ready to play."""
-    page.wait_for_function(
-        """() => {
-            const audio = document.getElementById('audioPlayer');
-            return audio && audio.readyState >= 2;
-        }""",
-        timeout=timeout,
-    )
-
-
 def wait_for_video_ready(page, timeout=10000):
     """Wait for the video element to be ready to play."""
     page.wait_for_function(
         """() => {
-            const video = document.getElementById('videoPlayer');
+            const video = document.getElementById('video-player');
             return video && video.readyState >= 2;
         }""",
         timeout=timeout,
