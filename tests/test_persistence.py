@@ -48,8 +48,10 @@ class TestTrackPersistence:
 
         # Check state format
         state = page.evaluate("""
-            const state = localStorage.getItem('kamiskaze-state');
-            return state ? JSON.parse(state) : null;
+            (() => {
+                const state = localStorage.getItem('kamiskaze-state');
+                return state ? JSON.parse(state) : null;
+            })()
         """)
         assert state is not None, "State not saved"
         assert "index" in state, "State missing index field"
