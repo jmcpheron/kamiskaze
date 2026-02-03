@@ -1,388 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <!-- Mobile & Tablet Meta Tags -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Kamiskaze Archives">
-    <meta name="theme-color" content="#0a0a0a">
-    <meta name="format-detection" content="telephone=no">
-    <link rel="apple-touch-icon" href="sample_audio/clwb.svg">
-    <!-- PWA Support -->
-    <link rel="manifest" href="manifest.json">
-    <!-- Cache Control Meta Tags -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <!-- End Cache Control Meta Tags -->
-    <title>Kamiskaze Archives</title>
-    <link rel="stylesheet" href="styles/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kamiskaze Archives</title>
+  <link rel="stylesheet" href="styles/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Special+Elite&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="app-container">
-        <!-- Header -->
-        <header class="app-header">
-            <div class="header-content">
-                <div class="brand">
-                    <h1 class="brand-title">Kamiskaze</h1>
-                    <p class="brand-subtitle">SoCal Ska // Est. 1996</p>
-                </div>
-                <nav class="main-nav">
-                    <a href="#player" class="nav-link active" data-tab="player">Player</a>
-                    <a href="#about" class="nav-link" data-tab="about">About</a>
-                    <a href="#changelog" class="nav-link" data-tab="changelog">Changelog</a>
-                    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark/light mode">
-                        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>
-                        </svg>
-                        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M9.37 5.51c-.18.64-.27 1.31-.27 1.99 0 4.08 3.32 7.4 7.4 7.4.68 0 1.35-.09 1.99-.27C17.45 17.19 14.93 19 12 19c-3.86 0-7-3.14-7-7 0-2.93 1.81-5.45 4.37-6.49z"/>
-                        </svg>
-                    </button>
-                </nav>
-            </div>
-        </header>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <h1 class="title">Kamiskaze</h1>
+      <p class="subtitle">SoCal Ska // Est. 1996</p>
+    </header>
 
-        <!-- Notification Area -->
-        <div id="notification-area" class="notification-area"></div>
+    <!-- About Section -->
+    <section class="about">
+      <p>Kamiskaze was a Southern California ska band that captured the energy and spirit of the mid-90s ska revival scene. Known for their high-energy performances and tight musicianship, the band was part of the vibrant SoCal ska community that helped define the third wave ska movement.</p>
+      <p>The band performed at various venues throughout Southern California, including memorable shows at The Jawas in Palm Springs, where these recordings were captured in 1996.</p>
+    </section>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Player Tab Content -->
-            <div id="player-tab" class="tab-content active">
-                <!-- YouTube-style Layout Container -->
-                <div class="youtube-layout">
-                    <!-- Left Side: Video/Audio Player -->
-                    <div class="main-player-area">
-                        <!-- Video Player (Primary) -->
-                        <div class="video-container" id="video-container">
-                            <div class="video-wrapper">
-                                <video id="video-element" playsinline preload="metadata">
-                                    Your browser does not support the video tag.
-                                </video>
-                                <!-- Fallback to Audio Display when no video -->
-                                <div id="audio-display-fallback" class="audio-display-fallback">
-                                    <div class="album-art">
-                                        <img id="custom-album-art" src="images/cassette-single.png" alt="Album artwork">
-                                        <svg id="default-album-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-                                        </svg>
-                                    </div>
-                                </div>
-                                
-                                <!-- Custom Video Controls Overlay -->
-                                <div class="video-controls-overlay" id="video-controls-overlay">
-                                    <!-- Center Play Button -->
-                                    <button class="center-play-button" id="center-play-button" aria-label="Play/Pause">
-                                        <svg class="center-play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M8 5v14l11-7z"/>
-                                        </svg>
-                                        <svg class="center-pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-                                        </svg>
-                                    </button>
-                                    
-                                    <!-- Bottom Controls Bar -->
-                                    <div class="video-controls-bar">
-                                        <!-- Progress Bar -->
-                                        <div class="video-progress-container">
-                                            <div class="video-progress-bar-wrapper">
-                                                <div class="video-buffered-bar"></div>
-                                                <div class="video-progress-bar"></div>
-                                                <div class="video-progress-handle"></div>
-                                                <input type="range" class="video-seek-input" id="video-seek-input" value="0" min="0" max="100" step="0.1">
-                                            </div>
-                                            <div class="video-time-tooltip" id="video-time-tooltip">0:00</div>
-                                        </div>
-                                        
-                                        <!-- Controls Row -->
-                                        <div class="video-controls-row">
-                                            <div class="video-controls-left">
-                                                <button class="video-control-button" id="video-prev-track" aria-label="Previous track">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                                        <path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/>
-                                                    </svg>
-                                                </button>
+    <!-- Performance Info -->
+    <section class="performance-info">
+      <h2 class="performance-title">Palm Springs, December 13, 1996</h2>
+      <p class="performance-subtitle">Live performance with The Jawas</p>
+    </section>
 
-                                                <button class="video-control-button" id="video-play-pause" aria-label="Play/Pause">
-                                                    <svg class="video-play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                                        <path d="M8 5v14l11-7z"/>
-                                                    </svg>
-                                                    <svg class="video-pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                                        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-                                                    </svg>
-                                                </button>
+    <!-- Track List -->
+    <ul id="track-list" class="track-list">
+      <!-- Populated by JavaScript -->
+    </ul>
 
-                                                <button class="video-control-button" id="video-next-track" aria-label="Next track">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                                        <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
-                                                    </svg>
-                                                </button>
-
-                                                <button class="video-control-button" id="video-rewind" aria-label="Rewind 10s">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                                        <path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/>
-                                                    </svg>
-                                                    <span class="skip-text">10</span>
-                                                </button>
-                                                
-                                                <button class="video-control-button" id="video-forward" aria-label="Forward 10s">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                                        <path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/>
-                                                    </svg>
-                                                    <span class="skip-text">10</span>
-                                                </button>
-                                                
-                                                <div class="video-time-display">
-                                                    <span id="video-current-time">0:00</span>
-                                                    <span class="time-separator">/</span>
-                                                    <span id="video-duration">0:00</span>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="video-controls-right">
-                                                <div class="volume-control-group">
-                                                    <button class="video-control-button" id="video-volume-button" aria-label="Mute/Unmute">
-                                                        <svg class="volume-high-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                                            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-                                                        </svg>
-                                                        <svg class="volume-mute-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                                            <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
-                                                        </svg>
-                                                    </button>
-                                                    <div class="volume-slider-container">
-                                                        <input type="range" class="volume-slider" id="video-volume-slider" min="0" max="100" value="100">
-                                                    </div>
-                                                </div>
-                                                
-                                                <button class="video-control-button" id="video-speed-button" aria-label="Playback Speed">
-                                                    <span class="speed-text">1x</span>
-                                                </button>
-                                                
-                                                <button class="video-control-button" id="video-pip-button" aria-label="Picture in Picture">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                                        <path d="M19 7h-8v6h8V7zm2-4H3c-1.1 0-2 .9-2 2v14c0 1.1.9 1.98 2 1.98h18c1.1 0 2-.88 2-1.98V5c0-1.1-.9-2-2-2zm0 16.01H3V4.98h18v14.03z"/>
-                                                    </svg>
-                                                </button>
-                                                
-                                                <button class="video-control-button" id="video-fullscreen-button" aria-label="Fullscreen">
-                                                    <svg class="fullscreen-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                                        <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
-                                                    </svg>
-                                                    <svg class="exit-fullscreen-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                                        <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Loading Spinner -->
-                                <div class="video-loading-spinner" id="video-loading-spinner">
-                                    <div class="spinner"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Track Info Below Video -->
-                        <div class="track-info-section">
-                            <div id="current-track-info" class="current-track-info">
-                                <div id="track-info-text" class="track-info-text">
-                                    <h2 class="track-title">Palm Springs w/ The Jawas</h2>
-                                    <p class="track-description">Live performance at the Jawas in Palm Springs, CA</p>
-                                    <div class="track-meta">
-                                        <span class="meta-item">9 tracks</span>
-                                        <span class="meta-item">Live recording</span>
-                                        <span class="meta-item">1996</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Compact Audio Controls -->
-                        <div class="compact-audio-controls">
-                            <div class="control-buttons">
-                                <button id="prev-button" class="control-button prev-button" aria-label="Previous track">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/>
-                                    </svg>
-                                </button>
-                                <button id="play-pause-button" class="control-button play-button" aria-label="Play">
-                                    <svg class="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M8 5v14l11-7z"/>
-                                    </svg>
-                                    <svg class="pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-                                    </svg>
-                                </button>
-                                <button id="next-button" class="control-button next-button" aria-label="Next track">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
-                                    </svg>
-                                </button>
-                            </div>
-                            
-                            <div class="progress-section">
-                                <div class="time-display">
-                                    <span id="current-time">0:00</span>
-                                    <span id="duration">--:--</span>
-                                </div>
-                                <div class="seek-container">
-                                    <div class="seek-progress-bar"></div>
-                                    <input type="range" id="seek-bar" value="0" max="0" aria-label="Seek bar">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Right Side: Playlist -->
-                    <div class="sidebar-playlist">
-                        <div class="playlist-container">
-                            <!-- Playlist Navigation -->
-                            <div class="playlist-nav">
-                                <div id="playlist-buttons" class="playlist-buttons"></div>
-                            </div>
-
-                            <!-- Track List -->
-                            <div class="tracklist-container">
-                                <div class="tracklist-header">
-                                    <h3 class="tracklist-title">Palm Springs w/ The Jawas <span id="track-count" class="track-count"></span></h3>
-                                    <p class="tracklist-description">Live performance at the Jawas in Palm Springs, CA</p>
-                                </div>
-                                <ul id="track-list" class="track-list"></ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- About Tab Content -->
-            <div id="about-tab" class="tab-content">
-                <section class="about-section">
-                    <div class="about-container">
-                        <div class="about-header">
-                            <h2>About Kamiskaze</h2>
-                            <p class="about-subtitle">SoCal Ska Band Archives</p>
-                        </div>
-
-                        <div class="about-content">
-                            <div class="about-grid">
-                                <div class="about-main">
-                                    <div class="band-info">
-                                        <h3>The Band</h3>
-                                        <p>Kamiskaze was a Southern California ska band that captured the energy and spirit of the mid-90s ska revival scene. Known for their high-energy performances and tight musicianship, the band was part of the vibrant SoCal ska community that helped define the third wave ska movement.</p>
-                                        
-                                        <p>The band performed at various venues throughout Southern California, including memorable shows at The Jawas in Palm Springs, where these recordings were captured in 1996.</p>
-                                    </div>
-
-                                    <div class="archive-info">
-                                        <h3>The Archives</h3>
-                                        <p>This collection preserves live recordings and audio tracks from Kamiskaze's performances, digitized and made available for fans and ska enthusiasts. The recordings showcase the raw energy of live ska performances from the height of the ska revival era.</p>
-                                        
-                                        <p>Audio tracks have been carefully preserved and are presented here both as streaming audio and, where available, as video recordings from live performances.</p>
-                                    </div>
-
-                                    <div class="technical-info">
-                                        <h3>Technical Details</h3>
-                                        <p>This archive player is built with modern web technologies to provide the best possible listening experience across all devices. It supports:</p>
-                                        <ul>
-                                            <li>High-quality audio streaming in multiple formats</li>
-                                            <li>Video playback for live performance recordings</li>
-                                            <li>External playlist support via CDN feeds</li>
-                                            <li>Responsive design for mobile and desktop</li>
-                                            <li>Progressive Web App capabilities</li>
-                                        </ul>
-                                    </div>
-                                </div>
-
-                                <div class="about-sidebar">
-                                    <div class="archive-stats">
-                                        <h4>Archive Statistics</h4>
-                                        <div class="stat-item">
-                                            <span class="stat-label">Total Tracks:</span>
-                                            <span class="stat-value" id="total-tracks">--</span>
-                                        </div>
-                                        <div class="stat-item">
-                                            <span class="stat-label">Collections:</span>
-                                            <span class="stat-value" id="total-collections">--</span>
-                                        </div>
-                                        <div class="stat-item">
-                                            <span class="stat-label">Era:</span>
-                                            <span class="stat-value">1996</span>
-                                        </div>
-                                        <div class="stat-item">
-                                            <span class="stat-label">Genre:</span>
-                                            <span class="stat-value">Ska / Punk</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="project-links">
-                                        <h4>Project Links</h4>
-                                        <div class="link-list">
-                                            <a href="https://github.com/jmcpheron/kamiskaze" target="_blank" rel="noopener" class="project-link">
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                                                </svg>
-                                                Archive Repository
-                                            </a>
-                                        </div>
-                                    </div>
-
-                                    <div class="credits">
-                                        <h4>Credits</h4>
-                                        <p class="credit-item"><strong>Recordings:</strong> Live at The Jawas, Palm Springs</p>
-                                        <p class="credit-item"><strong>Archive Curation:</strong> Digital preservation project</p>
-                                        <p class="credit-item"><strong>Player Technology:</strong> Modern web audio APIs</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-
-            <!-- Changelog Tab Content -->
-            <div id="changelog-tab" class="tab-content">
-                <section class="changelog-section">
-                    <div class="changelog-container">
-                        <div class="changelog-header">
-                            <h2>Visual Changelog</h2>
-                            <p class="changelog-subtitle">See how the player has evolved</p>
-                        </div>
-
-                        <div id="changelog-loading" class="changelog-loading">
-                            <div class="loading-spinner"></div>
-                            <p>Loading release history...</p>
-                        </div>
-
-                        <div id="changelog-error" class="changelog-error" style="display: none;">
-                            <p>Unable to load changelog.</p>
-                            <a href="https://github.com/jmcpheron/kamiskaze/releases" target="_blank" rel="noopener">View releases on GitHub</a>
-                        </div>
-
-                        <div id="changelog-entries" class="changelog-entries"></div>
-                    </div>
-                </section>
-            </div>
-        </main>
-
-        <!-- Footer -->
-        <footer class="app-footer">
-            <div class="footer-content">
-                <p class="band-credit"><strong>Kamiskaze</strong> - SoCal Ska Band</p>
-                <p class="archive-link">Archives at <a href="https://github.com/jmcpheron/kamiskaze">github.com/jmcpheron/kamiskaze</a></p>
-            </div>
-        </footer>
+    <!-- Video Player -->
+    <div class="video-container">
+      <video id="video-player" controls preload="metadata">
+        Your browser does not support the video tag.
+      </video>
     </div>
 
-    <!-- Hidden Audio Element -->
-    <audio id="audio-player" preload="metadata"></audio>
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="checkered-border"></div>
+      <p>Archives at <a href="https://github.com/jmcpheron/kamiskaze">github.com/jmcpheron/kamiskaze</a></p>
+    </footer>
+  </div>
 
-    <script src="scripts/video-controls.js"></script>
-    <script src="scripts/touch-gestures.js"></script>
-    <script src="scripts/main.js"></script>
+  <script src="scripts/main.js"></script>
 </body>
 </html>
