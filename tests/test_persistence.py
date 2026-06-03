@@ -22,8 +22,8 @@ class TestTrackPersistence:
         tracks.nth(1).click()
         page.wait_for_timeout(500)
 
-        # Check localStorage has playerState (app stores state as JSON)
-        saved_state = page.evaluate("localStorage.getItem('playerState')")
+        # Check localStorage has state (simplified player uses 'kamiskaze-state')
+        saved_state = page.evaluate("localStorage.getItem('kamiskaze-state')")
         assert saved_state is not None, "Player state not saved"
 
         # Reload page
@@ -33,107 +33,28 @@ class TestTrackPersistence:
         page.wait_for_timeout(500)
 
         # Player state should still exist
-        restored_state = page.evaluate("localStorage.getItem('playerState')")
+        restored_state = page.evaluate("localStorage.getItem('kamiskaze-state')")
         assert restored_state is not None, "Player state not persisted"
 
-
-class TestVolumePersistence:
-    """Test suite for volume state persistence."""
-
-    def test_volume_persists_across_reload(self, page, server):
-        """Volume setting is saved and restored on reload."""
-        page.goto(f"{server}/index.html")
-        page.wait_for_load_state("networkidle")
-
-        # Set volume to specific value
-        page.evaluate("document.getElementById('audio-player').volume = 0.3")
-        page.evaluate("localStorage.setItem('volume', '0.3')")
-        page.wait_for_timeout(200)
-
-        # Reload
-        page.reload()
-        page.wait_for_load_state("networkidle")
-        page.wait_for_timeout(500)
-
-        # Check volume restored
-        saved_volume = page.evaluate("localStorage.getItem('volume')")
-        assert saved_volume is not None, "Volume not persisted"
-
-
-class TestThemePersistence:
-    """Test suite for theme preference persistence."""
-
-    def test_theme_persists_across_reload(self, page, server):
-        """Theme preference is saved and restored on reload."""
-        page.goto(f"{server}/index.html")
-        page.wait_for_load_state("networkidle")
-
-        # Toggle theme using JavaScript (bypasses visibility issues)
-        page.evaluate("document.getElementById('theme-toggle').click()")
-        page.wait_for_timeout(200)
-
-        # Get current theme state
-        is_dark = page.evaluate("document.body.classList.contains('dark-mode')")
-
-        # Reload
-        page.reload()
-        page.wait_for_load_state("networkidle")
-        page.wait_for_timeout(300)
-
-        # Check theme restored
-        restored_dark = page.evaluate("document.body.classList.contains('dark-mode')")
-
-        # Theme should match (allowing for system preference override)
-        saved_theme = page.evaluate("localStorage.getItem('theme')")
-        assert saved_theme is not None, "Theme preference not saved"
-
-
-class TestPlaybackSpeedPersistence:
-    """Test suite for playback speed persistence."""
-
-    def test_speed_persists_across_reload(self, page, server):
-        """Playback speed is saved in playerState."""
-        page.goto(f"{server}/index.html")
-        page.wait_for_load_state("networkidle")
-
-        # Hover to show controls and change speed
-        page.locator(".video-container").hover()
-        page.click("#video-speed-button")
-        page.wait_for_timeout(200)
-
-        # Check playerState contains speed info
-        player_state = page.evaluate("localStorage.getItem('playerState')")
-        # Speed is stored in playerState JSON, verify state exists
-        assert player_state is not None, "Player state not saved"
-
-
-class TestFeedPersistence:
-    """Test suite for feed selection persistence."""
-
-    def test_feed_selection_persists(self, page, server):
-        """Selected feed is saved and restored on reload."""
+    def test_state_contains_index(self, page, server):
+        """Saved state contains track index."""
         page.goto(f"{server}/index.html")
         page.wait_for_load_state("networkidle")
         page.wait_for_selector("#track-list li", timeout=5000)
 
-        # Get playlist buttons
-        buttons = page.locator("#playlist-buttons button")
-        if buttons.count() < 2:
-            pytest.skip("Need at least 2 playlists")
-
-        # Select a different playlist
-        buttons.nth(1).click()
+        # Click first track
+        page.locator("#track-list li").first.click()
         page.wait_for_timeout(500)
 
-        # Reload
-        page.reload()
-        page.wait_for_load_state("networkidle")
-        page.wait_for_timeout(500)
-
-        # Check feed saved
-        saved_feed = page.evaluate("localStorage.getItem('currentFeedId')")
-        # May or may not be persisted depending on implementation
-        # This test documents the expected behavior
+        # Check state format
+        state = page.evaluate("""
+            (() => {
+                const state = localStorage.getItem('kamiskaze-state');
+                return state ? JSON.parse(state) : null;
+            })()
+        """)
+        assert state is not None, "State not saved"
+        assert "index" in state, "State missing index field"
 
 
 class TestClearStorage:

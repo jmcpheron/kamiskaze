@@ -1,142 +1,55 @@
-"""Tests for UI controls and interactions."""
+"""Tests for native video controls."""
 
 import pytest
 from playwright.sync_api import expect
 
 
-class TestVideoControls:
-    """Test suite for video-specific controls."""
+class TestNativeVideoControls:
+    """Test suite for native video controls (simplified player uses browser controls)."""
 
-    def test_fullscreen_button_exists(self, app_page):
-        """Fullscreen button is present in video controls."""
-        # Load a video track to make controls visible
+    def test_video_element_has_controls(self, app_page):
+        """Video element has controls attribute for native browser controls."""
+        video = app_page.locator("#video-player")
+        expect(video).to_have_attribute("controls", "")
+
+    def test_video_player_is_interactive(self, app_page):
+        """Video player can be interacted with."""
+        video = app_page.locator("#video-player")
+        expect(video).to_be_visible()
+        expect(video).to_be_enabled()
+
+
+class TestTrackListInteraction:
+    """Test suite for track list interactions."""
+
+    def test_track_items_clickable(self, app_page):
+        """Track list items are clickable."""
         app_page.wait_for_selector("#track-list li", timeout=5000)
-        app_page.locator("#track-list li").first.click()
-        app_page.wait_for_timeout(500)
 
-        # Hover to show controls
-        app_page.locator(".video-container").hover()
+        first_track = app_page.locator("#track-list li").first
+        expect(first_track).to_be_visible()
 
-        fullscreen_btn = app_page.locator("#video-fullscreen-button")
-        expect(fullscreen_btn).to_be_visible()
+        # Click should not throw
+        first_track.click()
 
-    def test_pip_button_exists(self, app_page):
-        """Picture-in-Picture button is present."""
+    def test_clicking_track_updates_video_source(self, app_page):
+        """Clicking a track updates the video source."""
         app_page.wait_for_selector("#track-list li", timeout=5000)
-        app_page.locator("#track-list li").first.click()
-        app_page.wait_for_timeout(500)
 
-        app_page.locator(".video-container").hover()
-
-        pip_btn = app_page.locator("#video-pip-button")
-        expect(pip_btn).to_be_visible()
-
-    def test_progress_bar_exists(self, app_page):
-        """Progress bar is present in video controls."""
-        app_page.wait_for_selector("#track-list li", timeout=5000)
-        app_page.locator("#track-list li").first.click()
-        app_page.wait_for_timeout(500)
-
-        app_page.locator(".video-container").hover()
-
-        progress = app_page.locator(".video-progress-bar")
-        expect(progress).to_be_visible()
-
-
-class TestKeyboardShortcuts:
-    """Test suite for keyboard shortcuts."""
-
-    def test_space_toggles_playback(self, app_page):
-        """Pressing space toggles play/pause."""
-        # Load a track
-        app_page.wait_for_selector("#track-list li", timeout=5000)
+        # Click first track
         app_page.locator("#track-list li").first.click()
 
-        # Wait for audio ready
+        # Wait for video to get source
         app_page.wait_for_function(
-            "document.getElementById('audio-player').readyState >= 2",
-            timeout=10000,
+            """() => {
+                const video = document.getElementById('video-player');
+                return video && video.src && video.src.length > 0;
+            }""",
+            timeout=5000,
         )
 
-        # Get initial state
-        initial_paused = app_page.evaluate(
-            "document.getElementById('audio-player').paused"
+        # Verify video has source
+        has_src = app_page.evaluate(
+            "document.getElementById('video-player').src.length > 0"
         )
-
-        # Click on video container to ensure focus, then press space
-        app_page.locator(".video-container").click()
-        app_page.wait_for_timeout(100)
-        app_page.keyboard.press("Space")
-        app_page.wait_for_timeout(200)
-
-        # Check state changed
-        new_paused = app_page.evaluate(
-            "document.getElementById('audio-player').paused"
-        )
-        assert initial_paused != new_paused, "Space did not toggle playback"
-
-    def test_arrow_keys_seek(self, app_page):
-        """Arrow keys seek forward/backward."""
-        # Load a track
-        app_page.wait_for_selector("#track-list li", timeout=5000)
-        app_page.locator("#track-list li").first.click()
-
-        app_page.wait_for_function(
-            "document.getElementById('audio-player').readyState >= 2",
-            timeout=10000,
-        )
-
-        # Get initial time
-        initial_time = app_page.evaluate(
-            "document.getElementById('audio-player').currentTime"
-        )
-
-        # Press right arrow
-        app_page.keyboard.press("ArrowRight")
-        app_page.wait_for_timeout(200)
-
-        # Time should have increased
-        new_time = app_page.evaluate(
-            "document.getElementById('audio-player').currentTime"
-        )
-        assert new_time >= initial_time, "Right arrow did not seek forward"
-
-
-class TestMuteControl:
-    """Test suite for mute/volume controls."""
-
-    def test_mute_button_exists(self, app_page):
-        """Mute button is present."""
-        app_page.locator(".video-container").hover()
-        mute_btn = app_page.locator("#video-volume-button")
-        expect(mute_btn).to_be_visible()
-
-    def test_mute_toggles_volume(self, app_page):
-        """Clicking mute button toggles muted state."""
-        # Load a track first
-        app_page.wait_for_selector("#track-list li", timeout=5000)
-        app_page.locator("#track-list li").first.click()
-        app_page.wait_for_timeout(300)
-
-        app_page.locator(".video-container").hover()
-
-        # Get initial muted state (check audio player since that's the active media)
-        initial_muted = app_page.evaluate(
-            "document.getElementById('audio-player').muted"
-        )
-
-        # Click mute button
-        app_page.click("#video-volume-button")
-        app_page.wait_for_timeout(100)
-
-        # Check muted state changed
-        new_muted = app_page.evaluate(
-            "document.getElementById('audio-player').muted"
-        )
-        assert initial_muted != new_muted, "Mute did not toggle"
-
-    def test_volume_slider_exists(self, app_page):
-        """Volume slider is present."""
-        app_page.locator(".video-container").hover()
-        volume_slider = app_page.locator("#video-volume-slider")
-        expect(volume_slider).to_be_attached()
+        assert has_src, "Video source was not set after clicking track"

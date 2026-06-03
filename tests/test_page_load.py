@@ -31,10 +31,10 @@ class TestPageLoad:
         track_items = app_page.locator("#track-list li")
         expect(track_items.first).to_be_visible()
 
-    def test_playlist_sidebar_renders(self, app_page):
-        """Playlist sidebar renders with track list."""
-        playlist = app_page.locator(".sidebar-playlist")
-        expect(playlist).to_be_visible()
+    def test_track_list_renders(self, app_page):
+        """Track list renders with track items."""
+        track_list = app_page.locator("#track-list")
+        expect(track_list).to_be_visible()
 
         # Should have track items
         track_items = app_page.locator("#track-list li")
@@ -43,49 +43,21 @@ class TestPageLoad:
 
     def test_video_player_present(self, app_page):
         """Video player element is present in the DOM."""
-        video = app_page.locator("#video-element")
+        video = app_page.locator("#video-player")
         expect(video).to_be_attached()
 
-    def test_audio_player_present(self, app_page):
-        """Audio player element is present in the DOM."""
-        audio = app_page.locator("#audio-player")
-        expect(audio).to_be_attached()
-
-    def test_theme_toggle_exists(self, app_page):
-        """Theme toggle button is present in the DOM."""
-        theme_toggle = app_page.locator("#theme-toggle")
-        # Button exists but may be hidden on smaller viewports
-        expect(theme_toggle).to_be_attached()
-
-    def test_theme_toggle_changes_theme(self, app_page):
-        """Clicking theme toggle changes the page theme."""
-        # Get initial theme state (uses data-theme attribute on documentElement)
-        initial_theme = app_page.evaluate("document.documentElement.getAttribute('data-theme')")
-
-        # Use JavaScript to click the theme toggle (bypasses visibility issues)
-        app_page.evaluate("document.getElementById('theme-toggle').click()")
-        app_page.wait_for_timeout(100)
-
-        # Check theme changed
-        new_theme = app_page.evaluate("document.documentElement.getAttribute('data-theme')")
-        assert initial_theme != new_theme, "Theme did not change after toggle"
-
-    def test_about_tab_accessible(self, app_page):
-        """About tab is present and can be clicked."""
-        about_btn = app_page.locator("[data-tab='about']")
-        expect(about_btn).to_be_visible()
-
-        # Click about tab
-        about_btn.click()
-
-        # About section should be visible
-        about_section = app_page.locator("#about-tab")
+    def test_about_section_visible(self, app_page):
+        """About section is visible on the page."""
+        about_section = app_page.locator(".about")
         expect(about_section).to_be_visible()
 
-    def test_playlist_buttons_present(self, app_page):
-        """Playlist navigation buttons are present."""
-        playlist_buttons = app_page.locator("#playlist-buttons")
-        expect(playlist_buttons).to_be_visible()
+    def test_header_visible(self, app_page):
+        """Header with title is visible."""
+        header = app_page.locator(".header")
+        expect(header).to_be_visible()
+
+        title = app_page.locator(".title")
+        expect(title).to_have_text("Kamiskaze")
 
 
 class TestTestPage:
