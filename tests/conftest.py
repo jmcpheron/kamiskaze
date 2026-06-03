@@ -1,4 +1,9 @@
-"""Pytest configuration and fixtures for Kamiskaze tests."""
+"""Pytest configuration and fixtures for Kamiskaze tests.
+
+The site is a static single-page app served over HTTP. These fixtures spin up
+a throwaway `python3 -m http.server` for the session and give each test a fresh
+page pointed at the app, plus a few small localStorage helpers.
+"""
 
 import subprocess
 import time
@@ -23,11 +28,10 @@ def is_port_in_use(port: int) -> bool:
 def server():
     """Start a local HTTP server for the duration of the test session."""
     if is_port_in_use(SERVER_PORT):
-        # Server already running (e.g., started manually)
+        # Server already running (e.g., started manually or by CI)
         yield BASE_URL
         return
 
-    # Start the server
     proc = subprocess.Popen(
         ["python3", "-m", "http.server", str(SERVER_PORT)],
         cwd=PROJECT_ROOT,
@@ -63,43 +67,34 @@ def browser_context_args(browser_context_args):
 
 @pytest.fixture
 def app_page(page, server):
-    """Navigate to the main application page."""
+    """Navigate to the main application page with the track list rendered."""
     page.goto(f"{server}/index.html")
-    # Wait for the page to be fully loaded
     page.wait_for_load_state("networkidle")
+    # The track list is populated from feed.json by main.js; wait for it.
+    page.wait_for_selector(".track-row", timeout=5000)
     return page
 
 
-@pytest.fixture
-def test_page(page, server):
-    """Navigate to the test player page."""
-    page.goto(f"{server}/test-player.html")
-    page.wait_for_load_state("networkidle")
-    return page
+# --- localStorage helpers available to all tests -------------------------------
+
+STORAGE_KEY = "kamiskaze-state"
 
 
-# Helper functions available to all tests
-def wait_for_video_ready(page, timeout=10000):
-    """Wait for the video element to be ready to play."""
-    page.wait_for_function(
+def get_saved_state(page):
+    """Return the parsed kamiskaze-state object from localStorage (or None)."""
+    return page.evaluate(
         """() => {
-            const video = document.getElementById('video-player');
-            return video && video.readyState >= 2;
-        }""",
-        timeout=timeout,
+            const raw = localStorage.getItem('kamiskaze-state');
+            return raw ? JSON.parse(raw) : null;
+        }"""
     )
 
 
-def get_local_storage(page, key):
-    """Get a value from localStorage."""
-    return page.evaluate(f"localStorage.getItem('{key}')")
-
-
-def set_local_storage(page, key, value):
-    """Set a value in localStorage."""
-    page.evaluate(f"localStorage.setItem('{key}', '{value}')")
-
-
-def clear_local_storage(page):
-    """Clear all localStorage."""
-    page.evaluate("localStorage.clear()")
+def active_track_index(page):
+    """Return the 0-based index of the row marked aria-current, or -1."""
+    return page.evaluate(
+        """() => {
+            const rows = Array.from(document.querySelectorAll('.track-row'));
+            return rows.findIndex(r => r.getAttribute('aria-current') === 'true');
+        }"""
+    )

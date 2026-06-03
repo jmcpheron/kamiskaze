@@ -1,73 +1,58 @@
-"""Tests for page loading and initial rendering."""
+"""Tests for page loading and initial rendering of the single-page archive."""
 
-import pytest
 from playwright.sync_api import expect
 
 
 class TestPageLoad:
-    """Test suite for page loading functionality."""
+    """The main page loads, renders its sections, and queues the first track."""
 
     def test_main_page_loads(self, app_page):
-        """Main index.html page loads without errors."""
+        """index.html loads with the expected title."""
         expect(app_page).to_have_title("Kamiskaze Archives")
 
     def test_no_console_errors(self, page, server):
-        """Page loads without JavaScript console errors."""
+        """Page loads without JavaScript console errors (ignoring 404s)."""
         errors = []
-        page.on("console", lambda msg: errors.append(msg.text) if msg.type == "error" else None)
+        page.on(
+            "console",
+            lambda msg: errors.append(msg.text) if msg.type == "error" else None,
+        )
         page.goto(f"{server}/index.html")
         page.wait_for_load_state("networkidle")
 
-        # Filter out expected errors (like 404 for missing media)
-        critical_errors = [e for e in errors if "404" not in e and "net::" not in e]
-        assert len(critical_errors) == 0, f"Console errors found: {critical_errors}"
+        # Ignore network 404s (e.g. the absent favicon) which aren't app bugs.
+        critical = [e for e in errors if "404" not in e and "net::" not in e]
+        assert not critical, f"Console errors found: {critical}"
 
-    def test_feed_loads_successfully(self, app_page):
-        """Feed.json loads and populates the playlist."""
-        # Wait for track list items to render
-        app_page.wait_for_selector("#track-list li", timeout=5000)
+    def test_masthead_visible(self, app_page):
+        """Masthead shows the Kamiskaze wordmark."""
+        expect(app_page.locator(".masthead")).to_be_visible()
+        expect(app_page.locator(".wordmark")).to_have_text("Kamiskaze")
 
-        # Check that at least one track item exists
-        track_items = app_page.locator("#track-list li")
-        expect(track_items.first).to_be_visible()
+    def test_about_section_present(self, app_page):
+        """About section (band history) renders with its label."""
+        expect(app_page.locator(".about")).to_be_visible()
+        expect(app_page.locator("#about-label")).to_have_text("About")
 
-    def test_track_list_renders(self, app_page):
-        """Track list renders with track items."""
-        track_list = app_page.locator("#track-list")
-        expect(track_list).to_be_visible()
+    def test_recording_header_present(self, app_page):
+        """Recording section header is present."""
+        expect(app_page.locator(".recording-title")).to_be_visible()
 
-        # Should have track items
-        track_items = app_page.locator("#track-list li")
-        count = track_items.count()
-        assert count > 0, "No track items found in playlist"
+    def test_feed_populates_track_list(self, app_page):
+        """feed.json populates the track list with all nine tracks."""
+        rows = app_page.locator(".track-row")
+        expect(rows.first).to_be_visible()
+        assert rows.count() == 9, f"Expected 9 tracks, got {rows.count()}"
 
-    def test_video_player_present(self, app_page):
-        """Video player element is present in the DOM."""
+    def test_video_player_present_with_controls(self, app_page):
+        """The video element is attached and uses native controls."""
         video = app_page.locator("#video-player")
-        expect(video).to_be_attached()
+        expect(video).to_be_visible()
+        assert app_page.evaluate(
+            "document.getElementById('video-player').hasAttribute('controls')"
+        ), "Video element is missing the controls attribute"
 
-    def test_about_section_visible(self, app_page):
-        """About section is visible on the page."""
-        about_section = app_page.locator(".about")
-        expect(about_section).to_be_visible()
-
-    def test_header_visible(self, app_page):
-        """Header with title is visible."""
-        header = app_page.locator(".header")
-        expect(header).to_be_visible()
-
-        title = app_page.locator(".title")
-        expect(title).to_have_text("Kamiskaze")
-
-
-class TestTestPage:
-    """Tests for the test-player.html page."""
-
-    def test_test_page_loads(self, test_page):
-        """Test player page loads successfully."""
-        expect(test_page).to_have_title("Kamiskaze Player - Test Interface")
-
-    def test_test_page_has_launch_button(self, test_page):
-        """Test page has button to launch main player."""
-        launch_link = test_page.locator("a[href='index.html']")
-        expect(launch_link.first).to_be_visible()
+    def test_video_has_poster(self, app_page):
+        """The media frame shows album art (poster) instead of a black void."""
+        poster = app_page.evaluate("document.getElementById('video-player').poster")
+        assert poster and poster.strip(), "Video has no poster (would render black)"
