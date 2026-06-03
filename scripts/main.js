@@ -2,6 +2,9 @@
 document.addEventListener('DOMContentLoaded', async () => {
   const video = document.getElementById('video-player');
   const trackList = document.getElementById('track-list');
+  const nowPlayingTitle = document.getElementById('now-playing-title');
+
+  const DEFAULT_POSTER = 'images/cassette-single.png';
 
   let tracks = [];
   let currentIndex = 0;
@@ -20,19 +23,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  // Render track list
+  // Render track list as accessible buttons (keyboard + screen reader friendly)
   function renderTrackList() {
     trackList.innerHTML = tracks.map((track, index) => `
-      <li data-index="${index}">
-        <span class="track-number">${index + 1}.</span>
-        <span class="track-title">${track.title}</span>
+      <li>
+        <button type="button" class="track-row" data-index="${index}">
+          <span class="track-number">${index + 1}</span>
+          <span class="track-title">${track.title}</span>
+          <span class="track-indicator" aria-hidden="true">▶</span>
+        </button>
       </li>
     `).join('');
 
     // Add click handlers
-    trackList.querySelectorAll('li').forEach(li => {
-      li.addEventListener('click', () => {
-        playTrack(parseInt(li.dataset.index));
+    trackList.querySelectorAll('.track-row').forEach(button => {
+      button.addEventListener('click', () => {
+        playTrack(parseInt(button.dataset.index));
       });
     });
   }
@@ -45,17 +51,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     const track = tracks[index];
 
     video.src = track.audioUrl;
+    setPoster(track);
     video.play();
 
     highlightTrack(index);
+    updateNowPlaying(track);
     saveState();
   }
 
   // Highlight active track
   function highlightTrack(index) {
-    trackList.querySelectorAll('li').forEach((li, i) => {
-      li.classList.toggle('active', i === index);
+    trackList.querySelectorAll('.track-row').forEach((button, i) => {
+      if (i === index) {
+        button.setAttribute('aria-current', 'true');
+      } else {
+        button.removeAttribute('aria-current');
+      }
     });
+  }
+
+  // Update the "Now Playing" caption
+  function updateNowPlaying(track) {
+    nowPlayingTitle.textContent = track.title;
+  }
+
+  // Show album art in the video frame before/while playing (falls back to default)
+  function setPoster(track) {
+    video.poster = track.albumArt || DEFAULT_POSTER;
   }
 
   // Auto-advance to next track
@@ -80,8 +102,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         currentIndex = state.index || 0;
 
         if (tracks[currentIndex]) {
-          video.src = tracks[currentIndex].audioUrl;
+          const track = tracks[currentIndex];
+          video.src = track.audioUrl;
+          setPoster(track);
           highlightTrack(currentIndex);
+          updateNowPlaying(track);
 
           video.addEventListener('loadedmetadata', () => {
             if (state.time) {
@@ -90,9 +115,12 @@ document.addEventListener('DOMContentLoaded', async () => {
           }, { once: true });
         }
       } else if (tracks.length > 0) {
-        // Default to first track
-        video.src = tracks[0].audioUrl;
+        // Default to first track (queued, not auto-played)
+        const track = tracks[0];
+        video.src = track.audioUrl;
+        setPoster(track);
         highlightTrack(0);
+        updateNowPlaying(track);
       }
     } catch (error) {
       console.error('Failed to restore state:', error);

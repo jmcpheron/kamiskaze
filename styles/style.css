@@ -1,4 +1,4 @@
-/* Kamiskaze Archives - Simplified Styles */
+/* Kamiskaze Archives — "Liner Notes": a clean modern archive with a ska accent */
 
 /* === RESET & BASE === */
 *, *::before, *::after {
@@ -8,206 +8,305 @@
 }
 
 :root {
+  /* Palette — soft paper, calm ink, ska yellow used only as accent */
+  --paper: #f7f5f0;
+  --surface: #ffffff;
+  --ink: #18181b;
+  --ink-soft: #5c5c5c;
+  --line: #e6e2d8;
   --yellow: #ffd93d;
-  --black: #1a1a1a;
-  --cream: #f5f0e1;
-  --cream-dark: #e8e0c8;
-  --shadow: 4px 4px 0 var(--black);
-  --font-marker: 'Permanent Marker', cursive;
-  --font-typewriter: 'Special Elite', monospace;
+  --yellow-deep: #e8b800;
+
+  /* Soft, blurred shadow (replaces the old hard 4px offset) */
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.07), 0 8px 24px rgba(0, 0, 0, 0.04);
+  --radius: 10px;
+
+  /* Spacing scale for consistent vertical rhythm */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2.5rem;
+  --space-6: 4rem;
+
+  /* Type */
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 body {
-  font-family: var(--font-typewriter);
-  background-color: var(--cream);
-  color: var(--black);
-  line-height: 1.6;
+  font-family: var(--font-body);
+  background-color: var(--paper);
+  color: var(--ink);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
   min-height: 100vh;
 }
 
 /* === LAYOUT === */
 .container {
-  max-width: 800px;
+  max-width: 760px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: var(--space-6) var(--space-4);
 }
 
-/* === HEADER === */
-.header {
-  text-align: center;
-  margin-bottom: 2rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 3px solid var(--black);
-}
-
-.title {
-  font-family: var(--font-marker);
-  font-size: 3rem;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  text-shadow: 3px 3px 0 var(--yellow);
-  transform: rotate(-2deg);
-}
-
-.subtitle {
-  font-size: 1rem;
-  margin-top: 0.5rem;
-  opacity: 0.8;
-}
-
-/* === ABOUT SECTION === */
-.about {
-  background: white;
-  border: 3px solid var(--black);
-  box-shadow: var(--shadow);
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.about p {
-  margin-bottom: 1rem;
-}
-
-.about p:last-child {
-  margin-bottom: 0;
-}
-
-/* === PERFORMANCE INFO === */
-.performance-info {
-  margin-bottom: 1.5rem;
-}
-
-.performance-title {
-  font-family: var(--font-marker);
-  font-size: 1.5rem;
-  margin-bottom: 0.25rem;
-}
-
-.performance-subtitle {
-  font-size: 0.9rem;
-  opacity: 0.7;
-}
-
-/* === TRACK LIST === */
-.track-list {
-  list-style: none;
-  background: white;
-  border: 3px solid var(--black);
-  box-shadow: var(--shadow);
-  margin-bottom: 1.5rem;
-}
-
-.track-list li {
-  padding: 0.75rem 1rem;
-  cursor: pointer;
-  border-bottom: 1px solid var(--cream-dark);
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  transition: background-color 0.15s ease;
-}
-
-.track-list li:last-child {
-  border-bottom: none;
-}
-
-.track-list li:hover {
-  background-color: var(--cream);
-}
-
-.track-list li.active {
-  background-color: var(--yellow);
+.section-label {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
   font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: var(--space-2);
 }
 
-.track-list li.active::before {
-  content: '\25B6';
-  font-size: 0.8rem;
+/* === MASTHEAD === */
+.masthead {
+  text-align: center;
+  margin-bottom: var(--space-5);
 }
 
-.track-number {
-  min-width: 1.5rem;
-  font-weight: bold;
-  opacity: 0.6;
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.75rem, 9vw, 4.25rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
 }
 
-.track-title {
-  flex: 1;
+.tagline {
+  margin-top: var(--space-3);
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
 }
 
-/* === VIDEO PLAYER === */
-.video-container {
-  background: var(--black);
-  border: 4px solid var(--black);
+/* Ska accent: a slim two-tone checkerboard rule */
+.checkerboard {
+  height: 10px;
+  margin-top: var(--space-4);
+  border-radius: 999px;
+  background-image:
+    linear-gradient(45deg, var(--ink) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--ink) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--ink) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--ink) 75%);
+  background-size: 10px 10px;
+  background-position: 0 0, 0 5px, 5px -5px, -5px 0;
+  background-color: var(--yellow);
+}
+
+/* === ABOUT === */
+.about {
+  max-width: 62ch;
+  margin: 0 auto;
+}
+
+.about p:not(.section-label) {
+  color: var(--ink);
+}
+
+.about p:not(.section-label) + p {
+  margin-top: var(--space-3);
+}
+
+/* === RECORDING === */
+.recording {
+  margin-bottom: var(--space-6);
+}
+
+.recording-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.5rem;
+  letter-spacing: -0.01em;
+}
+
+.recording-meta {
+  margin-top: var(--space-1);
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  margin-bottom: var(--space-4);
+}
+
+/* === MEDIA FRAME === */
+.media-frame {
+  background: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
   box-shadow: var(--shadow);
-  margin-bottom: 2rem;
+  overflow: hidden;
 }
 
 #video-player {
   width: 100%;
   display: block;
   aspect-ratio: 16 / 9;
-  background: #000;
+  background: var(--ink);
+  object-fit: contain;
+}
+
+/* Now playing caption */
+.now-playing {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin: var(--space-3) 0 var(--space-4);
+  font-size: 0.95rem;
+}
+
+.now-playing-label {
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  padding: 0.15rem 0.5rem;
+  background: var(--yellow);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.now-playing-title {
+  font-weight: 500;
+}
+
+/* === TRACK LIST === */
+.track-list {
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.track-list li + li {
+  border-top: 1px solid var(--line);
+}
+
+.track-row {
+  /* reset button styling */
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0.8rem 1.1rem;
+  position: relative;
+  transition: background-color 0.15s ease;
+}
+
+.track-row:hover {
+  background-color: var(--paper);
+}
+
+.track-number {
+  min-width: 1.75rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.track-title {
+  flex: 1;
+}
+
+.track-indicator {
+  color: var(--yellow-deep);
+  font-size: 0.85rem;
+  opacity: 0;
+}
+
+/* Active row: yellow left-accent bar + bold title + visible indicator */
+.track-row[aria-current="true"] {
+  font-weight: 600;
+  background-color: #fffae6;
+}
+
+.track-row[aria-current="true"]::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--yellow);
+}
+
+.track-row[aria-current="true"] .track-number {
+  color: var(--ink);
+}
+
+.track-row[aria-current="true"] .track-indicator {
+  opacity: 1;
 }
 
 /* === FOOTER === */
 .footer {
   text-align: center;
-  padding-top: 1.5rem;
+  margin-top: var(--space-6);
 }
 
-.checkered-border {
-  height: 12px;
-  margin-bottom: 1rem;
-  background-image:
-    linear-gradient(45deg, var(--black) 25%, transparent 25%),
-    linear-gradient(-45deg, var(--black) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, var(--black) 75%),
-    linear-gradient(-45deg, transparent 75%, var(--black) 75%);
-  background-size: 12px 12px;
-  background-position: 0 0, 0 6px, 6px -6px, -6px 0px;
-  background-color: var(--yellow);
+.checkerboard--footer {
+  max-width: 120px;
+  margin: 0 auto var(--space-3);
+  height: 8px;
+  background-size: 8px 8px;
+  background-position: 0 0, 0 4px, 4px -4px, -4px 0;
 }
 
 .footer p {
   font-size: 0.85rem;
-  opacity: 0.7;
+  color: var(--ink-soft);
 }
 
 .footer a {
-  color: var(--black);
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+  transition: border-color 0.15s ease, color 0.15s ease;
 }
 
 .footer a:hover {
-  color: var(--yellow);
-  background: var(--black);
-  padding: 0.1rem 0.25rem;
+  color: var(--yellow-deep);
+  border-bottom-color: var(--yellow);
 }
 
 /* === RESPONSIVE === */
 @media (max-width: 600px) {
   .container {
-    padding: 1rem;
+    padding: var(--space-5) var(--space-3);
   }
 
-  .title {
-    font-size: 2rem;
+  .recording {
+    margin-bottom: var(--space-5);
   }
 
-  .track-list li {
-    padding: 0.6rem 0.75rem;
-    font-size: 0.9rem;
+  .track-row {
+    padding: 0.75rem 0.9rem;
+    font-size: 0.95rem;
   }
 }
 
 /* === ACCESSIBILITY === */
+:focus-visible {
+  outline: 3px solid var(--yellow-deep);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;
   }
-}
-
-:focus-visible {
-  outline: 3px dashed var(--yellow);
-  outline-offset: 2px;
 }

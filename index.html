@@ -7,43 +7,51 @@
   <link rel="stylesheet" href="styles/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Special+Elite&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="container">
-    <!-- Header -->
-    <header class="header">
-      <h1 class="title">Kamiskaze</h1>
-      <p class="subtitle">SoCal Ska // Est. 1996</p>
+    <!-- Masthead -->
+    <header class="masthead">
+      <h1 class="wordmark">Kamiskaze</h1>
+      <p class="tagline">SoCal Ska · Est. 1996</p>
+      <div class="checkerboard" role="presentation" aria-hidden="true"></div>
     </header>
 
-    <!-- About Section -->
-    <section class="about">
+    <!-- Recording -->
+    <section class="recording" aria-labelledby="recording-title">
+      <h2 class="recording-title" id="recording-title">Palm Springs · December 13, 1996</h2>
+      <p class="recording-meta">Live with The Jawas · 9 tracks · 1996</p>
+
+      <!-- Media frame -->
+      <div class="media-frame">
+        <video id="video-player" controls preload="metadata"
+               poster="images/cassette-single.png"
+               aria-label="Kamiskaze live recording player">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+      <p class="now-playing" id="now-playing" aria-live="polite">
+        <span class="now-playing-label">Now Playing</span>
+        <span class="now-playing-title" id="now-playing-title">Select a track to begin</span>
+      </p>
+
+      <!-- Track list -->
+      <ol id="track-list" class="track-list" aria-label="Track list">
+        <!-- Populated by JavaScript -->
+      </ol>
+    </section>
+
+    <!-- About -->
+    <section class="about" aria-labelledby="about-label">
+      <p class="section-label" id="about-label">About</p>
       <p>Kamiskaze was a Southern California ska band that captured the energy and spirit of the mid-90s ska revival scene. Known for their high-energy performances and tight musicianship, the band was part of the vibrant SoCal ska community that helped define the third wave ska movement.</p>
       <p>The band performed at various venues throughout Southern California, including memorable shows at The Jawas in Palm Springs, where these recordings were captured in 1996.</p>
     </section>
 
-    <!-- Performance Info -->
-    <section class="performance-info">
-      <h2 class="performance-title">Palm Springs, December 13, 1996</h2>
-      <p class="performance-subtitle">Live performance with The Jawas</p>
-    </section>
-
-    <!-- Track List -->
-    <ul id="track-list" class="track-list">
-      <!-- Populated by JavaScript -->
-    </ul>
-
-    <!-- Video Player -->
-    <div class="video-container">
-      <video id="video-player" controls preload="metadata">
-        Your browser does not support the video tag.
-      </video>
-    </div>
-
     <!-- Footer -->
     <footer class="footer">
-      <div class="checkered-border"></div>
+      <div class="checkerboard checkerboard--footer" role="presentation" aria-hidden="true"></div>
       <p>Archives at <a href="https://github.com/jmcpheron/kamiskaze">github.com/jmcpheron/kamiskaze</a></p>
     </footer>
   </div>
